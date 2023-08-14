@@ -5,6 +5,7 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY *.go ./
+COPY cmd/ cmd/
 COPY internal/ internal/
 
 RUN --mount=type=cache,target=/root/.cache \
