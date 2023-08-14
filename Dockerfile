@@ -15,6 +15,8 @@ RUN --mount=type=cache,target=/root/.cache \
 FROM alpine:3.18
 WORKDIR /app
 
+RUN apk add --no-cache tzdata
+
 ARG USERNAME=sponsorblockcast
 ARG UID=1000
 ARG GID=$UID
