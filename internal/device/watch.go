@@ -5,7 +5,6 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/buger/jsonparser"
 	"github.com/gabe565/sponsorblockcast/internal/config"
 	"github.com/gabe565/sponsorblockcast/internal/sponsorblock"
 	"github.com/vishen/go-chromecast/application"
@@ -42,17 +41,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	}
 
 	app.AddMessageFunc(func(msg *api.CastMessage) {
-		payload := []byte(msg.GetPayloadUtf8())
-
-		if requestID, err := jsonparser.GetInt(payload, "requestId"); requestID != 0 || err != nil {
-			// Only match broadcasts from the device
-			return
-		}
-
-		if msgType, _ := jsonparser.GetString(payload, "type"); msgType != "MEDIA_STATUS" {
-			return
-		}
-
 		ticker.Reset(config.PlayingIntervalValue)
 	})
 
