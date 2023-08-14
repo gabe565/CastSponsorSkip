@@ -1,0 +1,10 @@
+**/.DS_Store
+.dockerignore
+.git/
+.github/
+.idea/
+.pre-commit-config.yaml
+Dockerfile
+docker-compose.yml
+sponsorblockcast
+vendor/
