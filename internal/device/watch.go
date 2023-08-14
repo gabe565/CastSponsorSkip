@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/buger/jsonparser"
+	"github.com/gabe565/sponsorblockcast/internal/config"
 	"github.com/gabe565/sponsorblockcast/internal/sponsorblock"
 	"github.com/vishen/go-chromecast/application"
 	"github.com/vishen/go-chromecast/cast/proto"
@@ -17,7 +18,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	slog.With(logGroup).Info("Found cast device")
 
-	ticker := time.NewTicker(time.Second)
+	ticker := time.NewTicker(config.PlayingIntervalValue)
 	defer func() {
 		ticker.Stop()
 	}()
@@ -52,7 +53,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			return
 		}
 
-		ticker.Reset(time.Second)
+		ticker.Reset(config.PlayingIntervalValue)
 	})
 
 	for {
@@ -71,7 +72,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil || castMedia.PlayerState != "PLAYING" || castMedia.Media.ContentId == "" {
 				segments = nil
-				ticker.Reset(time.Minute)
+				ticker.Reset(config.PausedIntervalValue)
 				continue
 			}
 
@@ -99,7 +100,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				}
 			}
 
-			ticker.Reset(time.Second)
+			ticker.Reset(config.PlayingIntervalValue)
 		}
 	}
 }

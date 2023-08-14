@@ -7,9 +7,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-)
 
-var Categories = []string{"sponsor"}
+	"github.com/gabe565/sponsorblockcast/internal/config"
+)
 
 type Segment struct {
 	Segment       [2]float32
@@ -33,7 +33,7 @@ func QuerySegments(id string) ([]Segment, error) {
 
 	query := make(url.Values)
 	query.Set("videoID", id)
-	for _, category := range Categories {
+	for _, category := range config.CategoriesValue {
 		query.Add("category", category)
 	}
 	u.RawQuery = query.Encode()
