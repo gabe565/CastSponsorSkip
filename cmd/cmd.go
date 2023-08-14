@@ -63,6 +63,10 @@ func run(cmd *cobra.Command, args []string) (err error) {
 			case <-ctx.Done():
 				return
 			case entry := <-entries:
+				if entry.Device == "Google Cast Group" {
+					continue
+				}
+
 				group.Add(1)
 				go func() {
 					defer func() {
