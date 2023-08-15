@@ -53,11 +53,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	var prevVideoId string
 	var segments []sponsorblock.Segment
 
-	if err := app.Update(); err != nil {
-		logger.Warn("Failed to update application.")
-		return
-	}
-
 	app.AddMessageFunc(func(msg *api.CastMessage) {
 		ticker.Reset(config.PlayingIntervalValue)
 	})
