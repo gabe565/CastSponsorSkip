@@ -17,7 +17,7 @@ archives:
     files:
       - LICENSE
       - README.md
-      - castsponsorskip.service
+      - "{{ .ProjectName }}.service"
 checksum:
   name_template: "checksums.txt"
 snapshot:
@@ -36,6 +36,14 @@ brews:
     folder: Formula
     install: |
       bin.install "{{ .ProjectName }}"
+    service: |
+      if OS.linux?
+        name "{{ .ProjectName }}.service"
+      else
+        run [opt_bin/"{{ .ProjectName }}"]
+        keep_alive true
+        error_log_path var/"log/{{ .ProjectName }}.log"
+      end
 dockers:
   - &dockers
     image_templates:
