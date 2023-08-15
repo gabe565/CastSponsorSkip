@@ -104,9 +104,11 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			for _, segment := range segments {
 				if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
-					logger.Info("Skipping to timestamp.", "category", segment.Category, "timestamp", castMedia.CurrentTime, "segment", segment.Segment)
+					from := time.Duration(castMedia.CurrentTime) * time.Second
+					to := time.Duration(segment.Segment[1]) * time.Second
+					logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
 					if err := app.SeekToTime(segment.Segment[1]); err != nil {
-						logger.Warn("Failed to seek to timestamp.", "to", segment.Segment[1], "error", err.Error())
+						logger.Warn("Failed to seek to timestamp.", "to", to, "error", err.Error())
 					}
 					break
 				}
