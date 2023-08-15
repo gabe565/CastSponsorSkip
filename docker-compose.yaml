@@ -3,7 +3,11 @@ version: "3.9"
 services:
   app:
     image: ghcr.io/gabe565/sponsorblockcast-go
-    build: .
+    environment:
+      SBC_PAUSED_INTERVAL: 1m
+      SBC_PLAYING_INTERVAL: 1s
+      SBC_CATEGORIES: sponsor
     network_mode: host
     cap_add:
       - NET_ADMIN
+    restart: always
