@@ -33,6 +33,9 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		if err := app.Start(entry.GetAddr(), entry.GetPort()); err == nil {
 			break
 		} else {
+			if ctx.Err() != nil {
+				return
+			}
 			if retries == 0 {
 				logger.Warn("Failed to connect to device. Retrying...")
 			}
@@ -47,6 +50,9 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	defer func() {
 		_ = app.Close(false)
 	}()
+	if ctx.Err() != nil {
+		return
+	}
 
 	logger.Info("Connected to cast device.")
 
