@@ -14,7 +14,12 @@ import (
 )
 
 func Watch(ctx context.Context, entry castdns.CastEntry) {
-	logGroup := slog.Group("device", "type", entry.Device, "name", entry.DeviceName)
+	var logGroup slog.Attr
+	if entry.DeviceName != "" {
+		logGroup = slog.String("device", entry.DeviceName)
+	} else {
+		logGroup = slog.String("device", entry.Device)
+	}
 
 	slog.With(logGroup).Info("Found cast device")
 
@@ -66,7 +71,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			if castMedia.Media.ContentId != prevVideoId {
-				slog.With(logGroup).Info("Watching stream", "app_name", castApp.DisplayName, "content_id", castMedia.Media.ContentId)
+				slog.With(logGroup).Info("Detected video stream", "video_id", castMedia.Media.ContentId)
 				segments = nil
 				prevVideoId = castMedia.Media.ContentId
 			}
