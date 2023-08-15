@@ -1,6 +1,7 @@
 package sponsorblock
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -24,7 +25,7 @@ type Segment struct {
 
 var ErrStatusCode = errors.New("invalid response status")
 
-func QuerySegments(id string) ([]Segment, error) {
+func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 	u := url.URL{
 		Scheme: "https",
 		Host:   "sponsor.ajay.app",
@@ -38,7 +39,14 @@ func QuerySegments(id string) ([]Segment, error) {
 	}
 	u.RawQuery = query.Encode()
 
-	resp, err := http.Get(u.String())
+	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req = req.WithContext(ctx)
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
