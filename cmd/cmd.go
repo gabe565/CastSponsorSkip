@@ -65,6 +65,8 @@ func run(cmd *cobra.Command, args []string) (err error) {
 			case entry := <-entries:
 				if entry.Device == "Google Cast Group" {
 					continue
+				} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
+					continue
 				}
 
 				group.Add(1)
