@@ -78,7 +78,7 @@ nfpms:
       - rpm
     contents:
       - src: ./castsponsorskip.service
-        dst: /etc/systemd/system/castsponsorskip.service
+        dst: /usr/lib/systemd/system/castsponsorskip.service
         type: config
 publishers:
   - name: fury.io
