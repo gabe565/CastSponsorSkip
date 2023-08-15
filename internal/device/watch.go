@@ -34,12 +34,12 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			break
 		} else {
 			if retries == 0 {
-				logger.Warn("Failed to connect to device. Retrying")
+				logger.Warn("Failed to connect to device. Retrying...")
 			}
 			retries += 1
 			entry, err = DiscoverCastDNSEntryByUuid(ctx, entry.UUID)
 			if err != nil && retries >= 10 {
-				logger.Warn("Failed to start application", "error", err.Error())
+				logger.Warn("Failed to start application.", "error", err.Error())
 				return
 			}
 		}
@@ -48,13 +48,13 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		_ = app.Close(false)
 	}()
 
-	logger.Info("Connected to cast device")
+	logger.Info("Connected to cast device.")
 
 	var prevVideoId string
 	var segments []sponsorblock.Segment
 
 	if err := app.Update(); err != nil {
-		logger.Warn("Failed to update application")
+		logger.Warn("Failed to update application.")
 		return
 	}
 
@@ -70,7 +70,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			logger.Debug("Update")
 
 			if err := app.Update(); err != nil {
-				logger.Warn("Failed to update application", "error", err.Error())
+				logger.Warn("Failed to update application.", "error", err.Error())
 				continue
 			}
 
@@ -83,7 +83,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			if castMedia.Media.ContentId != prevVideoId {
-				logger.Info("Detected video stream", "video_id", castMedia.Media.ContentId)
+				logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
 				segments = nil
 				prevVideoId = castMedia.Media.ContentId
 			}
@@ -93,9 +93,9 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				segments, err = sponsorblock.QuerySegments(castMedia.Media.ContentId)
 				if err == nil {
 					if len(segments) == 0 {
-						logger.Info("No segments found for video", "video_id", castMedia.Media.ContentId)
+						logger.Info("No segments found for video.", "video_id", castMedia.Media.ContentId)
 					} else {
-						logger.Info("Found segments for video", "segments", len(segments))
+						logger.Info("Found segments for video.", "segments", len(segments))
 					}
 				} else {
 					logger.Error("Failed to query segments", "error", err.Error())
@@ -104,18 +104,18 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			for _, segment := range segments {
 				if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
-					logger.Info("Skipping to timestamp", "category", segment.Category, "timestamp", castMedia.CurrentTime, "segment", segment.Segment)
+					logger.Info("Skipping to timestamp.", "category", segment.Category, "timestamp", castMedia.CurrentTime, "segment", segment.Segment)
 					if err := app.SeekToTime(segment.Segment[1]); err != nil {
-						logger.Warn("Failed to seek to timestamp", "to", segment.Segment[1], "error", err.Error())
+						logger.Warn("Failed to seek to timestamp.", "to", segment.Segment[1], "error", err.Error())
 					}
 					break
 				}
 			}
 
 			if err := app.Skipad(); err == nil {
-				logger.Info("Skipped ad")
+				logger.Info("Skipped ad.")
 			} else if !errors.Is(err, application.ErrNoMediaSkipad) {
-				logger.Warn("Failed to skip ad", "error", err.Error())
+				logger.Warn("Failed to skip ad.", "error", err.Error())
 			}
 
 			ticker.Reset(config.PlayingIntervalValue)
