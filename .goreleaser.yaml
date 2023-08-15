@@ -89,8 +89,8 @@ nfpms:
       - deb
       - rpm
     contents:
-      - src: ./castsponsorskip.service
-        dst: /usr/lib/systemd/system/castsponsorskip.service
+      - src: ./{{ .ProjectName }}.service
+        dst: /usr/lib/systemd/system/{{ .ProjectName }}.service
         type: config
 publishers:
   - name: fury.io
