@@ -58,3 +58,23 @@ docker_manifests:
     name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}
   - <<: *docker_manifests
     name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}.{{ .Minor }}
+nfpms:
+  - id: packages
+    vendor: Gabe Cook
+    homepage: https://github.com/gabe565/sponsorblockcast-go
+    description: A Go program that skips sponsored YouTube content on all local Google Cast devices
+    license: GPL-3.0
+    maintainer: Gabe Cook <gabe565@gmail.com>
+    formats:
+      - deb
+      - rpm
+    contents:
+      - src: ./sponsorblockcast-go.service
+        dst: /etc/systemd/system/sponsorblockcast-go.service
+        type: config
+publishers:
+  - name: fury.io
+    ids:
+      - packages
+    dir: "{{ dir .ArtifactPath }}"
+    cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/

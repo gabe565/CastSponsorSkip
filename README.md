@@ -9,24 +9,86 @@ Additionally, sponsorblockcast-go will look for skippable YouTube ads, and autom
 ## Installation
 
 ### Docker Image
-You can [install Docker](https://docs.docker.com/engine/install/) directly or use [Docker Compose](https://docs.docker.com/compose/install/) (Or use Podman, Portainer, etc). Please note you *MUST* use the `host` network as shown below for cli or in the example `docker-compose` file.
 
-#### Docker
-Run the below commands as root or a member of the `docker` group:
-```shell
-docker run --network=host --name=sponsorblockcast-go ghcr.io/gabe565/sponsorblockcast-go
-```
+<details>
+  <summary>Click to expand</summary>
 
-#### Docker Compose
-First you will need a `docker-compose.yaml` file, such as the [one included in this repo](docker-compose.yaml). Run the below commands as root or a member of the `docker` group:
-```shell
-docker compose up -d
-```
+  You can [install Docker](https://docs.docker.com/engine/install/) directly or use [Docker Compose](https://docs.docker.com/compose/install/) (Or use Podman, Portainer, etc). Please note you *MUST* use the `host` network as shown below for cli or in the example `docker-compose` file.
+
+  #### Docker
+  Run the below commands as root or a member of the `docker` group:
+  ```shell
+  docker run --network=host --name=sponsorblockcast-go ghcr.io/gabe565/sponsorblockcast-go
+  ```
+
+  #### Docker Compose
+  First you will need a `docker-compose.yaml` file, such as the [one included in this repo](docker-compose.yaml). Run the below commands as root or a member of the `docker` group:
+  ```shell
+  docker compose up -d
+  ```
+</details>
+
+
+### APT Repository (Ubuntu, Debian)
+
+<details>
+  <summary>Click to expand</summary>
+
+1. If you don't have it already, install the `ca-certificates` package
+   ```shell
+   sudo apt install ca-certificates
+   ```
+
+2. Add gabe565 apt repository
+   ```
+   echo 'deb [trusted=yes] https://apt.gabe565.com /' | sudo tee /etc/apt/sources.list.d/gabe565.list
+   ```
+
+3. Update apt repositories
+   ```shell
+   sudo apt update
+   ```
+
+4. Install sponsorblockcast-go
+   ```shell
+   sudo apt install sponsorblockcast-go
+   ```
+</details>
+
+### RPM Repository (CentOS, RHEL)
+
+<details>
+  <summary>Click to expand</summary>
+
+1. If you don't have it already, install the `ca-certificates` package
+   ```shell
+   sudo yum install ca-certificates
+   ```
+
+2. Add gabe565 rpm repository to `/etc/yum.repos.d/gabe565.repo`
+   ```ini
+   [gabe565]
+   name=gabe565
+   baseurl=https://rpm.gabe565.com
+   enabled=1
+   gpgcheck=0
+   ```
+
+3. Install sponsorblockcast-go
+   ```shell
+   sudo yum install sponsorblockcast-go
+   ```
+</details>
 
 ### Manual Installation
-#### Instructions
 
-Download and run the [latest release binary](https://github.com/gabe565/sponsorblockcast-go/releases/latest) for your system and architecture.
+<details>
+  <summary>Click to expand</summary>
+
+  #### Instructions
+
+  Download and run the [latest release binary](https://github.com/gabe565/sponsorblockcast-go/releases/latest) for your system and architecture.
+</details>
 
 ## Usage
 Run `sponsorblockcast-go` from a terminal or activate the service with `systemctl enable --now sponsorblockcast-go`.

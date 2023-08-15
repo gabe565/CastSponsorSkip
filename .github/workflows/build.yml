@@ -74,6 +74,7 @@ jobs:
           args: ${{ steps.vars.outputs.args }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
       - uses: actions/upload-artifact@v3
         with:
           name: dist
