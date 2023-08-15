@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"log/slog"
-	"net"
 	"os"
 	"os/signal"
 	"sync"
@@ -12,8 +11,6 @@ import (
 	"github.com/gabe565/sponsorblockcast/internal/config"
 	"github.com/gabe565/sponsorblockcast/internal/device"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	castdns "github.com/vishen/go-chromecast/dns"
 )
 
 func NewCommand() *cobra.Command {
@@ -38,19 +35,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
-	var iface *net.Interface
-	interfaceName := viper.GetString(config.InterfaceKey)
-	if interfaceName != "" {
-		iface, err = net.InterfaceByName(interfaceName)
-		if err != nil {
-			return err
-		}
-		slog.Info("Searching for devices...", "interface", interfaceName)
-	} else {
-		slog.Info("Searching for devices...")
-	}
-
-	entries, err := castdns.DiscoverCastDNSEntries(ctx, iface)
+	entries, err := device.DiscoverCastDNSEntries(ctx)
 	if err != nil {
 		return err
 	}

@@ -28,9 +28,21 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	app := application.NewApplication()
 
-	if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
-		logger.Warn("Failed to start application", "error", err.Error())
-		return
+	var retries uint8
+	for {
+		if err := app.Start(entry.GetAddr(), entry.GetPort()); err == nil {
+			break
+		} else {
+			if retries == 0 {
+				logger.Warn("Failed to connect to device. Retrying")
+			}
+			retries += 1
+			entry, err = DiscoverCastDNSEntryByUuid(ctx, entry.UUID)
+			if err != nil && retries >= 10 {
+				logger.Warn("Failed to start application", "error", err.Error())
+				return
+			}
+		}
 	}
 	defer func() {
 		_ = app.Close(false)
