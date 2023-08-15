@@ -74,7 +74,13 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			if len(segments) == 0 {
 				var err error
 				segments, err = sponsorblock.QuerySegments(castMedia.Media.ContentId)
-				if err != nil {
+				if err == nil {
+					if len(segments) == 0 {
+						slog.With(logGroup).Info("No segments found for video", "video_id", castMedia.Media.ContentId)
+					} else {
+						slog.With(logGroup).Info("Found segments for video", "segments", len(segments))
+					}
+				} else {
 					slog.With(logGroup).Error("Failed to query segments", "error", err.Error())
 				}
 			}
