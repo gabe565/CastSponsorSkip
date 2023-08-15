@@ -2,6 +2,7 @@ package device
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
@@ -86,6 +87,12 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 					}
 					break
 				}
+			}
+
+			if err := app.Skipad(); err == nil {
+				slog.With(logGroup).Info("Skipped ad")
+			} else if !errors.Is(err, application.ErrNoMediaSkipad) {
+				slog.With(logGroup).Warn("Failed to skip ad", "error", err.Error())
 			}
 
 			ticker.Reset(config.PlayingIntervalValue)
