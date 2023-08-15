@@ -80,6 +80,16 @@ Additionally, sponsorblockcast-go will look for skippable YouTube ads, and autom
    ```
 </details>
 
+### Homebrew (macOS, Linux)
+
+<details>
+  <summary>Click to expand</summary>
+
+  ```shell
+  brew install gabe565/tap/sponsorblockcast-go
+  ```
+</details>
+
 ### Manual Installation
 
 <details>

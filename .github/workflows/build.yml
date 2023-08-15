@@ -75,6 +75,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
+          HOMEBREW_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
       - uses: actions/upload-artifact@v3
         with:
           name: dist

@@ -24,6 +24,14 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+brews:
+  - repository:
+      owner: gabe565
+      name: homebrew-tap
+      token: '{{ .Env.HOMEBREW_TOKEN }}'
+    folder: Formula
+    install: |
+      bin.install "{{ .ProjectName }}"
 dockers:
   - &dockers
     image_templates:
