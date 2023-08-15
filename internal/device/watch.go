@@ -21,8 +21,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		logger = slog.With("device", entry.Device)
 	}
 
-	logger.Info("Found cast device")
-
 	ticker := time.NewTicker(config.PlayingIntervalValue)
 	defer func() {
 		ticker.Stop()
@@ -37,6 +35,8 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	defer func() {
 		_ = app.Close(false)
 	}()
+
+	logger.Info("Connected to cast device")
 
 	var prevVideoId string
 	var segments []sponsorblock.Segment
