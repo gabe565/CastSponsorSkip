@@ -90,3 +90,23 @@ publishers:
       - packages
     dir: "{{ dir .ArtifactPath }}"
     cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
+aurs:
+  - name: "{{ .ProjectName }}-bin"
+    homepage: https://github.com/gabe565/CastSponsorSkip
+    description: Skip sponsored YouTube content on all local Google Cast devices
+    maintainers:
+      - Gabe Cook <gabe565@gmail.com>
+    license: GPL-3.0
+    private_key: '{{ .Env.AUR_SSH_KEY }}'
+    git_url: ssh://aur@aur.archlinux.org/{{ .ProjectName }}-bin.git'
+    skip_upload: auto
+    package: |-
+      # bin
+      install -Dm755 "./{{ .ProjectName }}" "${pkgdir}/usr/bin/{{ .ProjectName }}"
+      # license
+      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/{{ .ProjectName }}/LICENSE"
+      # systemd unit
+      install -Dm644 "./{{ .ProjectName }}.service" "${pkgdir}/usr/lib/systemd/system/{{ .ProjectName }}.service"
+    commit_author:
+      name: goreleaserbot
+      email: bot@goreleaser.com
