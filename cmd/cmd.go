@@ -52,7 +52,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 
 	entries, err := castdns.DiscoverCastDNSEntries(ctx, iface)
 	if err != nil {
-		slog.Error("Failed to fetch devices", "error", err)
+		slog.Error("Failed to fetch devices", "error", err.Error())
 	}
 
 	var group sync.WaitGroup

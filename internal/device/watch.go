@@ -52,7 +52,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			slog.With(logGroup).Debug("Update")
 
 			if err := app.Update(); err != nil {
-				slog.With(logGroup).Warn("Failed to update application", "error", err)
+				slog.With(logGroup).Warn("Failed to update application", "error", err.Error())
 				continue
 			}
 
@@ -82,7 +82,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
 					slog.With(logGroup).Info("Skipping to timestamp", "category", segment.Category, "timestamp", castMedia.CurrentTime, "segment", segment.Segment)
 					if err := app.SeekToTime(segment.Segment[1]); err != nil {
-						slog.With(logGroup).Warn("Failed to seek to timestamp", "to", segment.Segment[1], "error", err)
+						slog.With(logGroup).Warn("Failed to seek to timestamp", "to", segment.Segment[1], "error", err.Error())
 					}
 					break
 				}
