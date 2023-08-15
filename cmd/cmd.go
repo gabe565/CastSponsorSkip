@@ -21,6 +21,7 @@ func NewCommand() *cobra.Command {
 		RunE:    run,
 	}
 
+	CompletionFlag(cmd)
 	config.Interface(cmd)
 	config.PausedInterval(cmd)
 	config.PlayingInterval(cmd)
@@ -36,6 +37,10 @@ func preRun(cmd *cobra.Command, args []string) error {
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {
+	if completionFlag != "" {
+		return completion(cmd)
+	}
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
