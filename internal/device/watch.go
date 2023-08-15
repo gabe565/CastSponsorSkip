@@ -6,8 +6,8 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/gabe565/sponsorblockcast/internal/config"
-	"github.com/gabe565/sponsorblockcast/internal/sponsorblock"
+	"github.com/gabe565/sponsorblockcast-go/internal/config"
+	"github.com/gabe565/sponsorblockcast-go/internal/sponsorblock"
 	"github.com/vishen/go-chromecast/application"
 	"github.com/vishen/go-chromecast/cast/proto"
 	castdns "github.com/vishen/go-chromecast/dns"

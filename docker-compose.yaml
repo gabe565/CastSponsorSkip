@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   app:
-    image: ghcr.io/gabe565/sponsorblockcast
+    image: ghcr.io/gabe565/sponsorblockcast-go
     build: .
     network_mode: host
     cap_add:

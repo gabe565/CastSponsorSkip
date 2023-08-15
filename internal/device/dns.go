@@ -8,7 +8,7 @@ import (
 	"net"
 	"time"
 
-	"github.com/gabe565/sponsorblockcast/internal/config"
+	"github.com/gabe565/sponsorblockcast-go/internal/config"
 	castdns "github.com/vishen/go-chromecast/dns"
 )
 

@@ -9,11 +9,11 @@ import (
 
 func InitViper() func() {
 	return func() {
-		viper.SetConfigName("sponsorblockcast")
+		viper.SetConfigName("sponsorblockcast-go")
 		viper.SetConfigType("yaml")
 		viper.AddConfigPath("$HOME/.config/")
 		viper.AddConfigPath("$HOME/")
-		viper.AddConfigPath("/etc/sponsorblockcast/")
+		viper.AddConfigPath("/etc/sponsorblockcast-go/")
 
 		viper.AutomaticEnv()
 		viper.SetEnvPrefix("SBC")

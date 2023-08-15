@@ -17,13 +17,13 @@ WORKDIR /app
 
 RUN apk add --no-cache tzdata
 
-ARG USERNAME=sponsorblockcast
+ARG USERNAME=sponsorblockcast-go
 ARG UID=1000
 ARG GID=$UID
 RUN addgroup -g "$GID" "$USERNAME" \
     && adduser -S -u "$UID" -G "$USERNAME" "$USERNAME"
 
-COPY --from=go-builder /app/sponsorblockcast ./
+COPY --from=go-builder /app/sponsorblockcast-go ./
 
 USER $UID
-CMD ["./sponsorblockcast"]
+CMD ["./sponsorblockcast-go"]

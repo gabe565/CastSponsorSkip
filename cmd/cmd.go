@@ -8,14 +8,14 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/gabe565/sponsorblockcast/internal/config"
-	"github.com/gabe565/sponsorblockcast/internal/device"
+	"github.com/gabe565/sponsorblockcast-go/internal/config"
+	"github.com/gabe565/sponsorblockcast-go/internal/device"
 	"github.com/spf13/cobra"
 )
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "sponsorblockcast",
+		Use:   "sponsorblockcast-go",
 		Short: "Skip sponsored YouTube segments on local Cast devices",
 		RunE:  run,
 	}
