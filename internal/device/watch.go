@@ -14,14 +14,14 @@ import (
 )
 
 func Watch(ctx context.Context, entry castdns.CastEntry) {
-	var logGroup slog.Attr
+	var logger *slog.Logger
 	if entry.DeviceName != "" {
-		logGroup = slog.String("device", entry.DeviceName)
+		logger = slog.With("device", entry.DeviceName)
 	} else {
-		logGroup = slog.String("device", entry.Device)
+		logger = slog.With("device", entry.Device)
 	}
 
-	slog.With(logGroup).Info("Found cast device")
+	logger.Info("Found cast device")
 
 	ticker := time.NewTicker(config.PlayingIntervalValue)
 	defer func() {
@@ -31,7 +31,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	app := application.NewApplication()
 
 	if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
-		slog.With(logGroup).Warn("Failed to start application", "error", err.Error())
+		logger.Warn("Failed to start application", "error", err.Error())
 		return
 	}
 	defer func() {
@@ -42,7 +42,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	var segments []sponsorblock.Segment
 
 	if err := app.Update(); err != nil {
-		slog.With(logGroup).Warn("Failed to update application")
+		logger.Warn("Failed to update application")
 		return
 	}
 
@@ -55,10 +55,10 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			slog.With(logGroup).Debug("Update")
+			logger.Debug("Update")
 
 			if err := app.Update(); err != nil {
-				slog.With(logGroup).Warn("Failed to update application", "error", err.Error())
+				logger.Warn("Failed to update application", "error", err.Error())
 				continue
 			}
 
@@ -71,7 +71,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			if castMedia.Media.ContentId != prevVideoId {
-				slog.With(logGroup).Info("Detected video stream", "video_id", castMedia.Media.ContentId)
+				logger.Info("Detected video stream", "video_id", castMedia.Media.ContentId)
 				segments = nil
 				prevVideoId = castMedia.Media.ContentId
 			}
@@ -81,29 +81,29 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				segments, err = sponsorblock.QuerySegments(castMedia.Media.ContentId)
 				if err == nil {
 					if len(segments) == 0 {
-						slog.With(logGroup).Info("No segments found for video", "video_id", castMedia.Media.ContentId)
+						logger.Info("No segments found for video", "video_id", castMedia.Media.ContentId)
 					} else {
-						slog.With(logGroup).Info("Found segments for video", "segments", len(segments))
+						logger.Info("Found segments for video", "segments", len(segments))
 					}
 				} else {
-					slog.With(logGroup).Error("Failed to query segments", "error", err.Error())
+					logger.Error("Failed to query segments", "error", err.Error())
 				}
 			}
 
 			for _, segment := range segments {
 				if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
-					slog.With(logGroup).Info("Skipping to timestamp", "category", segment.Category, "timestamp", castMedia.CurrentTime, "segment", segment.Segment)
+					logger.Info("Skipping to timestamp", "category", segment.Category, "timestamp", castMedia.CurrentTime, "segment", segment.Segment)
 					if err := app.SeekToTime(segment.Segment[1]); err != nil {
-						slog.With(logGroup).Warn("Failed to seek to timestamp", "to", segment.Segment[1], "error", err.Error())
+						logger.Warn("Failed to seek to timestamp", "to", segment.Segment[1], "error", err.Error())
 					}
 					break
 				}
 			}
 
 			if err := app.Skipad(); err == nil {
-				slog.With(logGroup).Info("Skipped ad")
+				logger.Info("Skipped ad")
 			} else if !errors.Is(err, application.ErrNoMediaSkipad) {
-				slog.With(logGroup).Warn("Failed to skip ad", "error", err.Error())
+				logger.Warn("Failed to skip ad", "error", err.Error())
 			}
 
 			ticker.Reset(config.PlayingIntervalValue)
