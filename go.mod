@@ -1,4 +1,4 @@
-module github.com/gabe565/sponsorblockcast-go
+module github.com/gabe565/castsponsorskip
 
 go 1.21
 

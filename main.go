@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/gabe565/sponsorblockcast-go/cmd"
+	"github.com/gabe565/castsponsorskip/cmd"
 )
 
 func main() {

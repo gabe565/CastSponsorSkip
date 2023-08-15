@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   app:
-    image: ghcr.io/gabe565/sponsorblockcast-go
+    image: ghcr.io/gabe565/castsponsorskip
     environment:
       SBC_PAUSED_INTERVAL: 1m
       SBC_PLAYING_INTERVAL: 1s

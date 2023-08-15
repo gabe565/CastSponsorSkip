@@ -6,5 +6,5 @@
 .pre-commit-config.yaml
 Dockerfile
 docker-compose.yml
-sponsorblockcast-go
+castsponsorskip
 vendor/

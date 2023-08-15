@@ -1,11 +1,11 @@
 [Unit]
 Description=A Go program that skips sponsored YouTube content on all local Google Cast devices
-Documentation=https://github.com/gabe565/sponsorblockcast-go
+Documentation=https://github.com/gabe565/CastSponsorSkip
 After=network.target
 
 [Service]
 Restart=always
-ExecStart=/usr/bin/sponsorblockcast-go
+ExecStart=/usr/bin/castsponsorskip
 TimeoutStopSec=20s
 
 [Install]

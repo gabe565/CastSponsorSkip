@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/gabe565/sponsorblockcast-go/internal/config"
+	"github.com/gabe565/castsponsorskip/internal/config"
 )
 
 type Segment struct {
