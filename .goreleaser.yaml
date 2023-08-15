@@ -70,7 +70,7 @@ nfpms:
   - id: packages
     vendor: Gabe Cook
     homepage: https://github.com/gabe565/CastSponsorSkip
-    description: A Go program that skips sponsored YouTube content on all local Google Cast devices
+    description: Skip sponsored YouTube content on all local Google Cast devices
     license: GPL-3.0
     maintainer: Gabe Cook <gabe565@gmail.com>
     formats:
