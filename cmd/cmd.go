@@ -15,9 +15,10 @@ import (
 
 func NewCommand() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "castsponsorskip",
-		Short: "Skip sponsored YouTube segments on local Cast devices",
-		RunE:  run,
+		Use:     "castsponsorskip",
+		Short:   "Skip sponsored YouTube segments on local Cast devices",
+		PreRunE: preRun,
+		RunE:    run,
 	}
 
 	config.Interface(cmd)
@@ -29,9 +30,12 @@ func NewCommand() *cobra.Command {
 	return cmd
 }
 
-func run(cmd *cobra.Command, args []string) (err error) {
+func preRun(cmd *cobra.Command, args []string) error {
 	config.Load()
+	return nil
+}
 
+func run(cmd *cobra.Command, args []string) (err error) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
