@@ -1,0 +1,60 @@
+project_name: sponsorblockcast-go
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goarch:
+      - amd64
+      - arm
+      - arm64
+    goarm:
+      - "7"
+archives:
+  - format: tar.gz
+    # use zip for windows archives
+    format_overrides:
+      - goos: windows
+        format: zip
+checksum:
+  name_template: "checksums.txt"
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+dockers:
+  - &dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
+    use: buildx
+    dockerfile: Dockerfile.goreleaser
+    build_flag_templates:
+      - "--platform=linux/amd64"
+  - <<: *dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
+    goarch: arm
+    goarm: 7
+    build_flag_templates:
+      - "--platform=linux/arm/v7"
+  - <<: *dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
+    goarch: arm64
+    build_flag_templates:
+      - "--platform=linux/arm64/v8"
+docker_manifests:
+  - &docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:latest
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
+  - <<: *docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}
+  - <<: *docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}
+  - <<: *docker_manifests
+    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}.{{ .Minor }}
