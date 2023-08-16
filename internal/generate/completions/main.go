@@ -12,13 +12,17 @@ import (
 var Shells = []string{"bash", "zsh", "fish"}
 
 func main() {
-	rootCmd := cmd.NewCommand()
-	var buf bytes.Buffer
-	rootCmd.SetOut(&buf)
+	if err := os.RemoveAll("manpages"); err != nil {
+		panic(err)
+	}
 
 	if err := os.MkdirAll("completions", 0o777); err != nil {
 		panic(err)
 	}
+
+	rootCmd := cmd.NewCommand()
+	var buf bytes.Buffer
+	rootCmd.SetOut(&buf)
 
 	for _, shell := range Shells {
 		rootCmd.SetArgs([]string{"--completion=" + shell})
