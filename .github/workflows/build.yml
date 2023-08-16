@@ -77,6 +77,28 @@ jobs:
           FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
           HOMEBREW_TOKEN: ${{ secrets.HOMEBREW_TOKEN }}
           AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
+      - name: Push beta image
+        if: github.ref_name == 'main'
+        run: |
+          export REPO="$(tr '[[:upper:]]' '[[:lower:]]' <<< "ghcr.io/$GITHUB_REPOSITORY")"
+          IMAGES=()
+          while read -r SOURCE DEST; do
+            docker tag "$SOURCE" "$DEST"
+            docker push "$DEST"
+            IMAGES+=("$DEST")
+          done \
+            < <(docker image ls --format=json | \
+              yq --input-format=json --no-doc '[.]' | \
+              yq --output-format=tsv '.[] |
+                select(.Repository == strenv(REPO)) |
+                [
+                  .Repository + ":" + .Tag,
+                  .Repository + ":debug-" + (.Tag | sub(".*-", ""))
+                ]
+              ')
+
+          docker manifest create "$REPO:debug" "${IMAGES[@]}"
+          docker manifest push "$REPO:debug"
       - uses: actions/upload-artifact@v3
         with:
           name: dist
