@@ -8,7 +8,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
 
 ## Installation
 
-### Docker Image
+### Docker
 
 <details>
   <summary>Click to expand</summary>
@@ -29,7 +29,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
 </details>
 
 
-### APT Repository (Ubuntu, Debian)
+### APT (Ubuntu, Debian)
 
 <details>
   <summary>Click to expand</summary>
@@ -55,7 +55,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
    ```
 </details>
 
-### RPM Repository (CentOS, RHEL)
+### RPM (CentOS, RHEL)
 
 <details>
   <summary>Click to expand</summary>
@@ -80,7 +80,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
    ```
 </details>
 
-### AUR Package (Arch Linux)
+### AUR (Arch Linux)
 
 <details>
   <summary>Click to expand</summary>
@@ -96,9 +96,10 @@ pacman -S castsponsorskip-bin
 <details>
   <summary>Click to expand</summary>
 
-  ```shell
-  brew install gabe565/tap/castsponsorskip
-  ```
+Install CastSponsorSkip from [gabe565/homebrew-tap](https://github.com/gabe565/homebrew-tap):
+```shell
+brew install gabe565/tap/castsponsorskip
+```
 </details>
 
 ### Manual Installation
@@ -106,13 +107,23 @@ pacman -S castsponsorskip-bin
 <details>
   <summary>Click to expand</summary>
 
-  #### Instructions
-
-  Download and run the [latest release binary](https://github.com/gabe565/CastSponsorSkip/releases/latest) for your system and architecture.
+Download and run the [latest release binary](https://github.com/gabe565/CastSponsorSkip/releases/latest) for your system and architecture.
 </details>
 
 ## Usage
-Run `castsponsorskip` from a terminal or activate the service with `systemctl enable --now castsponsorskip`.
+Run `castsponsorskip` from a terminal or activate the service with systemd:
+```shell
+systemctl enable --now castsponsorskip
+````
+
+<details>
+  <summary>Homebrew Instructions</summary>
+
+  Use [brew services](https://github.com/Homebrew/homebrew-services) to start CastSponsorSkip:
+  ```shell
+  brew services start castsponsorskip
+  ```
+</details>
 
 ## Configuration
 You can configure the following parameters by setting the appropriate command line flag or environment variable:
