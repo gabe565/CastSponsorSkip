@@ -33,7 +33,10 @@ changelog:
       - '^docs:'
       - '^test:'
 brews:
-  - repository:
+  - homepage: https://github.com/gabe565/CastSponsorSkip
+    description: Skip sponsored YouTube content on all local Google Cast devices
+    license: GPL-3.0
+    repository:
       owner: gabe565
       name: homebrew-tap
       token: '{{ .Env.HOMEBREW_TOKEN }}'
