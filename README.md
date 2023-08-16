@@ -85,10 +85,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
 <details>
   <summary>Click to expand</summary>
 
-Install [castsponsorskip-bin](https://aur.archlinux.org/packages/castsponsorskip-bin) with your [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) of choice. For example, with [pacman](https://wiki.archlinux.org/title/pacman):
-```shell
-pacman -S castsponsorskip-bin
-```
+Install [castsponsorskip-bin](https://aur.archlinux.org/packages/castsponsorskip-bin) with your [AUR helper](https://wiki.archlinux.org/index.php/AUR_helpers) of choice.
 </details>
 
 ### Homebrew (macOS, Linux)
