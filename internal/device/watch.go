@@ -8,6 +8,7 @@ import (
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/sponsorblock"
+	"github.com/gabe565/castsponsorskip/internal/util"
 	"github.com/vishen/go-chromecast/application"
 	"github.com/vishen/go-chromecast/cast/proto"
 	castdns "github.com/vishen/go-chromecast/dns"
@@ -28,24 +29,21 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	app := application.NewApplication()
 
-	var retries uint8
-	for {
-		if err := app.Start(entry.GetAddr(), entry.GetPort()); err == nil {
-			break
-		} else {
-			if ctx.Err() != nil {
-				return
+	if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) error {
+		if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
+			logger.Warn("Failed to connect to device. Retrying...", "try", try, "error", err.Error())
+
+			var subErr error
+			if entry, subErr = DiscoverCastDNSEntryByUuid(ctx, entry.UUID); subErr != nil {
+				return subErr
 			}
-			if retries == 0 {
-				logger.Warn("Failed to connect to device. Retrying...")
-			}
-			retries += 1
-			entry, err = DiscoverCastDNSEntryByUuid(ctx, entry.UUID)
-			if err != nil && retries >= 10 {
-				logger.Warn("Failed to start application.", "error", err.Error())
-				return
-			}
+
+			return err
 		}
+		return nil
+	}); err != nil {
+		logger.Error("Connection retries exhausted.", "error", err.Error())
+		return
 	}
 	defer func() {
 		_ = app.Close(false)
@@ -70,9 +68,25 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		case <-ticker.C:
 			logger.Debug("Update")
 
-			if err := app.Update(); err != nil {
-				logger.Warn("Failed to update application.", "error", err.Error())
-				continue
+			if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) error {
+				if err := app.Update(); err != nil {
+					logger.Warn("Failed to update device. Retrying...", "try", try, "error", err.Error())
+
+					var subErr error
+					if entry, subErr = DiscoverCastDNSEntryByUuid(ctx, entry.UUID); subErr != nil {
+						return subErr
+					}
+
+					if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
+						return subErr
+					}
+
+					return err
+				}
+				return nil
+			}); err != nil {
+				logger.Error("Update retries exhausted.", "error", err.Error())
+				return
 			}
 
 			castApp, castMedia, _ := app.Status()
