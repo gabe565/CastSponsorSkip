@@ -128,7 +128,7 @@ aurs:
       - Gabe Cook <gabe565@gmail.com>
     license: GPL-3.0
     private_key: '{{ .Env.AUR_SSH_KEY }}'
-    git_url: ssh://aur@aur.archlinux.org/{{ .ProjectName }}-bin.git'
+    git_url: ssh://aur@aur.archlinux.org/{{ .ProjectName }}-bin.git
     skip_upload: auto
     package: |-
       # bin
