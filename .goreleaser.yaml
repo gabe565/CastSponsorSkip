@@ -30,8 +30,8 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - '^docs'
+      - '^test'
 brews:
   - homepage: https://github.com/gabe565/CastSponsorSkip
     description: Skip sponsored YouTube content on all local Google Cast devices
