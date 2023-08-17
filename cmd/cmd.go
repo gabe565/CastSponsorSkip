@@ -30,6 +30,9 @@ func NewCommand(version, commit string) *cobra.Command {
 		RunE:    run,
 		Version: buildVersion(version, commit),
 
+		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+			return nil, cobra.ShellCompDirectiveNoFileComp
+		},
 		DisableAutoGenTag: true,
 	}
 
