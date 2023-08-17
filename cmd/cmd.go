@@ -13,10 +13,19 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var long = `Skip sponsored YouTube segments on local Cast devices.
+
+When run, this program will watch all Google Cast devices on the LAN.
+If a Cast device begins playing a YouTube video, sponsored segments are fetched from the SponsorBlock API.
+When the device reaches a sponsored segment, the CastSponsorSkip will quickly seek to the end of the segment.
+
+Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatically hit the skip button when it becomes available.`
+
 func NewCommand(version, commit string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "castsponsorskip",
 		Short:   "Skip sponsored YouTube segments on local Cast devices",
+		Long:    long,
 		PreRunE: preRun,
 		RunE:    run,
 		Version: buildVersion(version, commit),
