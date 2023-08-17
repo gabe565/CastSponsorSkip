@@ -19,6 +19,8 @@ func NewCommand() *cobra.Command {
 		Short:   "Skip sponsored YouTube segments on local Cast devices",
 		PreRunE: preRun,
 		RunE:    run,
+
+		DisableAutoGenTag: true,
 	}
 
 	CompletionFlag(cmd)
