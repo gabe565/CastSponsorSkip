@@ -13,12 +13,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCommand() *cobra.Command {
+func NewCommand(version, commit string) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "castsponsorskip",
 		Short:   "Skip sponsored YouTube segments on local Cast devices",
 		PreRunE: preRun,
 		RunE:    run,
+		Version: buildVersion(version, commit),
 
 		DisableAutoGenTag: true,
 	}
@@ -81,4 +82,11 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	group.Wait()
 	slog.Info("Exiting")
 	return nil
+}
+
+func buildVersion(version, commit string) string {
+	if commit != "" {
+		version += " (" + commit + ")"
+	}
+	return version
 }

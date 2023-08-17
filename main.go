@@ -6,8 +6,13 @@ import (
 	"github.com/gabe565/castsponsorskip/cmd"
 )
 
+var (
+	version = "beta"
+	commit  = ""
+)
+
 func main() {
-	rootCmd := cmd.NewCommand()
+	rootCmd := cmd.NewCommand(version, commit)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

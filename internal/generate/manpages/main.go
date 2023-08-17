@@ -52,7 +52,7 @@ func main() {
 		Manual:  "User Commands",
 	}
 
-	rootCmd := cmd.NewCommand()
+	rootCmd := cmd.NewCommand("beta", "")
 	if err := doc.GenMan(rootCmd, &header, gz); err != nil {
 		panic(err)
 	}
