@@ -36,13 +36,6 @@ func main() {
 	rootCmd := cmd.NewCommand("beta", "")
 	name := rootCmd.Name()
 
-	f, err := os.Create(filepath.Join("manpages", name+".1.gz"))
-	if err != nil {
-		panic(err)
-	}
-
-	gz := gzip.NewWriter(f)
-
 	date, err := time.Parse(time.RFC3339, dateParam)
 	if err != nil {
 		panic(err)
@@ -56,6 +49,12 @@ func main() {
 		Manual:  "User Commands",
 	}
 
+	f, err := os.Create(filepath.Join("manpages", name+".1.gz"))
+	if err != nil {
+		panic(err)
+	}
+	gz := gzip.NewWriter(f)
+
 	if err := doc.GenMan(rootCmd, &header, gz); err != nil {
 		panic(err)
 	}
@@ -63,7 +62,6 @@ func main() {
 	if err := gz.Close(); err != nil {
 		panic(err)
 	}
-
 	if err := f.Close(); err != nil {
 		panic(err)
 	}
