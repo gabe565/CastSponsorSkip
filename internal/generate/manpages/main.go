@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/gabe565/castsponsorskip/cmd"
@@ -32,7 +33,10 @@ func main() {
 		panic(err)
 	}
 
-	f, err := os.Create(filepath.Join("manpages", "castsponsorskip.1.gz"))
+	rootCmd := cmd.NewCommand("beta", "")
+	name := rootCmd.Name()
+
+	f, err := os.Create(filepath.Join("manpages", name+".1.gz"))
 	if err != nil {
 		panic(err)
 	}
@@ -45,14 +49,13 @@ func main() {
 	}
 
 	header := doc.GenManHeader{
-		Title:   "CASTSPONSORSKIP",
+		Title:   strings.ToUpper(name),
 		Section: "1",
 		Date:    &date,
-		Source:  "castsponsorskip " + version,
+		Source:  name + " " + version,
 		Manual:  "User Commands",
 	}
 
-	rootCmd := cmd.NewCommand("beta", "")
 	if err := doc.GenMan(rootCmd, &header, gz); err != nil {
 		panic(err)
 	}
