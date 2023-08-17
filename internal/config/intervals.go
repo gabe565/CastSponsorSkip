@@ -17,6 +17,11 @@ func PausedInterval(cmd *cobra.Command) {
 	if err := viper.BindPFlag(PausedIntervalKey, cmd.PersistentFlags().Lookup(PausedIntervalKey)); err != nil {
 		panic(err)
 	}
+	if err := cmd.RegisterFlagCompletionFunc(PausedIntervalKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1m", "2m", "5m", "10m", "30m", "1h"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}); err != nil {
+		panic(err)
+	}
 }
 
 var (
@@ -27,6 +32,11 @@ var (
 func PlayingInterval(cmd *cobra.Command) {
 	cmd.PersistentFlags().Duration(PlayingIntervalKey, PlayingIntervalValue, "Interval to scan playing devices")
 	if err := viper.BindPFlag(PlayingIntervalKey, cmd.PersistentFlags().Lookup(PlayingIntervalKey)); err != nil {
+		panic(err)
+	}
+	if err := cmd.RegisterFlagCompletionFunc(PlayingIntervalKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1s", "2s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}); err != nil {
 		panic(err)
 	}
 }
