@@ -2,7 +2,7 @@
 
 A Go program that skips sponsored YouTube content and skippable ads on all local Google Cast devices, using the [SponsorBlock](https://github.com/ajayyy/SponsorBlock) API. This project was inspired by [sponsorblockcast](https://github.com/nichobi/sponsorblockcast), but written from scratch to decrease memory and CPU usage, and to work around some of its problems (see [Differences from sponsorblockcast](#differences-from-sponsorblockcast)).
 
-This program will scan for all Google Cast devices on the LAN, and runs a Goroutine for each one to efficiently poll its status every minute. If a Cast device is found to be playing a YouTube video, the poll interval is increased to once every second, sponsored segments are fetched from the SponsorBlock API and stored in memory. Whenever the Cast device reaches a sponsored segment, the program tells it to seek to the end of the segment.
+When run, this program will watch all Google Cast devices on the LAN. If a Cast device begins playing a YouTube video, sponsored segments are fetched from the SponsorBlock API. When the device reaches a sponsored segment, the CastSponsorSkip will quickly seek to the end of the segment.
 
 Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatically hit the skip button when it becomes available.
 
