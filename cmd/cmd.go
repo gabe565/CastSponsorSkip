@@ -29,7 +29,6 @@ func NewCommand(version, commit string) *cobra.Command {
 	config.PausedInterval(cmd)
 	config.PlayingInterval(cmd)
 	config.Categories(cmd)
-	config.InitViper()
 
 	return cmd
 }
