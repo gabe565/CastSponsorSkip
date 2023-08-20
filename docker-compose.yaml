@@ -8,6 +8,4 @@ services:
       CSS_PLAYING_INTERVAL: 1s
       CSS_CATEGORIES: sponsor
     network_mode: host
-    cap_add:
-      - NET_ADMIN
     restart: always
