@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"sync"
 	"time"
 
 	"github.com/gabe565/castsponsorskip/internal/config"
@@ -15,7 +16,34 @@ import (
 	castdns "github.com/vishen/go-chromecast/dns"
 )
 
+var (
+	listeners  = make(map[string]struct{})
+	listenerMu sync.Mutex
+)
+
 func Watch(ctx context.Context, entry castdns.CastEntry) {
+	if entry.Device == "Google Cast Group" {
+		return
+	} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
+		return
+	} else if _, ok := listeners[entry.UUID]; ok {
+		if entry.DeviceName != "" {
+			slog.Debug("Skipping device.", "device", entry.DeviceName)
+		} else {
+			slog.Debug("Skipping device.", "device", entry.Device)
+		}
+		return
+	}
+
+	listenerMu.Lock()
+	listeners[entry.UUID] = struct{}{}
+	listenerMu.Unlock()
+	defer func() {
+		listenerMu.Lock()
+		delete(listeners, entry.UUID)
+		listenerMu.Unlock()
+	}()
+
 	var logger *slog.Logger
 	if entry.DeviceName != "" {
 		logger = slog.With("device", entry.DeviceName)

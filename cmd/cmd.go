@@ -67,39 +67,16 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	}
 
 	var group sync.WaitGroup
-
-	listeners := make(map[string]struct{})
-	var listenerMu sync.Mutex
-
 	go func() {
 		for {
 			select {
 			case <-ctx.Done():
 				return
 			case entry := <-entries:
-				if entry.Device == "Google Cast Group" {
-					continue
-				} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
-					continue
-				} else if _, ok := listeners[entry.UUID]; ok {
-					if entry.DeviceName != "" {
-						slog.Debug("Skipping device.", "device", entry.DeviceName)
-					} else {
-						slog.Debug("Skipping device.", "device", entry.Device)
-					}
-					continue
-				}
-
-				listeners[entry.UUID] = struct{}{}
 				group.Add(1)
 				go func() {
-					defer func() {
-						listenerMu.Lock()
-						delete(listeners, entry.UUID)
-						listenerMu.Unlock()
-						group.Done()
-					}()
 					device.Watch(ctx, entry)
+					group.Done()
 				}()
 			}
 		}
