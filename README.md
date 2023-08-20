@@ -132,6 +132,9 @@ You can configure the following parameters by setting the appropriate command li
 | `--playing-interval`  | `CSS_PLAYING_INTERVAL`                | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
 | `--categories`        | `CSS_CATEGORIES` (or `SBCCATEGORIES`) | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
 | `--network-interface` | `CSS_NETWORK_INTERFACE`               | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
+
+Command line documentation is also generated [here](./docs/castsponsorskip.md).
+
 To modify the variables when running as a systemd service, create an override for the service with:
 
 ```shell
