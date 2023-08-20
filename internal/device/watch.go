@@ -111,7 +111,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			castApp, castMedia, _ := app.Status()
 
 			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil || castMedia.PlayerState != "PLAYING" {
-				segments = nil
 				ticker.Reset(config.PausedIntervalValue)
 				continue
 			}
@@ -144,7 +143,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			if castMedia.Media.ContentId == "" {
-				segments = nil
 				ticker.Reset(config.PausedIntervalValue)
 				continue
 			}
