@@ -15,7 +15,7 @@ var (
 )
 
 func Categories(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringSlice(CategoriesKey, CategoriesValue, "Sponsor Block categories to skip")
+	cmd.PersistentFlags().StringSliceP(CategoriesKey, "c", CategoriesValue, "Sponsor Block categories to skip")
 	if err := viper.BindPFlag(CategoriesKey, cmd.PersistentFlags().Lookup(CategoriesKey)); err != nil {
 		panic(err)
 	}
