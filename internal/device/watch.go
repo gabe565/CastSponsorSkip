@@ -26,7 +26,11 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		return
 	} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
 		return
-	} else if _, ok := listeners[entry.UUID]; ok {
+	}
+
+	listenerMu.Lock()
+	if _, ok := listeners[entry.UUID]; ok {
+		listenerMu.Unlock()
 		if entry.DeviceName != "" {
 			slog.Debug("Skipping device.", "device", entry.DeviceName)
 		} else {
@@ -34,8 +38,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		}
 		return
 	}
-
-	listenerMu.Lock()
 	listeners[entry.UUID] = struct{}{}
 	listenerMu.Unlock()
 	defer func() {
