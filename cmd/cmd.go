@@ -38,6 +38,7 @@ func NewCommand(version, commit string) *cobra.Command {
 
 	CompletionFlag(cmd)
 	config.Interface(cmd)
+	config.DiscoverInterval(cmd)
 	config.PausedInterval(cmd)
 	config.PlayingInterval(cmd)
 	config.Categories(cmd)
@@ -59,12 +60,14 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
-	entries, err := device.DiscoverCastDNSEntries(ctx)
+	entries, err := device.BeginDiscover(ctx)
 	if err != nil {
 		return err
 	}
 
 	var group sync.WaitGroup
+
+	listeners := make(map[string]struct{})
 
 	go func() {
 		for {
@@ -76,11 +79,20 @@ func run(cmd *cobra.Command, args []string) (err error) {
 					continue
 				} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
 					continue
+				} else if _, ok := listeners[entry.UUID]; ok {
+					if entry.DeviceName != "" {
+						slog.Debug("Skipping device.", "device", entry.DeviceName)
+					} else {
+						slog.Debug("Skipping device.", "device", entry.Device)
+					}
+					continue
 				}
 
+				listeners[entry.UUID] = struct{}{}
 				group.Add(1)
 				go func() {
 					defer func() {
+						delete(listeners, entry.UUID)
 						group.Done()
 					}()
 					device.Watch(ctx, entry)

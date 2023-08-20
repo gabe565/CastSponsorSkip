@@ -44,7 +44,26 @@ func DiscoverCastDNSEntryByUuid(ctx context.Context, uuid string) (castdns.CastE
 	}
 }
 
-func DiscoverCastDNSEntries(ctx context.Context) (<-chan castdns.CastEntry, error) {
+func DiscoverCastDNSEntries(ctx context.Context, iface *net.Interface, ch chan castdns.CastEntry) error {
+	subCtx, cancel := context.WithTimeout(ctx, config.DiscoverIntervalValue)
+	defer cancel()
+
+	entries, err := castdns.DiscoverCastDNSEntries(subCtx, iface)
+	if err != nil {
+		return err
+	}
+
+	for {
+		select {
+		case <-subCtx.Done():
+			return nil
+		case entry := <-entries:
+			ch <- entry
+		}
+	}
+}
+
+func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
 	var iface *net.Interface
 	if config.InterfaceValue != "" {
 		var err error
@@ -57,10 +76,23 @@ func DiscoverCastDNSEntries(ctx context.Context) (<-chan castdns.CastEntry, erro
 		slog.Info("Searching for devices...")
 	}
 
-	entries, err := castdns.DiscoverCastDNSEntries(ctx, iface)
-	if err != nil {
-		return nil, err
-	}
+	ch := make(chan castdns.CastEntry)
+	go func() {
+		defer func() {
+			close(ch)
+		}()
 
-	return entries, nil
+		for {
+			if ctx.Err() != nil {
+				return
+			}
+
+			if err := DiscoverCastDNSEntries(ctx, iface, ch); err != nil {
+				slog.Error("Failed to discover devices.", "error", err.Error())
+				continue
+			}
+		}
+	}()
+
+	return ch, nil
 }

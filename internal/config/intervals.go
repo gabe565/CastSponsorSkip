@@ -8,6 +8,23 @@ import (
 )
 
 var (
+	DiscoverIntervalKey   = "discover-interval"
+	DiscoverIntervalValue = 5 * time.Minute
+)
+
+func DiscoverInterval(cmd *cobra.Command) {
+	cmd.PersistentFlags().Duration(DiscoverIntervalKey, DiscoverIntervalValue, "Interval to restart the DNS discovery client")
+	if err := viper.BindPFlag(DiscoverIntervalKey, cmd.PersistentFlags().Lookup(DiscoverIntervalKey)); err != nil {
+		panic(err)
+	}
+	if err := cmd.RegisterFlagCompletionFunc(DiscoverIntervalKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"5m", "10m", "15m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}); err != nil {
+		panic(err)
+	}
+}
+
+var (
 	PausedIntervalKey   = "paused-interval"
 	PausedIntervalValue = time.Minute
 )

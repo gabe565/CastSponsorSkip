@@ -71,18 +71,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) error {
 				if err := app.Update(); err != nil {
 					logger.Warn("Failed to update device. Retrying...", "try", try, "error", err.Error())
-					_ = app.Close(false)
-
-					var subErr error
-					if entry, subErr = DiscoverCastDNSEntryByUuid(ctx, entry.UUID); subErr != nil {
-						return subErr
-					}
-
-					app = application.NewApplication()
-					if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
-						return subErr
-					}
-
 					return err
 				}
 				return nil

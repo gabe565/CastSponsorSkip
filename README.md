@@ -125,12 +125,13 @@ systemctl enable --now castsponsorskip
 ## Configuration
 You can configure the following parameters by setting the appropriate command line flag or environment variable:
 
-| Flag                 | Env                                   | Description                                                                                                                                                        | Default        |
-|----------------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
-| `--paused-interval`  | `SBC_PAUSED_INTERVAL`                 | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
-| `--playing-interval` | `SBC_PLAYING_INTERVAL`                | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
-| `--categories`       | `SBC_CATEGORIES` (or `SBCCATEGORIES`) | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
-| `--interface`        | `SBC_INTERFACE`                       | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
+| Flag                  | Env                                   | Description                                                                                                                                                        | Default        |
+|-----------------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| `--discover-interval` | `SBC_DISCOVER_INTERVAL`               | Interval to restart the DNS discovery client.                                                                                                                      | `5m`           |
+| `--paused-interval`   | `SBC_PAUSED_INTERVAL`                 | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
+| `--playing-interval`  | `SBC_PLAYING_INTERVAL`                | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
+| `--categories`        | `SBC_CATEGORIES` (or `SBCCATEGORIES`) | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
+| `--interface`         | `SBC_INTERFACE`                       | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
 
 To modify the variables when running as a systemd service, create an override for the service with:
 
