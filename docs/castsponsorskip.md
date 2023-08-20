@@ -27,5 +27,6 @@ castsponsorskip [flags]
       --paused-interval duration     Interval to scan paused devices (default 1m0s)
       --playing-interval duration    Interval to scan playing devices (default 1s)
   -v, --version                      version for castsponsorskip
+      --youtube-api-key string       YouTube API key for fallback video identification (required on some Chromecast devices).
 ```
 

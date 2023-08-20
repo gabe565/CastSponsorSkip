@@ -9,6 +9,7 @@ import (
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/sponsorblock"
 	"github.com/gabe565/castsponsorskip/internal/util"
+	"github.com/gabe565/castsponsorskip/internal/youtube"
 	"github.com/vishen/go-chromecast/application"
 	"github.com/vishen/go-chromecast/cast/proto"
 	castdns "github.com/vishen/go-chromecast/dns"
@@ -54,7 +55,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	logger.Info("Connected to cast device.")
 
-	var prevVideoId string
+	var prevVideoId, prevArtist, prevTitle string
 	var segments []sponsorblock.Segment
 
 	app.AddMessageFunc(func(msg *api.CastMessage) {
@@ -81,7 +82,40 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			castApp, castMedia, _ := app.Status()
 
-			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil || castMedia.PlayerState != "PLAYING" || castMedia.Media.ContentId == "" {
+			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil || castMedia.PlayerState != "PLAYING" {
+				segments = nil
+				ticker.Reset(config.PausedIntervalValue)
+				continue
+			}
+
+			if castMedia.Media.ContentId == "" {
+				var currArtist string
+				if castMedia.Media.Metadata.Artist != "" {
+					currArtist = castMedia.Media.Metadata.Artist
+				} else {
+					currArtist = castMedia.Media.Metadata.Subtitle
+				}
+				currTitle := castMedia.Media.Metadata.Title
+
+				if currArtist == prevArtist && currTitle == prevTitle {
+					castMedia.Media.ContentId = prevVideoId
+				} else {
+					if config.YouTubeAPIKeyValue == "" {
+						slog.Warn("Video ID not found. Please set a YouTube API key.")
+					} else {
+						logger.Info("Video ID not found. Searching for video on YouTube...")
+						var err error
+						castMedia.Media.ContentId, err = youtube.QueryVideoId(ctx, currArtist, currTitle)
+						if err != nil {
+							logger.Error("Failed to find video on YouTube.", "error", err.Error())
+						}
+					}
+					prevArtist = currArtist
+					prevTitle = currTitle
+				}
+			}
+
+			if castMedia.Media.ContentId == "" {
 				segments = nil
 				ticker.Reset(config.PausedIntervalValue)
 				continue

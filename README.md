@@ -131,6 +131,7 @@ You can configure the following parameters by setting the appropriate command li
 | `CSS_PAUSED_INTERVAL`   | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
 | `CSS_PLAYING_INTERVAL`  | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
 | `CSS_CATEGORIES`        | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
+| `CSS_YOUTUBE_API_KEY`   | [YouTube API key](https://developers.google.com/youtube/registering_an_application) for fallback video identification (required on some Chromecast devices).       | ` `            |
 | `CSS_NETWORK_INTERFACE` | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
 
 See command-line flag documentation [here](./docs/castsponsorskip.md).

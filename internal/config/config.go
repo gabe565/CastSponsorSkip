@@ -9,4 +9,5 @@ func Load() {
 	PlayingIntervalValue = viper.GetDuration(PlayingIntervalKey)
 	InterfaceValue = viper.GetString(InterfaceKey)
 	CategoriesValue = viper.GetStringSlice(CategoriesKey)
+	YouTubeAPIKeyValue = viper.GetString(YouTubeAPIKeyKey)
 }

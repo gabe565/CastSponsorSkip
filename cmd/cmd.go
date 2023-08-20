@@ -43,6 +43,7 @@ func NewCommand(version, commit string) *cobra.Command {
 	config.PlayingInterval(cmd)
 	config.Categories(cmd)
 	cmd.InitDefaultVersionFlag()
+	config.YouTubeAPIKey(cmd)
 
 	return cmd
 }
