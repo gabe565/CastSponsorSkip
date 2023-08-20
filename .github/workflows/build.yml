@@ -93,12 +93,12 @@ jobs:
                 select(.Repository == strenv(REPO)) |
                 [
                   .Repository + ":" + .Tag,
-                  .Repository + ":debug-" + (.Tag | sub(".*-", ""))
+                  .Repository + ":beta-" + (.Tag | sub(".*-", ""))
                 ]
               ')
 
-          docker manifest create "$REPO:debug" "${IMAGES[@]}"
-          docker manifest push "$REPO:debug"
+          docker manifest create "$REPO:beta" "${IMAGES[@]}"
+          docker manifest push "$REPO:beta"
       - uses: actions/upload-artifact@v3
         with:
           name: dist
