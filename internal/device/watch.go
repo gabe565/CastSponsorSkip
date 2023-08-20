@@ -31,7 +31,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	if err := util.Retry(ctx, 6, 500*time.Millisecond, func(try uint) error {
 		if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
-			logger.Warn("Failed to connect to device. Retrying...", "try", try, "error", err.Error())
+			logger.Debug("Failed to connect to device. Retrying...", "try", try, "error", err.Error())
 
 			var subErr error
 			if entry, subErr = DiscoverCastDNSEntryByUuid(ctx, entry.UUID); subErr != nil {
@@ -42,7 +42,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		}
 		return nil
 	}); err != nil {
-		logger.Error("Connection retries exhausted.", "error", err.Error())
+		logger.Error("Failed to connect to device.", "error", err.Error())
 		return
 	}
 	defer func() {
@@ -70,12 +70,12 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			if err := util.Retry(ctx, 6, 500*time.Millisecond, func(try uint) error {
 				if err := app.Update(); err != nil {
-					logger.Warn("Failed to update device. Retrying...", "try", try, "error", err.Error())
+					logger.Debug("Failed to update device. Retrying...", "try", try, "error", err.Error())
 					return err
 				}
 				return nil
 			}); err != nil {
-				logger.Error("Update retries exhausted.", "error", err.Error())
+				logger.Error("Lost connection to device.", "error", err.Error())
 				return
 			}
 
