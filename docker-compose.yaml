@@ -4,9 +4,9 @@ services:
   app:
     image: ghcr.io/gabe565/castsponsorskip
     environment:
-      SBC_PAUSED_INTERVAL: 1m
-      SBC_PLAYING_INTERVAL: 1s
-      SBC_CATEGORIES: sponsor
+      CSS_PAUSED_INTERVAL: 1m
+      CSS_PLAYING_INTERVAL: 1s
+      CSS_CATEGORIES: sponsor
     network_mode: host
     cap_add:
       - NET_ADMIN
