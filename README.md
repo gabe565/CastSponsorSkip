@@ -158,6 +158,7 @@ docker run --network=host --env CSS_PAUSED_INTERVAL=5m --env CSS_PLAYING_INTERVA
 When using `docker-compose.yaml`, you can simply edit the `environment` directive as shown in the example file.
 
 ## Differences from sponsorblockcast
+- Uses the SponsorBlock [enhanced privacy endpoint](https://wiki.sponsor.ajay.app/w/API_Docs#GET_/api/skipSegments/:sha256HashPrefix). When searching for sponsored segments, the video ID is hashed and only the first 4 characters of the hash are passed to SponsorBlock. This allows CastSponsorSkip to fetch segments without telling SponsorBlock what video is being watched.
 - Compiles to a single binary. No dependencies are required other than CastSponsorSkip.
 - Scans Cast device status much less frequently when a YouTube video is not playing, resulting in decreased CPU usage and less stress on the Cast device.
 - Written Go, which is the same language as `go-chromecast`. This means `go-chromecast` functions can be called directly instead of relying on shell scripts, child commands, or string parsing.

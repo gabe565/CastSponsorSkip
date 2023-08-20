@@ -2,15 +2,23 @@ package sponsorblock
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 )
+
+type Video struct {
+	VideoID  string    `json:"videoID"`
+	Segments []Segment `json:"segments"`
+}
 
 type Segment struct {
 	Segment       [2]float32
@@ -26,18 +34,20 @@ type Segment struct {
 var ErrStatusCode = errors.New("invalid response status")
 
 func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
-	u := url.URL{
-		Scheme: "https",
-		Host:   "sponsor.ajay.app",
-		Path:   "/api/skipSegments",
-	}
+	checksumBytes := sha256.Sum256([]byte(id))
+	checksum := hex.EncodeToString(checksumBytes[:])
 
-	query := make(url.Values)
-	query.Set("videoID", id)
+	query := make(url.Values, len(config.CategoriesValue))
 	for _, category := range config.CategoriesValue {
 		query.Add("category", category)
 	}
-	u.RawQuery = query.Encode()
+
+	u := url.URL{
+		Scheme:   "https",
+		Host:     "sponsor.ajay.app",
+		Path:     path.Join("api", "skipSegments", checksum[:4]),
+		RawQuery: query.Encode(),
+	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
@@ -63,10 +73,16 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 		}
 	}
 
-	var segments []Segment
-	if err := json.NewDecoder(resp.Body).Decode(&segments); err != nil {
+	var videos []Video
+	if err := json.NewDecoder(resp.Body).Decode(&videos); err != nil {
 		return nil, err
 	}
 
-	return segments, nil
+	for _, video := range videos {
+		if video.VideoID == id {
+			return video.Segments, nil
+		}
+	}
+
+	return nil, nil
 }
