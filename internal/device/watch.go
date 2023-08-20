@@ -89,11 +89,8 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			if castMedia.Media.ContentId != prevVideoId {
 				logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
-				segments = nil
 				prevVideoId = castMedia.Media.ContentId
-			}
 
-			if len(segments) == 0 {
 				var err error
 				segments, err = sponsorblock.QuerySegments(ctx, castMedia.Media.ContentId)
 				if err == nil {
@@ -103,7 +100,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 						logger.Info("Found segments for video.", "segments", len(segments))
 					}
 				} else {
-					logger.Error("Failed to query segments", "error", err.Error())
+					logger.Error("Failed to query segments. Retrying...", "error", err.Error())
 				}
 			}
 
