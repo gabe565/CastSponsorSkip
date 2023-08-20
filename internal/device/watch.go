@@ -73,7 +73,9 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		}
 		return nil
 	}); err != nil {
-		logger.Error("Failed to connect to device.", "error", err.Error())
+		if ctx.Err() == nil {
+			logger.Error("Failed to connect to device.", "error", err.Error())
+		}
 		return
 	}
 	defer func() {
@@ -106,7 +108,9 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				}
 				return nil
 			}); err != nil {
-				logger.Error("Lost connection to device.", "error", err.Error())
+				if ctx.Err() == nil {
+					logger.Error("Lost connection to device.", "error", err.Error())
+				}
 				return
 			}
 
