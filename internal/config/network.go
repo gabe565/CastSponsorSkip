@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	InterfaceKey   = "interface"
+	InterfaceKey   = "network-interface"
 	InterfaceValue string
 )
 
