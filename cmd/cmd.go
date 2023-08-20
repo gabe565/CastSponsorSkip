@@ -69,6 +69,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	var group sync.WaitGroup
 
 	listeners := make(map[string]struct{})
+	var listenerMu sync.Mutex
 
 	go func() {
 		for {
@@ -93,7 +94,9 @@ func run(cmd *cobra.Command, args []string) (err error) {
 				group.Add(1)
 				go func() {
 					defer func() {
+						listenerMu.Lock()
 						delete(listeners, entry.UUID)
+						listenerMu.Unlock()
 						group.Done()
 					}()
 					device.Watch(ctx, entry)
