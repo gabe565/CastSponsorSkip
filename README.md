@@ -125,13 +125,13 @@ systemctl enable --now castsponsorskip
 ## Configuration
 You can configure the following parameters by setting the appropriate command line flag or environment variable:
 
-| Env                                   | Description                                                                                                                                                        | Default        |
-|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
-| `CSS_DISCOVER_INTERVAL`               | Interval to restart the DNS discovery client.                                                                                                                      | `5m`           |
-| `CSS_PAUSED_INTERVAL`                 | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
-| `CSS_PLAYING_INTERVAL`                | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
-| `CSS_CATEGORIES` (or `SBCCATEGORIES`) | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
-| `CSS_NETWORK_INTERFACE`               | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
+| Env                     | Description                                                                                                                                                        | Default        |
+|-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
+| `CSS_DISCOVER_INTERVAL` | Interval to restart the DNS discovery client.                                                                                                                      | `5m`           |
+| `CSS_PAUSED_INTERVAL`   | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
+| `CSS_PLAYING_INTERVAL`  | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
+| `CSS_CATEGORIES`        | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
+| `CSS_NETWORK_INTERFACE` | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
 
 See command-line flag documentation [here](./docs/castsponsorskip.md).
 
