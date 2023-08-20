@@ -29,7 +29,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	app := application.NewApplication()
 
-	if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) error {
+	if err := util.Retry(ctx, 6, 500*time.Millisecond, func(try uint) error {
 		if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {
 			logger.Warn("Failed to connect to device. Retrying...", "try", try, "error", err.Error())
 
@@ -68,7 +68,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		case <-ticker.C:
 			logger.Debug("Update")
 
-			if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) error {
+			if err := util.Retry(ctx, 6, 500*time.Millisecond, func(try uint) error {
 				if err := app.Update(); err != nil {
 					logger.Warn("Failed to update device. Retrying...", "try", try, "error", err.Error())
 					return err
