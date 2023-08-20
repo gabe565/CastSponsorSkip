@@ -99,6 +99,19 @@ brew install gabe565/tap/castsponsorskip
 ```
 </details>
 
+### Kubernetes
+
+<details>
+  <summary>Click to expand</summary>
+
+CastSponsorSkip doesn't require a Service or Ingress, so it's simple to host in Kubernetes with a single Deployment. The only gotcha is that `hostNetwork` must be enabled for device discovery to work.
+
+A Helm chart is available to make Kubernetes deployment even simpler.
+For more information, see
+[charts.gabe565.com](https://charts.gabe565.com/charts/castsponsorskip/) or
+[Artifact Hub](https://artifacthub.io/packages/helm/gabe565/castsponsorskip).
+</details>
+
 ### Manual Installation
 
 <details>
