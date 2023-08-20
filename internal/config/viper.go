@@ -15,7 +15,7 @@ func InitViper() {
 	viper.AddConfigPath("/etc/castsponsorskip/")
 
 	viper.AutomaticEnv()
-	viper.SetEnvPrefix("SBC")
+	viper.SetEnvPrefix("CSS")
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	if err := viper.ReadInConfig(); err != nil {

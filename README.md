@@ -127,11 +127,11 @@ You can configure the following parameters by setting the appropriate command li
 
 | Flag                  | Env                                   | Description                                                                                                                                                        | Default        |
 |-----------------------|---------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
-| `--discover-interval` | `SBC_DISCOVER_INTERVAL`               | Interval to restart the DNS discovery client.                                                                                                                      | `5m`           |
-| `--paused-interval`   | `SBC_PAUSED_INTERVAL`                 | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
-| `--playing-interval`  | `SBC_PLAYING_INTERVAL`                | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
-| `--categories`        | `SBC_CATEGORIES` (or `SBCCATEGORIES`) | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
-| `--interface`         | `SBC_INTERFACE`                       | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
+| `--discover-interval` | `CSS_DISCOVER_INTERVAL`               | Interval to restart the DNS discovery client.                                                                                                                      | `5m`           |
+| `--paused-interval`   | `CSS_PAUSED_INTERVAL`                 | Time to wait between each poll of the Cast device status when paused.                                                                                              | `1m`           |
+| `--playing-interval`  | `CSS_PLAYING_INTERVAL`                | Time to wait between each poll of the Cast device status when playing.                                                                                             | `1s`           |
+| `--categories`        | `CSS_CATEGORIES` (or `SBCCATEGORIES`) | Comma-separated (or space-separated) SponsorBlock categories to skip, see [category list](https://github.com/ajayyy/SponsorBlock/blob/master/config.json.example). | `sponsor`      |
+| `--interface`         | `CSS_INTERFACE`                       | Optionally configure the network interface to use.                                                                                                                 | All interfaces |
 
 To modify the variables when running as a systemd service, create an override for the service with:
 
@@ -142,15 +142,15 @@ sudo systemctl edit castsponsorskip.service
 This will open a blank override file where you can specify environment variables like so:
 ```
 [Service]
-Environment="SBC_PAUSED_INTERVAL=1m"
-Environment="SBC_PLAYING_INTERVAL=1s"
-Environment="SBC_CATEGORIES=sponsor,selfpromo"
+Environment="CSS_PAUSED_INTERVAL=1m"
+Environment="CSS_PLAYING_INTERVAL=1s"
+Environment="CSS_CATEGORIES=sponsor,selfpromo"
 ```
 
 To modify the variables when running as a Docker container, you can add arguments to the `docker run` command like so:
 
 ```shell
-docker run --network=host --env SBC_PAUSED_INTERVAL=5m --env SBC_PLAYING_INTERVAL=2s --name=castsponsorskip ghcr.io/gabe565/castsponsorskip
+docker run --network=host --env CSS_PAUSED_INTERVAL=5m --env CSS_PLAYING_INTERVAL=2s --name=castsponsorskip ghcr.io/gabe565/castsponsorskip
 ```
 
 When using `docker-compose.yaml`, you can simply edit the `environment` directive as shown in the example file.
