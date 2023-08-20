@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"sync"
 	"syscall"
+	"time"
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/device"
@@ -83,9 +84,18 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	}()
 
 	<-ctx.Done()
-	slog.Info("Gracefully closing connections...")
-	group.Wait()
-	slog.Info("Exiting")
+	slog.Info("Gracefully closing connections... Press Ctrl+C again to force exit.")
+
+	forceCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	go func() {
+		group.Wait()
+		cancel()
+	}()
+	forceCtx, cancel = signal.NotifyContext(forceCtx, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
+	defer cancel()
+	<-forceCtx.Done()
+	slog.Info("Exiting.")
 	return nil
 }
 
