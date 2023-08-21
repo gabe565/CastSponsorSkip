@@ -15,5 +15,5 @@ repos:
         name: usage-docs
         entry: go run ./internal/generate/docs
         language: system
-        files: ^(cmd|internal/(generate/docs|config/flags))
+        type: [go]
         pass_filenames: false
