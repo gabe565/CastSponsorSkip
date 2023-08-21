@@ -55,3 +55,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/vishen/go-chromecast => github.com/gabe565/go-chromecast v0.0.0-20230821080907-00c44c5b2554
