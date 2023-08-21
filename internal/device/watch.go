@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/buger/jsonparser"
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/sponsorblock"
 	"github.com/gabe565/castsponsorskip/internal/util"
@@ -88,10 +89,29 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	logger.Info("Connected to cast device.")
 
 	var prevVideoId, prevArtist, prevTitle string
+	var mediaSessionId int
 	var segments []sponsorblock.Segment
 
 	app.AddMessageFunc(func(msg *api.CastMessage) {
-		ticker.Reset(config.PlayingIntervalValue)
+		payload := []byte(msg.GetPayloadUtf8())
+		msgType, _ := jsonparser.GetString(payload, "type")
+		switch msgType {
+		case "RECEIVER_STATUS":
+			appId, _ := jsonparser.GetString(payload, "status", "applications", "[0]", "displayName")
+			if appId == "YouTube" {
+				ticker.Reset(config.PlayingIntervalValue)
+			}
+		case "MEDIA_STATUS":
+			currMediaSessionId, err := jsonparser.GetInt(payload, "status", "[0]", "mediaSessionId")
+			if err != nil {
+				return
+			}
+
+			playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
+			if playerState == "PLAYING" && int(currMediaSessionId) == mediaSessionId {
+				ticker.Reset(config.PlayingIntervalValue)
+			}
+		}
 	})
 
 	for {
@@ -116,7 +136,14 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			castApp, castMedia, _ := app.Status()
 
-			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil || castMedia.PlayerState != "PLAYING" {
+			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil {
+				mediaSessionId = 0
+				ticker.Reset(config.PausedIntervalValue)
+				continue
+			}
+
+			mediaSessionId = castMedia.MediaSessionId
+			if castMedia.PlayerState != "PLAYING" {
 				ticker.Reset(config.PausedIntervalValue)
 				continue
 			}
