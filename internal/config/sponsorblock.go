@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -15,7 +16,7 @@ var (
 )
 
 func Categories(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringSliceP(CategoriesKey, "c", CategoriesValue, "Sponsor Block categories to skip")
+	cmd.PersistentFlags().StringP(CategoriesKey, "c", strings.Join(CategoriesValue, ","), "Comma-separated list of SponsorBlock categories to skip")
 	if err := viper.BindPFlag(CategoriesKey, cmd.PersistentFlags().Lookup(CategoriesKey)); err != nil {
 		panic(err)
 	}
