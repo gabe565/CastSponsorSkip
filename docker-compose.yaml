@@ -11,4 +11,3 @@ services:
     restart: always
     volumes:
       - "/etc/localtime:/etc/localtime:ro" # Use host's localtime, mounted read-only
-      - "/etc/timezone:/etc/timezone:ro" # Use host's timezone, mounted read-only
