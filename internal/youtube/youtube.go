@@ -16,7 +16,7 @@ var (
 )
 
 func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
-	service, err := youtube.NewService(ctx, option.WithAPIKey(config.YouTubeAPIKeyValue))
+	service, err := youtube.NewService(ctx, option.WithAPIKey(config.Default.YouTubeAPIKey))
 	if err != nil {
 		return "", err
 	}

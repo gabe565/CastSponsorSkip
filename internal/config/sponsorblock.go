@@ -4,23 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var (
-	CategoriesKey   = "categories"
-	CategoriesValue = []string{"sponsor"}
-)
-
-func Categories(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringP(CategoriesKey, "c", strings.Join(CategoriesValue, ","), "Comma-separated list of SponsorBlock categories to skip")
-	if err := viper.BindPFlag(CategoriesKey, cmd.PersistentFlags().Lookup(CategoriesKey)); err != nil {
+func (c *Config) RegisterCategories(cmd *cobra.Command) {
+	key := "categories"
+	cmd.PersistentFlags().StringSliceP(key, "c", []string{"sponsor"}, "Comma-separated list of SponsorBlock categories to skip")
+	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(CategoriesKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		response, err := http.Get("https://github.com/ajayyy/SponsorBlock/raw/master/config.json.example")
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError
@@ -46,6 +41,6 @@ func Categories(cmd *cobra.Command) {
 	}
 
 	if env := os.Getenv("SBCCATEGORIES"); env != "" {
-		viper.SetDefault(CategoriesKey, env)
+		viper.SetDefault(key, env)
 	}
 }

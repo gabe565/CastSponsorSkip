@@ -38,20 +38,14 @@ func NewCommand(version, commit string) *cobra.Command {
 	}
 
 	CompletionFlag(cmd)
-	config.Interface(cmd)
-	config.DiscoverInterval(cmd)
-	config.PausedInterval(cmd)
-	config.PlayingInterval(cmd)
-	config.Categories(cmd)
+	config.Default.RegisterFlags(cmd)
 	cmd.InitDefaultVersionFlag()
-	config.YouTubeAPIKey(cmd)
 
 	return cmd
 }
 
 func preRun(cmd *cobra.Command, args []string) error {
-	config.Load()
-	return nil
+	return config.Default.Load()
 }
 
 func run(cmd *cobra.Command, args []string) (err error) {

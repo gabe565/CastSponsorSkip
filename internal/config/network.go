@@ -8,17 +8,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-var (
-	InterfaceKey   = "network-interface"
-	InterfaceValue string
-)
-
-func Interface(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringP(InterfaceKey, "i", InterfaceValue, "Network interface to use for multicast dns discovery")
-	if err := viper.BindPFlag(InterfaceKey, cmd.PersistentFlags().Lookup(InterfaceKey)); err != nil {
+func (c *Config) RegisterNetworkInterface(cmd *cobra.Command) {
+	key := "network-interface"
+	cmd.PersistentFlags().StringP(key, "i", "", "Network interface to use for multicast dns discovery")
+	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(InterfaceKey, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 		interfaces, err := net.Interfaces()
 		if err != nil {
 			return nil, cobra.ShellCompDirectiveError

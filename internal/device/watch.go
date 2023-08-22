@@ -54,7 +54,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		logger = slog.With("device", entry.Device)
 	}
 
-	ticker := time.NewTicker(config.PlayingIntervalValue)
+	ticker := time.NewTicker(config.Default.PlayingInterval)
 	defer func() {
 		ticker.Stop()
 	}()
@@ -100,7 +100,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		case "RECEIVER_STATUS":
 			appId, _ := jsonparser.GetString(payload, "status", "applications", "[0]", "displayName")
 			if appId == "YouTube" {
-				ticker.Reset(config.PlayingIntervalValue)
+				ticker.Reset(config.Default.PlayingInterval)
 			}
 		case "MEDIA_STATUS":
 			currMediaSessionId, err := jsonparser.GetInt(payload, "status", "[0]", "mediaSessionId")
@@ -110,7 +110,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
 			if playerState == "PLAYING" && int(currMediaSessionId) == mediaSessionId {
-				ticker.Reset(config.PlayingIntervalValue)
+				ticker.Reset(config.Default.PlayingInterval)
 			}
 		}
 	})
@@ -139,13 +139,13 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil {
 				mediaSessionId = 0
-				ticker.Reset(config.PausedIntervalValue)
+				ticker.Reset(config.Default.PausedInterval)
 				continue
 			}
 
 			mediaSessionId = castMedia.MediaSessionId
 			if castMedia.PlayerState != "PLAYING" || castMedia.CurrentTime == lastTimestamp {
-				ticker.Reset(config.PausedIntervalValue)
+				ticker.Reset(config.Default.PausedInterval)
 				continue
 			}
 			lastTimestamp = castMedia.CurrentTime
@@ -162,7 +162,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				if currArtist == prevArtist && currTitle == prevTitle {
 					castMedia.Media.ContentId = prevVideoId
 				} else {
-					if config.YouTubeAPIKeyValue == "" {
+					if config.Default.YouTubeAPIKey == "" {
 						slog.Warn("Video ID not found. Please set a YouTube API key.")
 					} else {
 						logger.Info("Video ID not found. Searching for video on YouTube...")
@@ -178,7 +178,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			if castMedia.Media.ContentId == "" {
-				ticker.Reset(config.PausedIntervalValue)
+				ticker.Reset(config.Default.PausedInterval)
 				continue
 			}
 
@@ -217,7 +217,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				logger.Warn("Failed to skip ad.", "error", err.Error())
 			}
 
-			ticker.Reset(config.PlayingIntervalValue)
+			ticker.Reset(config.Default.PlayingInterval)
 		}
 	}
 }
