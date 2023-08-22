@@ -4,10 +4,11 @@ services:
   app:
     image: ghcr.io/gabe565/castsponsorskip
     environment:
+      # Set the container timezone
+      # See identifier list at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      TZ: UTC
       CSS_PAUSED_INTERVAL: 1m
       CSS_PLAYING_INTERVAL: 1s
       CSS_CATEGORIES: sponsor
     network_mode: host
     restart: always
-    volumes:
-      - "/etc/localtime:/etc/localtime:ro" # Use host's localtime, mounted read-only
