@@ -23,6 +23,7 @@ castsponsorskip [flags]
       --completion string            Output command-line completion code for the specified shell. Can be 'bash', 'zsh', 'fish', or 'powershell'.
       --discover-interval duration   Interval to restart the DNS discovery client (default 5m0s)
   -h, --help                         help for castsponsorskip
+      --log-level string             Log level (debug, info, warn, error) (default "info")
   -i, --network-interface string     Network interface to use for multicast dns discovery
       --paused-interval duration     Interval to scan paused devices (default 1m0s)
       --playing-interval duration    Interval to scan playing devices (default 1s)

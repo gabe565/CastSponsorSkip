@@ -53,6 +53,25 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return completion(cmd)
 	}
 
+	if config.Default.LogLevel != "info" {
+		var level slog.Level
+		switch config.Default.LogLevel {
+		case "debug":
+			level = slog.LevelDebug
+		case "warn":
+			level = slog.LevelWarn
+		case "error":
+			level = slog.LevelError
+		default:
+			slog.Warn("Invalid log level. Defaulting to info.")
+		}
+		if level != slog.LevelInfo {
+			slog.SetDefault(slog.New(slog.NewTextHandler(cmd.ErrOrStderr(), &slog.HandlerOptions{
+				Level: level,
+			})))
+		}
+	}
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 

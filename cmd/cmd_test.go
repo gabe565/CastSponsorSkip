@@ -27,6 +27,7 @@ func TestFlags(t *testing.T) {
 
 	cmd := NewCommand("", "")
 	cmd.SetArgs([]string{
+		"--log-level=debug",
 		"--network-interface=eno1",
 		"--discover-interval=" + discoverInterval.String(),
 		"--paused-interval=" + pausedInterval.String(),
@@ -42,6 +43,7 @@ func TestFlags(t *testing.T) {
 		return
 	}
 
+	assert.Equal(t, "debug", config.Default.LogLevel)
 	assert.Equal(t, "eno1", config.Default.NetworkInterface)
 	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
 	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
@@ -58,6 +60,7 @@ func TestEnvs(t *testing.T) {
 	playingInterval := randDuration()
 
 	defer func() {
+		_ = os.Unsetenv("CSS_LOG_LEVEL")
 		_ = os.Unsetenv("CSS_NETWORK_INTERFACE")
 		_ = os.Unsetenv("CSS_DISCOVER_INTERVAL")
 		_ = os.Unsetenv("CSS_PAUSED_INTERVAL")
@@ -65,6 +68,7 @@ func TestEnvs(t *testing.T) {
 		_ = os.Unsetenv("CSS_CATEGORIES")
 		_ = os.Unsetenv("CSS_YOUTUBE_API_KEY")
 	}()
+	_ = os.Setenv("CSS_LOG_LEVEL", "warn")
 	_ = os.Setenv("CSS_NETWORK_INTERFACE", "eno1")
 	_ = os.Setenv("CSS_DISCOVER_INTERVAL", discoverInterval.String())
 	_ = os.Setenv("CSS_PAUSED_INTERVAL", pausedInterval.String())
@@ -81,6 +85,7 @@ func TestEnvs(t *testing.T) {
 		return
 	}
 
+	assert.Equal(t, "warn", config.Default.LogLevel)
 	assert.Equal(t, "eno1", config.Default.NetworkInterface)
 	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
 	assert.Equal(t, pausedInterval, config.Default.PausedInterval)

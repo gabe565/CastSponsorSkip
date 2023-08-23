@@ -12,6 +12,8 @@ import (
 var Default = &Config{}
 
 type Config struct {
+	LogLevel string `mapstructure:"log-level"`
+
 	DiscoverInterval time.Duration `mapstructure:"discover-interval"`
 	PausedInterval   time.Duration `mapstructure:"paused-interval"`
 	PlayingInterval  time.Duration `mapstructure:"playing-interval"`
@@ -24,6 +26,7 @@ type Config struct {
 }
 
 func (c *Config) RegisterFlags(cmd *cobra.Command) {
+	c.RegisterLogLevel(cmd)
 	c.RegisterNetworkInterface(cmd)
 	c.RegisterDiscoverInterval(cmd)
 	c.RegisterPausedInterval(cmd)
