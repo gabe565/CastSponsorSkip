@@ -12,7 +12,7 @@ import (
 var Shells = []string{"bash", "zsh", "fish"}
 
 func main() {
-	if err := os.RemoveAll("manpages"); err != nil {
+	if err := os.RemoveAll("completions"); err != nil {
 		panic(err)
 	}
 
