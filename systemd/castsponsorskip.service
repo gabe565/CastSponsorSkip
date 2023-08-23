@@ -7,6 +7,8 @@ After=network.target
 Restart=always
 ExecStart=/usr/bin/castsponsorskip
 TimeoutStopSec=20s
+User=daemon
+Group=daemon
 
 [Install]
 WantedBy=multi-user.target
