@@ -33,6 +33,11 @@ type Segment struct {
 
 var ErrStatusCode = errors.New("invalid response status")
 
+var baseUrl = url.URL{
+	Scheme: "https",
+	Host:   "sponsor.ajay.app",
+}
+
 func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 	checksumBytes := sha256.Sum256([]byte(id))
 	checksum := hex.EncodeToString(checksumBytes[:])
@@ -42,12 +47,9 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 		query.Add("category", category)
 	}
 
-	u := url.URL{
-		Scheme:   "https",
-		Host:     "sponsor.ajay.app",
-		Path:     path.Join("api", "skipSegments", checksum[:4]),
-		RawQuery: query.Encode(),
-	}
+	u := baseUrl
+	u.Path = path.Join("api", "skipSegments", checksum[:4])
+	u.RawQuery = query.Encode()
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
