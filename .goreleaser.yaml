@@ -13,6 +13,7 @@ builds:
       - arm
       - arm64
     goarm:
+      - "6"
       - "7"
 archives:
   - format: tar.gz
@@ -67,6 +68,13 @@ dockers:
     dockerfile: Dockerfile.goreleaser
     build_flag_templates:
       - "--platform=linux/amd64"
+  - &dockers
+    image_templates:
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv6
+    use: buildx
+    dockerfile: Dockerfile.goreleaser
+    build_flag_templates:
+      - "--platform=linux/arm/v6"
   - <<: *dockers
     image_templates:
       - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
@@ -85,6 +93,7 @@ docker_manifests:
     name_template: ghcr.io/gabe565/{{ .ProjectName }}:latest
     image_templates:
       - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv6
       - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
       - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
   - <<: *docker_manifests
