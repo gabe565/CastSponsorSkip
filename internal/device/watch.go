@@ -27,18 +27,24 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		return
 	} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
 		return
-	} else if hasVideoOut, err := HasVideoOut(entry); err == nil && !hasVideoOut {
+	}
+
+	var logger *slog.Logger
+	if entry.DeviceName != "" {
+		logger = slog.With("device", entry.DeviceName)
+	} else {
+		logger = slog.With("device", entry.Device)
+	}
+
+	if hasVideoOut, err := HasVideoOut(entry); err == nil && !hasVideoOut {
+		logger.Debug("Ignoring device.", "reason", "Does not support video")
 		return
 	}
 
 	listenerMu.Lock()
 	if _, ok := listeners[entry.UUID]; ok {
 		listenerMu.Unlock()
-		if entry.DeviceName != "" {
-			slog.Debug("Skipping device.", "device", entry.DeviceName)
-		} else {
-			slog.Debug("Skipping device.", "device", entry.Device)
-		}
+		logger.Debug("Ignoring device.", "reason", "Already connected")
 		return
 	}
 	listeners[entry.UUID] = struct{}{}
@@ -48,13 +54,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		delete(listeners, entry.UUID)
 		listenerMu.Unlock()
 	}()
-
-	var logger *slog.Logger
-	if entry.DeviceName != "" {
-		logger = slog.With("device", entry.DeviceName)
-	} else {
-		logger = slog.With("device", entry.Device)
-	}
 
 	ticker := time.NewTicker(config.Default.PlayingInterval)
 	defer func() {
