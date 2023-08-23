@@ -27,6 +27,8 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		return
 	} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
 		return
+	} else if hasVideoOut, err := HasVideoOut(entry); err == nil && !hasVideoOut {
+		return
 	}
 
 	listenerMu.Lock()
