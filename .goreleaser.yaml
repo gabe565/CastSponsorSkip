@@ -137,7 +137,12 @@ publishers:
     ids:
       - packages
     dir: "{{ dir .ArtifactPath }}"
-    cmd: curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
+    cmd: |
+      bash -c '
+      if [[ "{{ .ArtifactName }}" != *.deb && "{{ .Arch }}" != armv7 ]]; then
+        curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
+      fi
+      '
 aurs:
   - name: "{{ .ProjectName }}-bin"
     homepage: https://github.com/gabe565/CastSponsorSkip
