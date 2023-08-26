@@ -2,7 +2,7 @@ project_name: castsponsorskip
 before:
   hooks:
     - go run ./internal/generate/completions
-    - go run ./internal/generate/manpages --version='{{ .Version }}' --date='{{ .CommitDate }}'
+    - go run ./internal/generate/manpages --version={{ .Version }} --date={{ .CommitDate }}
 builds:
   - env:
       - CGO_ENABLED=0
