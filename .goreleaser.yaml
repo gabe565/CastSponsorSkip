@@ -132,6 +132,11 @@ nfpms:
       - src: ./systemd/{{ .ProjectName }}.service
         dst: /usr/lib/systemd/system/{{ .ProjectName }}.service
         type: config
+        packager: rpm
+      - src: ./systemd/{{ .ProjectName }}.service
+        dst: /lib/systemd/system/{{ .ProjectName }}.service
+        type: config
+        packager: deb
 publishers:
   - name: fury.io
     ids:
