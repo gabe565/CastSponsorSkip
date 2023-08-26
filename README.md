@@ -64,7 +64,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
 
 1. If you don't have it already, install the `ca-certificates` package
    ```shell
-   sudo yum install ca-certificates
+   sudo dnf install ca-certificates
    ```
 
 2. Add gabe565 rpm repository to `/etc/yum.repos.d/gabe565.repo`
@@ -78,7 +78,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
 
 3. Install CastSponsorSkip
    ```shell
-   sudo yum install castsponsorskip
+   sudo dnf install castsponsorskip
    ```
 </details>
 
