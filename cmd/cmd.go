@@ -11,6 +11,7 @@ import (
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/device"
+	"github.com/gabe565/castsponsorskip/internal/youtube"
 	"github.com/spf13/cobra"
 )
 
@@ -78,6 +79,10 @@ func run(cmd *cobra.Command, args []string) (err error) {
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
+
+	if err := youtube.CreateService(ctx); err != nil {
+		return err
+	}
 
 	entries, err := device.BeginDiscover(ctx)
 	if err != nil {

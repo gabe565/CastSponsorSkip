@@ -11,19 +11,28 @@ import (
 )
 
 var (
-	ErrNoVideos = errors.New("search returned no videos")
-	ErrNoId     = errors.New("search result does not have a valid video ID")
+	ErrNotConnected = errors.New("not connected to YouTube")
+	ErrNoVideos     = errors.New("search returned no videos")
+	ErrNoId         = errors.New("search result does not have a valid video ID")
 )
 
+var service *youtube.Service
+
+func CreateService(ctx context.Context) error {
+	var err error
+	service, err = youtube.NewService(ctx, option.WithAPIKey(config.Default.YouTubeAPIKey))
+	return err
+}
+
 func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
-	service, err := youtube.NewService(ctx, option.WithAPIKey(config.Default.YouTubeAPIKey))
-	if err != nil {
-		return "", err
+	if service == nil {
+		return "", ErrNotConnected
 	}
 
 	response, err := service.Search.List([]string{"id"}).
 		Q(fmt.Sprintf(`%q+intitle:%q`, artist, title)).
 		MaxResults(1).
+		Context(ctx).
 		Do()
 	if err != nil {
 		return "", err
