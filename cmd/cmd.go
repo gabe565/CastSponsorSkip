@@ -45,12 +45,8 @@ func NewCommand(version, commit string) *cobra.Command {
 }
 
 func preRun(cmd *cobra.Command, args []string) error {
-	return config.Default.Load()
-}
-
-func run(cmd *cobra.Command, args []string) (err error) {
-	if completionFlag != "" {
-		return completion(cmd)
+	if err := config.Default.Load(); err != nil {
+		return err
 	}
 
 	if config.Default.LogLevel != "info" {
@@ -70,6 +66,14 @@ func run(cmd *cobra.Command, args []string) (err error) {
 				Level: level,
 			})))
 		}
+	}
+
+	return nil
+}
+
+func run(cmd *cobra.Command, args []string) (err error) {
+	if completionFlag != "" {
+		return completion(cmd)
 	}
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
