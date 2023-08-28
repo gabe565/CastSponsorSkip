@@ -80,8 +80,10 @@ func run(cmd *cobra.Command, args []string) (err error) {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
-	if err := youtube.CreateService(ctx); err != nil {
-		return err
+	if config.Default.YouTubeAPIKey != "" {
+		if err := youtube.CreateService(ctx); err != nil {
+			return err
+		}
 	}
 
 	entries, err := device.BeginDiscover(ctx)
