@@ -8,7 +8,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.8.4
-	github.com/vishen/go-chromecast v0.3.1
+	github.com/vishen/go-chromecast v0.3.2-0.20230828160317-e92af477dd65
 	google.golang.org/api v0.138.0
 )
 
@@ -58,5 +58,3 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/vishen/go-chromecast => github.com/gabe565/go-chromecast v0.0.0-20230828055344-8363e19b1868
