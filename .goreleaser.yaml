@@ -68,11 +68,11 @@ dockers:
     dockerfile: Dockerfile.goreleaser
     build_flag_templates:
       - "--platform=linux/amd64"
-  - &dockers
+  - <<: *dockers
     image_templates:
       - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv6
-    use: buildx
-    dockerfile: Dockerfile.goreleaser
+    goarch: arm
+    goarm: 6
     build_flag_templates:
       - "--platform=linux/arm/v6"
   - <<: *dockers
