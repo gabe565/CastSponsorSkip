@@ -91,7 +91,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 	var prevVideoId, prevArtist, prevTitle string
 	var mediaSessionId int
-	var lastTimestamp float32
 	var segments []sponsorblock.Segment
 
 	app.AddMessageFunc(func(msg *api.CastMessage) {
@@ -145,11 +144,10 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			mediaSessionId = castMedia.MediaSessionId
-			if castMedia.PlayerState != "PLAYING" || castMedia.CurrentTime == lastTimestamp {
+			if castMedia.PlayerState != "PLAYING" {
 				ticker.Reset(config.Default.PausedInterval)
 				continue
 			}
-			lastTimestamp = castMedia.CurrentTime
 
 			if castMedia.Media.ContentId == "" {
 				var currArtist string
