@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"bytes"
 	"math/rand"
 	"os"
 	"strconv"
@@ -154,4 +155,22 @@ func TestSBCEnvs(t *testing.T) {
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
+}
+
+func TestCompletionFlag(t *testing.T) {
+	for _, shell := range []string{"bash", "zsh", "fish", "powershell"} {
+		t.Run(shell, func(t *testing.T) {
+			cmd := NewCommand("", "")
+			cmd.SetArgs([]string{"--completion", shell})
+
+			var buf bytes.Buffer
+			cmd.SetOut(&buf)
+
+			if err := cmd.Execute(); !assert.NoError(t, err) {
+				return
+			}
+
+			assert.NotZero(t, buf.Bytes())
+		})
+	}
 }
