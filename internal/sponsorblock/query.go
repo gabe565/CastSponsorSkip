@@ -71,7 +71,8 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 		if resp.StatusCode == http.StatusNotFound {
 			return nil, nil
 		} else {
-			return nil, fmt.Errorf("%w: %s", ErrStatusCode, resp.Status)
+			body, _ := io.ReadAll(resp.Body)
+			return nil, fmt.Errorf("%w: %s %s", ErrStatusCode, resp.Status, body)
 		}
 	}
 
