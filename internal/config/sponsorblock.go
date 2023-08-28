@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -41,6 +42,7 @@ func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	}
 
 	if env := os.Getenv("SBCCATEGORIES"); env != "" {
+		env := strings.Split(env, " ")
 		viper.SetDefault(key, env)
 	}
 }
