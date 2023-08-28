@@ -25,7 +25,12 @@ func TestFlags(t *testing.T) {
 	pausedInterval := randDuration()
 	playingInterval := randDuration()
 
-	cmd := NewCommand("", "")
+	var cmd *cobra.Command
+	if !assert.NotPanics(t, func() {
+		cmd = NewCommand("", "")
+	}) {
+		return
+	}
 	cmd.SetArgs([]string{
 		"--log-level=debug",
 		"--network-interface=eno1",
@@ -76,7 +81,12 @@ func TestEnvs(t *testing.T) {
 	_ = os.Setenv("CSS_CATEGORIES", "a,b,c")
 	_ = os.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 
-	cmd := NewCommand("", "")
+	var cmd *cobra.Command
+	if !assert.NotPanics(t, func() {
+		cmd = NewCommand("", "")
+	}) {
+		return
+	}
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		return nil
 	}
