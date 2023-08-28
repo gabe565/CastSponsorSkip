@@ -209,6 +209,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			switch castMedia.CustomData.PlayerState {
 			case StateAd:
+				logger.Info("Detected ad. Attempting to skip...")
 				if err := app.Skipad(); err == nil {
 					logger.Info("Skipped ad.")
 				} else if !errors.Is(err, application.ErrNoMediaSkipad) {
