@@ -138,6 +138,7 @@ systemctl enable --now castsponsorskip
 </details>
 
 ## Configuration
+### Envs
 You can configure the following parameters by setting the appropriate command line flag or environment variable:
 
 | Env                     | Description                                                                                                                                                  | Default        |
@@ -153,8 +154,10 @@ You can configure the following parameters by setting the appropriate command li
 > **Note**
 > [sponsorblockcast envs](https://github.com/nichobi/sponsorblockcast#configuration) are also supported to simplify the migration to CastSponsorSkip. When used, a deprecation warning will be logged with an updated env key and value. There are currently no plans to remove these envs.
 
+### Flags
 See command-line flag documentation [here](./docs/castsponsorskip.md).
 
+### Systemd
 To modify the variables when running as a systemd service, create an override for the service with:
 
 ```shell
@@ -175,7 +178,8 @@ To modify the variables when running as a Docker container, you can add argument
 docker run --network=host --env CSS_PAUSED_INTERVAL=5m --env CSS_PLAYING_INTERVAL=2s --name=castsponsorskip ghcr.io/gabe565/castsponsorskip
 ```
 
-When using `docker-compose.yaml`, you can simply edit the `environment` directive as shown in the example file.
+### Docker Compose
+When using `docker-compose.yaml`, you can simply edit the `environment` directive as shown in the [example file](./docker-compose.yaml).
 
 ## Differences from sponsorblockcast
 - Uses the SponsorBlock [enhanced privacy endpoint](https://wiki.sponsor.ajay.app/w/API_Docs#GET_/api/skipSegments/:sha256HashPrefix). When searching for sponsored segments, the video ID is hashed and only the first 4 characters of the hash are passed to SponsorBlock. This allows CastSponsorSkip to fetch segments without telling SponsorBlock what video is being watched.
