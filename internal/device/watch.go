@@ -193,23 +193,6 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				continue
 			}
 
-			if castMedia.Media.ContentId != prevVideoId {
-				logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
-				prevVideoId = castMedia.Media.ContentId
-
-				var err error
-				segments, err = sponsorblock.QuerySegments(ctx, castMedia.Media.ContentId)
-				if err == nil {
-					if len(segments) == 0 {
-						logger.Info("No segments found for video.", "video_id", castMedia.Media.ContentId)
-					} else {
-						logger.Info("Found segments for video.", "segments", len(segments))
-					}
-				} else {
-					logger.Error("Failed to query segments. Retrying...", "error", err.Error())
-				}
-			}
-
 			switch castMedia.CustomData.PlayerState {
 			case StateAd:
 				var shouldUnmute bool
@@ -236,6 +219,23 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 					}
 				}
 			default:
+				if castMedia.Media.ContentId != prevVideoId {
+					logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
+					prevVideoId = castMedia.Media.ContentId
+
+					var err error
+					segments, err = sponsorblock.QuerySegments(ctx, castMedia.Media.ContentId)
+					if err == nil {
+						if len(segments) == 0 {
+							logger.Info("No segments found for video.", "video_id", castMedia.Media.ContentId)
+						} else {
+							logger.Info("Found segments for video.", "segments", len(segments))
+						}
+					} else {
+						logger.Error("Failed to query segments. Retrying...", "error", err.Error())
+					}
+				}
+
 				for _, segment := range segments {
 					if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
 						from := time.Duration(castMedia.CurrentTime) * time.Second
