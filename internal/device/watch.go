@@ -17,6 +17,11 @@ import (
 	castdns "github.com/vishen/go-chromecast/dns"
 )
 
+const (
+	StatePlaying   = "PLAYING"
+	StateBuffering = "BUFFERING"
+)
+
 var (
 	listeners  = make(map[string]struct{})
 	listenerMu sync.Mutex
@@ -110,7 +115,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
 			switch playerState {
-			case "PLAYING", "BUFFERING":
+			case StatePlaying, StateBuffering:
 				if int(currMediaSessionId) == mediaSessionId {
 					ticker.Reset(config.Default.PlayingInterval)
 				}
@@ -147,7 +152,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			mediaSessionId = castMedia.MediaSessionId
-			if castMedia.PlayerState != "PLAYING" && castMedia.PlayerState != "BUFFERING" {
+			if castMedia.PlayerState != StatePlaying && castMedia.PlayerState != StateBuffering {
 				ticker.Reset(config.Default.PausedInterval)
 				continue
 			}
