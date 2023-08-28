@@ -18,3 +18,11 @@ func (c *Config) RegisterYouTubeAPIKey(cmd *cobra.Command) {
 		viper.SetDefault(key, env)
 	}
 }
+
+func (c *Config) RegisterMuteAds(cmd *cobra.Command) {
+	key := "mute-ads"
+	cmd.PersistentFlags().Bool(key, false, "Enables experimental support for muting unskippable ads")
+	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+		panic(err)
+	}
+}

@@ -23,6 +23,7 @@ type Config struct {
 	Categories []string
 
 	YouTubeAPIKey string `mapstructure:"youtube-api-key"`
+	MuteAds       bool   `mapstructure:"mute-ads"`
 }
 
 func (c *Config) RegisterFlags(cmd *cobra.Command) {
@@ -33,6 +34,7 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.RegisterPlayingInterval(cmd)
 	c.RegisterCategories(cmd)
 	c.RegisterYouTubeAPIKey(cmd)
+	c.RegisterMuteAds(cmd)
 }
 
 func (c *Config) Load() error {

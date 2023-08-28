@@ -39,6 +39,7 @@ func TestFlags(t *testing.T) {
 		"--playing-interval=" + playingInterval.String(),
 		"--categories=a,b,c",
 		"--youtube-api-key=AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe",
+		"--mute-ads",
 	})
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
 		return nil
@@ -55,6 +56,7 @@ func TestFlags(t *testing.T) {
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
+	assert.Equal(t, true, config.Default.MuteAds)
 }
 
 func TestEnvs(t *testing.T) {
@@ -72,6 +74,7 @@ func TestEnvs(t *testing.T) {
 		_ = os.Unsetenv("CSS_PLAYING_INTERVAL")
 		_ = os.Unsetenv("CSS_CATEGORIES")
 		_ = os.Unsetenv("CSS_YOUTUBE_API_KEY")
+		_ = os.Unsetenv("CSS_MUTE_ADS")
 	}()
 	_ = os.Setenv("CSS_LOG_LEVEL", "warn")
 	_ = os.Setenv("CSS_NETWORK_INTERFACE", "eno1")
@@ -80,6 +83,7 @@ func TestEnvs(t *testing.T) {
 	_ = os.Setenv("CSS_PLAYING_INTERVAL", playingInterval.String())
 	_ = os.Setenv("CSS_CATEGORIES", "a,b,c")
 	_ = os.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
+	_ = os.Setenv("CSS_MUTE_ADS", "true")
 
 	var cmd *cobra.Command
 	if !assert.NotPanics(t, func() {
@@ -102,4 +106,5 @@ func TestEnvs(t *testing.T) {
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
+	assert.Equal(t, true, config.Default.MuteAds)
 }

@@ -147,7 +147,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				return
 			}
 
-			castApp, castMedia, _ := app.Status()
+			castApp, castMedia, castVol := app.Status()
 
 			if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil {
 				mediaSessionId = 0
@@ -212,11 +212,28 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 
 			switch castMedia.CustomData.PlayerState {
 			case StateAd:
-				logger.Info("Detected ad. Attempting to skip...")
+				var shouldUnmute bool
+				if config.Default.MuteAds && !castVol.Muted {
+					logger.Info("Detected ad. Muting and attempting to skip...")
+					if err := app.SetMuted(true); err == nil {
+						shouldUnmute = true
+					} else {
+						logger.Warn("Failed to mute ad.", "error", err.Error())
+					}
+				} else {
+					logger.Info("Detected ad. Attempting to skip...")
+				}
+
 				if err := app.Skipad(); err == nil {
 					logger.Info("Skipped ad.")
 				} else if !errors.Is(err, application.ErrNoMediaSkipad) {
 					logger.Warn("Failed to skip ad.", "error", err.Error())
+				}
+
+				if shouldUnmute {
+					if err := app.SetMuted(false); err != nil {
+						logger.Warn("Failed to unmute ad.", "error", err.Error())
+					}
 				}
 			default:
 				for _, segment := range segments {
