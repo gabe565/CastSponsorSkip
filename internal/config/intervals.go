@@ -1,6 +1,8 @@
 package config
 
 import (
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -17,6 +19,13 @@ func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 		return []string{"5m", "10m", "15m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
+	}
+
+	if env := os.Getenv("SBCSCANINTERVAL"); env != "" {
+		parsed, err := strconv.Atoi(env)
+		if err == nil {
+			viper.SetDefault(key, (time.Duration(parsed) * time.Second).String())
+		}
 	}
 }
 
@@ -43,5 +52,12 @@ func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 		return []string{"1s", "2s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
+	}
+
+	if env := os.Getenv("SBCPOLLINTERVAL"); env != "" {
+		parsed, err := strconv.Atoi(env)
+		if err == nil {
+			viper.SetDefault(key, (time.Duration(parsed) * time.Second).String())
+		}
 	}
 }
