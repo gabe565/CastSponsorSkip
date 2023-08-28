@@ -150,6 +150,9 @@ You can configure the following parameters by setting the appropriate command li
 | `CSS_NETWORK_INTERFACE` | Optionally configure the network interface to use.                                                                                                           | All interfaces |
 | `CSS_MUTE_ADS`          | Enables experimental support for muting unskippable ads.                                                                                                     | `false`        |
 
+> **Note**
+> [sponsorblockcast envs](https://github.com/nichobi/sponsorblockcast#configuration) are also supported to simplify the migration to CastSponsorSkip. When used, a deprecation warning will be logged with an updated env key and value. There are currently no plans to remove these envs.
+
 See command-line flag documentation [here](./docs/castsponsorskip.md).
 
 To modify the variables when running as a systemd service, create an override for the service with:
