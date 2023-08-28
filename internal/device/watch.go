@@ -20,6 +20,7 @@ import (
 const (
 	StatePlaying   = "PLAYING"
 	StateBuffering = "BUFFERING"
+	StateAd        = 1081
 )
 
 var (
@@ -206,22 +207,25 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				}
 			}
 
-			for _, segment := range segments {
-				if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
-					from := time.Duration(castMedia.CurrentTime) * time.Second
-					to := time.Duration(segment.Segment[1]) * time.Second
-					logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
-					if err := app.SeekToTime(segment.Segment[1]); err != nil {
-						logger.Warn("Failed to seek to timestamp.", "to", to, "error", err.Error())
-					}
-					break
+			switch castMedia.CustomData.PlayerState {
+			case StateAd:
+				if err := app.Skipad(); err == nil {
+					logger.Info("Skipped ad.")
+				} else if !errors.Is(err, application.ErrNoMediaSkipad) {
+					logger.Warn("Failed to skip ad.", "error", err.Error())
 				}
-			}
-
-			if err := app.Skipad(); err == nil {
-				logger.Info("Skipped ad.")
-			} else if !errors.Is(err, application.ErrNoMediaSkipad) {
-				logger.Warn("Failed to skip ad.", "error", err.Error())
+			default:
+				for _, segment := range segments {
+					if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
+						from := time.Duration(castMedia.CurrentTime) * time.Second
+						to := time.Duration(segment.Segment[1]) * time.Second
+						logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
+						if err := app.SeekToTime(segment.Segment[1]); err != nil {
+							logger.Warn("Failed to seek to timestamp.", "to", to, "error", err.Error())
+						}
+						break
+					}
+				}
 			}
 
 			ticker.Reset(config.Default.PlayingInterval)
