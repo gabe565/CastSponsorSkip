@@ -3,6 +3,7 @@ package cmd
 import (
 	"math/rand"
 	"os"
+	"strconv"
 	"testing"
 	"time"
 
@@ -113,4 +114,44 @@ func TestEnvs(t *testing.T) {
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
 	assert.Equal(t, true, config.Default.MuteAds)
+}
+
+func TestSBCEnvs(t *testing.T) {
+	defer func() {
+		viper.Reset()
+		config.Default = &config.Config{}
+	}()
+
+	discoverInterval := randDuration()
+	playingInterval := randDuration()
+
+	defer func() {
+		_ = os.Unsetenv("SBCSCANINTERVAL")
+		_ = os.Unsetenv("SBCPOLLINTERVAL")
+		_ = os.Unsetenv("SBCCATEGORIES")
+		_ = os.Unsetenv("SBCYOUTUBEAPIKEY")
+	}()
+	_ = os.Setenv("SBCSCANINTERVAL", strconv.Itoa(int(discoverInterval.Seconds())))
+	_ = os.Setenv("SBCPOLLINTERVAL", strconv.Itoa(int(playingInterval.Seconds())))
+	_ = os.Setenv("SBCCATEGORIES", "a b c")
+	_ = os.Setenv("SBCYOUTUBEAPIKEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
+
+	var cmd *cobra.Command
+	if !assert.NotPanics(t, func() {
+		cmd = NewCommand("", "")
+	}) {
+		return
+	}
+	cmd.RunE = func(cmd *cobra.Command, args []string) error {
+		return nil
+	}
+
+	if err := cmd.Execute(); !assert.NoError(t, err) {
+		return
+	}
+
+	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
+	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
+	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
+	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
 }
