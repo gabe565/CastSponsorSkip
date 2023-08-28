@@ -19,7 +19,10 @@ func randDuration() time.Duration {
 }
 
 func TestFlags(t *testing.T) {
-	viper.Reset()
+	defer func() {
+		viper.Reset()
+		config.Default = &config.Config{}
+	}()
 
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
@@ -60,7 +63,10 @@ func TestFlags(t *testing.T) {
 }
 
 func TestEnvs(t *testing.T) {
-	viper.Reset()
+	defer func() {
+		viper.Reset()
+		config.Default = &config.Config{}
+	}()
 
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
