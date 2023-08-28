@@ -144,7 +144,7 @@ publishers:
     dir: "{{ dir .ArtifactPath }}"
     cmd: |
       bash -c '
-      if [[ "{{ .ArtifactName }}" != *.deb || "{{ .Arch }}" != armv7 ]]; then
+      if [[ "{{ .ArtifactName }}" != *.deb || "{{ .Arm }}" != 7 ]]; then
         curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
       fi
       '
