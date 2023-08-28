@@ -66,7 +66,10 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 		ticker.Stop()
 	}()
 
-	app := application.NewApplication()
+	app := application.NewApplication(
+		application.WithSkipadSleep(config.Default.PlayingInterval),
+		application.WithSkipadRetries(int(time.Minute/config.Default.PlayingInterval)),
+	)
 
 	if err := util.Retry(ctx, 6, 500*time.Millisecond, func(try uint) error {
 		if err := app.Start(entry.GetAddr(), entry.GetPort()); err != nil {

@@ -59,4 +59,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace github.com/vishen/go-chromecast => github.com/gabe565/go-chromecast v0.0.0-20230828050144-f1c474e486a8
+replace github.com/vishen/go-chromecast => github.com/gabe565/go-chromecast v0.0.0-20230828055344-8363e19b1868
