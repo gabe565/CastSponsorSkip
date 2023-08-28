@@ -177,9 +177,13 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 						slog.Warn("Video ID not found. Please set a YouTube API key.")
 					} else {
 						logger.Info("Video ID not found. Searching for video on YouTube...")
-						var err error
-						castMedia.Media.ContentId, err = youtube.QueryVideoId(ctx, currArtist, currTitle)
-						if err != nil {
+						if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
+							castMedia.Media.ContentId, err = youtube.QueryVideoId(ctx, currArtist, currTitle)
+							if errors.Is(err, youtube.ErrNoVideos) || errors.Is(err, youtube.ErrNoId) {
+								return util.HaltRetries(err)
+							}
+							return err
+						}); err != nil {
 							logger.Error("Failed to find video on YouTube.", "error", err.Error())
 						}
 					}
@@ -223,9 +227,10 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 					logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
 					prevVideoId = castMedia.Media.ContentId
 
-					var err error
-					segments, err = sponsorblock.QuerySegments(ctx, castMedia.Media.ContentId)
-					if err == nil {
+					if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
+						segments, err = sponsorblock.QuerySegments(ctx, castMedia.Media.ContentId)
+						return err
+					}); err == nil {
 						if len(segments) == 0 {
 							logger.Info("No segments found for video.", "video_id", castMedia.Media.ContentId)
 						} else {
