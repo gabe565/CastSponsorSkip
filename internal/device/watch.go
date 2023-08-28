@@ -109,8 +109,11 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
-			if playerState == "PLAYING" && int(currMediaSessionId) == mediaSessionId {
-				ticker.Reset(config.Default.PlayingInterval)
+			switch playerState {
+			case "PLAYING", "BUFFERING":
+				if int(currMediaSessionId) == mediaSessionId {
+					ticker.Reset(config.Default.PlayingInterval)
+				}
 			}
 		}
 	})
@@ -144,7 +147,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 			}
 
 			mediaSessionId = castMedia.MediaSessionId
-			if castMedia.PlayerState != "PLAYING" {
+			if castMedia.PlayerState != "PLAYING" && castMedia.PlayerState != "BUFFERING" {
 				ticker.Reset(config.Default.PausedInterval)
 				continue
 			}
