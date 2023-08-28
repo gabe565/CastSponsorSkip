@@ -158,15 +158,25 @@ func TestSBCEnvs(t *testing.T) {
 }
 
 func TestCompletionFlag(t *testing.T) {
-	for _, shell := range []string{"bash", "zsh", "fish", "powershell"} {
-		t.Run(shell, func(t *testing.T) {
+	tests := []struct {
+		shell        string
+		errAssertion assert.ErrorAssertionFunc
+	}{
+		{"bash", assert.NoError},
+		{"zsh", assert.NoError},
+		{"fish", assert.NoError},
+		{"powershell", assert.NoError},
+		{"invalid", assert.Error},
+	}
+	for _, tt := range tests {
+		t.Run(tt.shell, func(t *testing.T) {
 			cmd := NewCommand("", "")
-			cmd.SetArgs([]string{"--completion", shell})
+			cmd.SetArgs([]string{"--completion", tt.shell})
 
 			var buf bytes.Buffer
 			cmd.SetOut(&buf)
 
-			if err := cmd.Execute(); !assert.NoError(t, err) {
+			if err := cmd.Execute(); !tt.errAssertion(t, err) {
 				return
 			}
 
