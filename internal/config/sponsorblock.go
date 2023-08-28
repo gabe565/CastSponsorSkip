@@ -2,6 +2,8 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 	"strings"
@@ -21,8 +23,9 @@ func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	}
 
 	if env := os.Getenv("SBCCATEGORIES"); env != "" {
-		env := strings.Split(env, " ")
-		viper.SetDefault(key, env)
+		val := strings.Split(env, " ")
+		slog.Warn(fmt.Sprintf(`SBCCATEGORIES is deprecated. Please set %q instead.`, "CSS_CATEGORIES="+strings.Join(val, ",")))
+		viper.SetDefault(key, val)
 	}
 }
 

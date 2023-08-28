@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"time"
@@ -24,7 +26,9 @@ func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 	if env := os.Getenv("SBCSCANINTERVAL"); env != "" {
 		parsed, err := strconv.Atoi(env)
 		if err == nil {
-			viper.SetDefault(key, (time.Duration(parsed) * time.Second).String())
+			val := (time.Duration(parsed) * time.Second).String()
+			slog.Warn(fmt.Sprintf(`SBCSCANINTERVAL is deprecated. Please set %q instead.`, "CSS_DISCOVER_INTERVAL="+val))
+			viper.SetDefault(key, val)
 		}
 	}
 }
@@ -57,7 +61,9 @@ func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 	if env := os.Getenv("SBCPOLLINTERVAL"); env != "" {
 		parsed, err := strconv.Atoi(env)
 		if err == nil {
-			viper.SetDefault(key, (time.Duration(parsed) * time.Second).String())
+			val := (time.Duration(parsed) * time.Second).String()
+			slog.Warn(fmt.Sprintf(`SBCPOLLINTERVAL is deprecated. Please set %q instead.`, "CSS_PLAYING_INTERVAL="+val))
+			viper.SetDefault(key, val)
 		}
 	}
 }

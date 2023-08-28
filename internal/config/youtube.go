@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -15,6 +17,7 @@ func (c *Config) RegisterYouTubeAPIKey(cmd *cobra.Command) {
 	}
 
 	if env := os.Getenv("SBCYOUTUBEAPIKEY"); env != "" {
+		slog.Warn(fmt.Sprintf(`SBCYOUTUBEAPIKEY is deprecated. Please set %q instead.`, "CSS_YOUTUBE_API_KEY="+env))
 		viper.SetDefault(key, env)
 	}
 }
