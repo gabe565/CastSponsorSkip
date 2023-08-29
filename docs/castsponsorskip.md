@@ -27,7 +27,7 @@ castsponsorskip [flags]
       --mute-ads                     Enables experimental support for muting unskippable ads
   -i, --network-interface string     Network interface to use for multicast dns discovery
       --paused-interval duration     Interval to scan paused devices (default 1m0s)
-      --playing-interval duration    Interval to scan playing devices (default 1s)
+      --playing-interval duration    Interval to scan playing devices (default 500ms)
   -v, --version                      version for castsponsorskip
       --youtube-api-key string       YouTube API key for fallback video identification (required on some Chromecast devices).
 ```

@@ -48,7 +48,7 @@ func (c *Config) RegisterPausedInterval(cmd *cobra.Command) {
 
 func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 	key := "playing-interval"
-	cmd.PersistentFlags().Duration(key, time.Second, "Interval to scan playing devices")
+	cmd.PersistentFlags().Duration(key, 500*time.Millisecond, "Interval to scan playing devices")
 	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
