@@ -7,8 +7,10 @@ services:
       # Set the container timezone
       # See identifier list at https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
       TZ: UTC
-      CSS_PAUSED_INTERVAL: 1m
-      CSS_PLAYING_INTERVAL: 500ms
-      CSS_CATEGORIES: sponsor
+      # CSS_PAUSED_INTERVAL:
+      # CSS_PLAYING_INTERVAL:
+      # CSS_CATEGORIES:
+      # CSS_YOUTUBE_API_KEY:
+      # CSS_MUTE_ADS:
     network_mode: host
     restart: always
