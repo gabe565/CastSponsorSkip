@@ -39,7 +39,7 @@ changelog:
       - '^test'
 brews:
   - homepage: https://github.com/gabe565/CastSponsorSkip
-    description: Skip sponsored YouTube content on all local Google Cast devices
+    description: Skip YouTube ads and sponsorships on all local Google Cast devices
     license: GPL-3.0
     repository:
       owner: gabe565
@@ -106,7 +106,7 @@ nfpms:
   - id: packages
     vendor: Gabe Cook
     homepage: https://github.com/gabe565/CastSponsorSkip
-    description: Skip sponsored YouTube content on all local Google Cast devices
+    description: Skip YouTube ads and sponsorships on all local Google Cast devices
     license: GPL-3.0
     maintainer: Gabe Cook <gabe565@gmail.com>
     formats:
@@ -151,7 +151,7 @@ publishers:
 aurs:
   - name: "{{ .ProjectName }}-bin"
     homepage: https://github.com/gabe565/CastSponsorSkip
-    description: Skip sponsored YouTube content on all local Google Cast devices
+    description: Skip YouTube ads and sponsorships on all local Google Cast devices
     maintainers:
       - Gabe Cook <gabe565@gmail.com>
     license: GPL-3.0
