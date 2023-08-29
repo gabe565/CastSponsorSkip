@@ -242,7 +242,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 				}
 
 				for _, segment := range segments {
-					if castMedia.CurrentTime > segment.Segment[0] && castMedia.CurrentTime < segment.Segment[1]-1 {
+					if segment.Segment[0] <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
 						from := time.Duration(castMedia.CurrentTime) * time.Second
 						to := time.Duration(segment.Segment[1]) * time.Second
 						logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
