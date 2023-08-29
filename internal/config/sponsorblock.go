@@ -29,6 +29,19 @@ func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	}
 }
 
+func (c *Config) RegisterActionTypes(cmd *cobra.Command) {
+	key := "action-types"
+	cmd.PersistentFlags().StringSlice(key, []string{"skip", "mute"}, "SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped.")
+	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+		panic(err)
+	}
+	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"skip", "mute"}, cobra.ShellCompDirectiveNoFileComp
+	}); err != nil {
+		panic(err)
+	}
+}
+
 func completeCategories(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	response, err := http.Get("https://github.com/ajayyy/SponsorBlock/raw/master/config.json.example")
 	if err != nil {

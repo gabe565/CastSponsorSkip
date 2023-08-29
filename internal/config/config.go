@@ -20,7 +20,8 @@ type Config struct {
 
 	NetworkInterface string `mapstructure:"network-interface"`
 
-	Categories []string
+	Categories  []string
+	ActionTypes []string `mapstructure:"action-types"`
 
 	YouTubeAPIKey string `mapstructure:"youtube-api-key"`
 	MuteAds       bool   `mapstructure:"mute-ads"`
@@ -33,6 +34,7 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.RegisterPausedInterval(cmd)
 	c.RegisterPlayingInterval(cmd)
 	c.RegisterCategories(cmd)
+	c.RegisterActionTypes(cmd)
 	c.RegisterYouTubeAPIKey(cmd)
 	c.RegisterMuteAds(cmd)
 }

@@ -42,9 +42,12 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 	checksumBytes := sha256.Sum256([]byte(id))
 	checksum := hex.EncodeToString(checksumBytes[:])
 
-	query := make(url.Values, len(config.Default.Categories))
+	query := make(url.Values, len(config.Default.Categories)+len(config.Default.ActionTypes))
 	for _, category := range config.Default.Categories {
 		query.Add("category", category)
+	}
+	for _, actionType := range config.Default.ActionTypes {
+		query.Add("actionType", actionType)
 	}
 
 	u := baseUrl

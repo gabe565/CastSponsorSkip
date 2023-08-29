@@ -21,6 +21,8 @@ const (
 	StatePlaying   = "PLAYING"
 	StateBuffering = "BUFFERING"
 	StateAd        = 1081
+
+	NoMutedSegment = -1
 )
 
 var (
@@ -101,6 +103,7 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 	var prevVideoId, prevArtist, prevTitle string
 	var mediaSessionId int
 	var segments []sponsorblock.Segment
+	mutedSegmentId := NoMutedSegment
 
 	app.AddMessageFunc(func(msg *api.CastMessage) {
 		payload := []byte(msg.GetPayloadUtf8())
@@ -227,6 +230,14 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 					logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
 					prevVideoId = castMedia.Media.ContentId
 
+					if mutedSegmentId != NoMutedSegment {
+						if err := app.SetMuted(false); err == nil {
+							mutedSegmentId = NoMutedSegment
+						} else {
+							logger.Warn("Failed to unmute after video change.", "error", err.Error())
+						}
+					}
+
 					if err := util.Retry(ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
 						segments, err = sponsorblock.QuerySegments(ctx, castMedia.Media.ContentId)
 						return err
@@ -245,11 +256,37 @@ func Watch(ctx context.Context, entry castdns.CastEntry) {
 					if segment.Segment[0] <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
 						from := time.Duration(castMedia.CurrentTime) * time.Second
 						to := time.Duration(segment.Segment[1]) * time.Second
-						logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
-						if err := app.SeekToTime(segment.Segment[1]); err != nil {
-							logger.Warn("Failed to seek to timestamp.", "to", to, "error", err.Error())
+						switch segment.ActionType {
+						case sponsorblock.ActionTypeSkip:
+							logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
+							if err := app.SeekToTime(segment.Segment[1]); err != nil {
+								logger.Warn("Failed to seek to timestamp.", "to", segment.Segment[1], "error", err.Error())
+							}
+							castMedia.CurrentTime = segment.Segment[1]
+						case sponsorblock.ActionTypeMute:
+							if !castVol.Muted || mutedSegmentId != NoMutedSegment {
+								logger.Info("Mute segment.", "category", segment.Category, "from", from, "to", to)
+								if err := app.SetMuted(true); err == nil {
+									mutedSegmentId = i
+								} else {
+									logger.Warn("Failed to mute "+segment.Category+".", "error", err.Error())
+								}
+							}
 						}
-						break
+					}
+				}
+
+				if mutedSegmentId != NoMutedSegment {
+					segment := segments[mutedSegmentId]
+					if castMedia.CurrentTime < segment.Segment[0] || segment.Segment[1] <= castMedia.CurrentTime {
+						from := time.Duration(castMedia.CurrentTime) * time.Second
+						to := time.Duration(segment.Segment[1]) * time.Second
+						logger.Info("Unmute segment.", "category", segment.Category, "from", from, "to", to)
+						if err := app.SetMuted(false); err == nil {
+							mutedSegmentId = NoMutedSegment
+						} else {
+							logger.Warn("Failed to unmute segment.", "error", err.Error())
+						}
 					}
 				}
 			}

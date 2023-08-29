@@ -13,8 +13,9 @@ import (
 
 func TestQuerySegmentsRequest(t *testing.T) {
 	type args struct {
-		id         string
-		categories []string
+		id          string
+		categories  []string
+		actionTypes []string
 	}
 	tests := []struct {
 		name         string
@@ -24,27 +25,30 @@ func TestQuerySegmentsRequest(t *testing.T) {
 	}{
 		{
 			"1",
-			args{"dQw4w9WgXcQ", []string{"sponsor"}},
+			args{"dQw4w9WgXcQ", []string{"sponsor"}, []string{"skip", "mute"}},
 			"/api/skipSegments/5f6b",
 			assert.NoError,
 		},
 		{
 			"2",
-			args{"y8Kyi0WNg40", []string{"sponsor", "selfpromo"}},
+			args{"y8Kyi0WNg40", []string{"sponsor", "selfpromo"}, []string{"skip", "mute"}},
 			"/api/skipSegments/30cc",
 			assert.NoError,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			defer func(c []string) {
-				config.Default.Categories = c
-			}(config.Default.Categories)
+			defer func(categories []string, actionTypes []string) {
+				config.Default.Categories = categories
+				config.Default.ActionTypes = actionTypes
+			}(config.Default.Categories, config.Default.ActionTypes)
 			config.Default.Categories = tt.args.categories
+			config.Default.ActionTypes = tt.args.actionTypes
 
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tt.wantPath, r.URL.Path)
 				assert.Equal(t, tt.args.categories, r.URL.Query()["category"])
+				assert.Equal(t, tt.args.actionTypes, r.URL.Query()["actionType"])
 				_, _ = w.Write([]byte("[]"))
 			}))
 			defer server.Close()

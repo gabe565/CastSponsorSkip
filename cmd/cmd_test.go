@@ -43,6 +43,7 @@ func TestFlags(t *testing.T) {
 		"--paused-interval=" + pausedInterval.String(),
 		"--playing-interval=" + playingInterval.String(),
 		"--categories=a,b,c",
+		"--action-types=d,e,f",
 		"--youtube-api-key=AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe",
 		"--mute-ads",
 	})
@@ -60,6 +61,7 @@ func TestFlags(t *testing.T) {
 	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
+	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
 	assert.Equal(t, true, config.Default.MuteAds)
 }
@@ -90,6 +92,7 @@ func TestEnvs(t *testing.T) {
 	_ = os.Setenv("CSS_PAUSED_INTERVAL", pausedInterval.String())
 	_ = os.Setenv("CSS_PLAYING_INTERVAL", playingInterval.String())
 	_ = os.Setenv("CSS_CATEGORIES", "a,b,c")
+	_ = os.Setenv("CSS_ACTION_TYPES", "d,e,f")
 	_ = os.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 	_ = os.Setenv("CSS_MUTE_ADS", "true")
 
@@ -113,6 +116,7 @@ func TestEnvs(t *testing.T) {
 	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
+	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
 	assert.Equal(t, true, config.Default.MuteAds)
 }
