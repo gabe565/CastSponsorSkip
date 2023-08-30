@@ -35,6 +35,8 @@ var (
 
 type Device struct {
 	ctx    context.Context
+	cancel context.CancelFunc
+
 	entry  castdns.CastEntry
 	app    *application.Application
 	logger *slog.Logger
@@ -78,8 +80,11 @@ func NewDevice(ctx context.Context, entry castdns.CastEntry) *Device {
 	listeners[entry.UUID] = struct{}{}
 	listenerMu.Unlock()
 
+	subctx, cancel := context.WithCancel(ctx)
+
 	return &Device{
-		ctx:            ctx,
+		ctx:            subctx,
+		cancel:         cancel,
 		entry:          entry,
 		logger:         logger,
 		mutedSegmentId: NoMutedSegment,
@@ -94,6 +99,7 @@ func (d *Device) Close() error {
 	}()
 
 	d.unmuteSegment()
+	d.cancel()
 
 	if d.ticker != nil {
 		d.ticker.Stop()
