@@ -3,7 +3,9 @@ package device
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
+	"runtime/debug"
 	"sync"
 	"time"
 
@@ -105,6 +107,13 @@ func (d *Device) Close() error {
 }
 
 func (d *Device) BeginTick() error {
+	defer func() {
+		if r := recover(); r != nil {
+			d.logger.Error("Recovered from panic.", "error", r)
+			fmt.Println(string(debug.Stack()))
+		}
+	}()
+
 	if err := d.connect(); err != nil {
 		d.logger.Error("Failed to connect to device.", "error", err.Error())
 		return err
