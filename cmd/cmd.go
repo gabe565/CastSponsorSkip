@@ -77,6 +77,8 @@ func run(cmd *cobra.Command, args []string) (err error) {
 		return completion(cmd)
 	}
 
+	slog.Info("CastSponsorSkip version " + cmd.Version)
+
 	ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
