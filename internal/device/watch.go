@@ -291,7 +291,7 @@ func (d *Device) queryVideoId(castMedia *cast.Media) error {
 		castMedia.Media.ContentId = d.prevVideoId
 	} else {
 		if config.Default.YouTubeAPIKey == "" {
-			slog.Warn("Video ID not found. Please set a YouTube API key.")
+			d.logger.Warn("Video ID not found. Please set a YouTube API key.")
 		} else {
 			d.logger.Info("Video ID not found. Searching for video on YouTube...")
 			if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
