@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"google.golang.org/api/option"
@@ -29,8 +30,10 @@ func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
 		return "", ErrNotConnected
 	}
 
+	query := fmt.Sprintf(`%q+intitle:%q`, artist, title)
+	slog.Debug("Searching for video ID", "query", query)
 	response, err := service.Search.List([]string{"id"}).
-		Q(fmt.Sprintf(`%q+intitle:%q`, artist, title)).
+		Q(query).
 		MaxResults(1).
 		Context(ctx).
 		Do()

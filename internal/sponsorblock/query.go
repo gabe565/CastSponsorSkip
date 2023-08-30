@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"path"
@@ -54,6 +55,7 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 	u.Path = path.Join("api", "skipSegments", checksum[:4])
 	u.RawQuery = query.Encode()
 
+	slog.Debug("Request segments", "url", u.String())
 	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
