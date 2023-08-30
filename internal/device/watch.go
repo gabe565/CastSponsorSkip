@@ -260,6 +260,9 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 		}
 	case "CLOSE":
 		d.unmuteSegment()
+		d.segments = nil
+		d.prevTitle, d.prevArtist, d.prevVideoId = "", "", ""
+		d.mediaSessionId = 0
 	}
 }
 
