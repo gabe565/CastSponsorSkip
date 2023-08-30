@@ -75,11 +75,6 @@ func NewDevice(ctx context.Context, entry castdns.CastEntry) *Device {
 	}
 	listeners[entry.UUID] = struct{}{}
 	listenerMu.Unlock()
-	defer func() {
-		listenerMu.Lock()
-		delete(listeners, entry.UUID)
-		listenerMu.Unlock()
-	}()
 
 	return &Device{
 		ctx:            ctx,
@@ -90,6 +85,12 @@ func NewDevice(ctx context.Context, entry castdns.CastEntry) *Device {
 }
 
 func (d *Device) Close() error {
+	defer func() {
+		listenerMu.Lock()
+		delete(listeners, d.entry.UUID)
+		listenerMu.Unlock()
+	}()
+
 	if d.ticker != nil {
 		d.ticker.Stop()
 	}
@@ -118,6 +119,7 @@ func (d *Device) BeginTick() error {
 			return d.ctx.Err()
 		case <-d.ticker.C:
 			if err := d.tick(); err != nil {
+				d.logger.Error("Lost connection to device.", "error", err.Error())
 				return err
 			}
 		}
@@ -193,6 +195,7 @@ func (d *Device) connect() error {
 		application.WithSkipadSleep(config.Default.PlayingInterval),
 		application.WithSkipadRetries(int(time.Minute/config.Default.PlayingInterval)),
 	)
+	d.app.AddMessageFunc(d.onMessage)
 
 	if err := util.Retry(d.ctx, 6, 500*time.Millisecond, func(try uint) error {
 		if err := d.app.Start(d.entry.GetAddr(), d.entry.GetPort()); err != nil {
@@ -213,7 +216,6 @@ func (d *Device) connect() error {
 		d.logger.Info("Connected to cast device.")
 	}
 
-	d.app.AddMessageFunc(d.onMessage)
 	return nil
 }
 
