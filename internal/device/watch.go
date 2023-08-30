@@ -342,7 +342,8 @@ func (d *Device) handleSegment(castMedia *cast.Media, castVol *cast.Volume, segm
 	switch segment.ActionType {
 	case sponsorblock.ActionTypeSkip:
 		d.logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
-		if err := d.app.SeekToTime(segment.Segment[1]); err != nil {
+		// Cast API seems to ignore decimals, so add 100ms to seek time in case sponsorship ends at 0.9 seconds.
+		if err := d.app.SeekToTime(segment.Segment[1] + 0.1); err != nil {
 			d.logger.Warn("Failed to seek to timestamp.", "to", segment.Segment[1], "error", err.Error())
 		}
 		castMedia.CurrentTime = segment.Segment[1]
