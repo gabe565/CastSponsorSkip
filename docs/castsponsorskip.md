@@ -25,7 +25,7 @@ castsponsorskip [flags]
       --discover-interval duration   Interval to restart the DNS discovery client (default 5m0s)
   -h, --help                         help for castsponsorskip
       --log-level string             Log level (debug, info, warn, error) (default "info")
-      --mute-ads                     Enables experimental support for muting unskippable ads
+      --mute-ads                     Mutes the device while an ad is playing (default true)
   -i, --network-interface string     Network interface to use for multicast dns discovery
       --paused-interval duration     Interval to scan paused devices (default 1m0s)
       --playing-interval duration    Interval to scan playing devices (default 500ms)
