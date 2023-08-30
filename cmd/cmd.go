@@ -100,7 +100,10 @@ func run(cmd *cobra.Command, args []string) (err error) {
 			case entry := <-entries:
 				group.Add(1)
 				go func() {
-					device.Watch(ctx, entry)
+					if d := device.NewDevice(ctx, entry); d != nil {
+						_ = d.BeginTick()
+						_ = d.Close()
+					}
 					group.Done()
 				}()
 			}
