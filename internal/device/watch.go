@@ -174,7 +174,7 @@ func (d *Device) tick() error {
 
 		if d.mutedSegmentId != NoMutedSegment {
 			segment := d.segments[d.mutedSegmentId]
-			if castMedia.CurrentTime < segment.Segment[0] || segment.Segment[1] <= castMedia.CurrentTime {
+			if castMedia.CurrentTime < segment.Segment[0]-1 || segment.Segment[1] <= castMedia.CurrentTime {
 				from := time.Duration(castMedia.CurrentTime) * time.Second
 				to := time.Duration(segment.Segment[1]) * time.Second
 				d.logger.Info("Unmute segment.", "category", segment.Category, "from", from, "to", to)
