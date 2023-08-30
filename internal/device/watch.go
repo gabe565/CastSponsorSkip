@@ -91,6 +91,8 @@ func (d *Device) Close() error {
 		listenerMu.Unlock()
 	}()
 
+	d.unmuteSegment()
+
 	if d.ticker != nil {
 		d.ticker.Stop()
 	}
@@ -241,6 +243,8 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 				d.changeTickInterval(config.Default.PlayingInterval)
 			}
 		}
+	case "CLOSE":
+		d.unmuteSegment()
 	}
 }
 
