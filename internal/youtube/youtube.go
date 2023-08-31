@@ -21,7 +21,11 @@ var service *youtube.Service
 
 func CreateService(ctx context.Context) error {
 	var err error
-	service, err = youtube.NewService(ctx, option.WithAPIKey(config.Default.YouTubeAPIKey))
+	service, err = youtube.NewService(
+		ctx,
+		option.WithAPIKey(config.Default.YouTubeAPIKey),
+		option.WithTelemetryDisabled(),
+	)
 	return err
 }
 
