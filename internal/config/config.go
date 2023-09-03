@@ -9,7 +9,29 @@ import (
 	"github.com/spf13/viper"
 )
 
-var Default = &Config{}
+var Default Config
+
+func init() {
+	Reset()
+}
+
+func Reset() {
+	Default = Config{
+		LogLevel: "info",
+
+		DiscoverInterval: 5 * time.Minute,
+		PausedInterval:   time.Minute,
+		PlayingInterval:  500 * time.Millisecond,
+
+		NetworkInterface: "",
+
+		Categories:  []string{"sponsor"},
+		ActionTypes: []string{"skip", "mute"},
+
+		YouTubeAPIKey: "",
+		MuteAds:       true,
+	}
+}
 
 type Config struct {
 	viper *viper.Viper `mapstructure:"-"`

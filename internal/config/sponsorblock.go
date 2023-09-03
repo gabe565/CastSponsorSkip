@@ -13,7 +13,7 @@ import (
 
 func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	key := "categories"
-	cmd.PersistentFlags().StringSliceP(key, "c", []string{"sponsor"}, "Comma-separated list of SponsorBlock categories to skip")
+	cmd.PersistentFlags().StringSliceP(key, "c", Default.Categories, "Comma-separated list of SponsorBlock categories to skip")
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ func (c *Config) RegisterCategories(cmd *cobra.Command) {
 
 func (c *Config) RegisterActionTypes(cmd *cobra.Command) {
 	key := "action-types"
-	cmd.PersistentFlags().StringSlice(key, []string{"skip", "mute"}, "SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped.")
+	cmd.PersistentFlags().StringSlice(key, Default.ActionTypes, "SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped.")
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}

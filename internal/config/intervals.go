@@ -12,7 +12,7 @@ import (
 
 func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 	key := "discover-interval"
-	cmd.PersistentFlags().Duration(key, 5*time.Minute, "Interval to restart the DNS discovery client")
+	cmd.PersistentFlags().Duration(key, Default.DiscoverInterval, "Interval to restart the DNS discovery client")
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 
 func (c *Config) RegisterPausedInterval(cmd *cobra.Command) {
 	key := "paused-interval"
-	cmd.PersistentFlags().Duration(key, time.Minute, "Interval to scan paused devices")
+	cmd.PersistentFlags().Duration(key, Default.PausedInterval, "Interval to scan paused devices")
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
@@ -47,7 +47,7 @@ func (c *Config) RegisterPausedInterval(cmd *cobra.Command) {
 
 func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 	key := "playing-interval"
-	cmd.PersistentFlags().Duration(key, 500*time.Millisecond, "Interval to scan playing devices")
+	cmd.PersistentFlags().Duration(key, Default.PlayingInterval, "Interval to scan playing devices")
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}

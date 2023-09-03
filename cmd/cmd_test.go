@@ -10,7 +10,6 @@ import (
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,8 +21,7 @@ func randDuration() time.Duration {
 
 func TestFlags(t *testing.T) {
 	defer func() {
-		viper.Reset()
-		config.Default = &config.Config{}
+		config.Reset()
 	}()
 
 	discoverInterval := randDuration()
@@ -66,8 +64,7 @@ func TestFlags(t *testing.T) {
 
 func TestEnvs(t *testing.T) {
 	defer func() {
-		viper.Reset()
-		config.Default = &config.Config{}
+		config.Reset()
 	}()
 
 	discoverInterval := randDuration()
@@ -119,8 +116,7 @@ func TestEnvs(t *testing.T) {
 
 func TestSBCEnvs(t *testing.T) {
 	defer func() {
-		viper.Reset()
-		config.Default = &config.Config{}
+		config.Reset()
 	}()
 
 	discoverInterval := randDuration()
