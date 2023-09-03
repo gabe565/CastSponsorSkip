@@ -296,15 +296,13 @@ func (d *Device) queryVideoId(castMedia *cast.Media) error {
 			d.logger.Info("Video ID not found. Searching for video on YouTube...")
 			d.prevArtist = currArtist
 			d.prevTitle = currTitle
-			if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
+			return util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
 				castMedia.Media.ContentId, err = youtube.QueryVideoId(d.ctx, currArtist, currTitle)
 				if errors.Is(err, youtube.ErrNoVideos) || errors.Is(err, youtube.ErrNoId) {
 					return util.HaltRetries(err)
 				}
 				return err
-			}); err != nil {
-				return err
-			}
+			})
 		}
 	}
 	return nil
