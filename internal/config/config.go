@@ -55,7 +55,7 @@ func (c *Config) Load() error {
 			// Config file not found; ignore error
 		} else {
 			// Config file was found but another error was produced
-			panic(fmt.Errorf("Fatal error reading config file: %w \n", err))
+			return fmt.Errorf("fatal error reading config file: %w", err)
 		}
 	}
 
