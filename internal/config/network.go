@@ -5,13 +5,12 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func (c *Config) RegisterNetworkInterface(cmd *cobra.Command) {
 	key := "network-interface"
 	cmd.PersistentFlags().StringP(key, "i", "", "Network interface to use for multicast dns discovery")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, completeNetworkInterface); err != nil {

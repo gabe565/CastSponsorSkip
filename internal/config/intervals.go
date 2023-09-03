@@ -8,13 +8,12 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 	key := "discover-interval"
 	cmd.PersistentFlags().Duration(key, 5*time.Minute, "Interval to restart the DNS discovery client")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -28,7 +27,7 @@ func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 		if err == nil {
 			val := (time.Duration(parsed) * time.Second).String()
 			slog.Warn(fmt.Sprintf(`SBCSCANINTERVAL is deprecated. Please set %q instead.`, "CSS_DISCOVER_INTERVAL="+val))
-			viper.SetDefault(key, val)
+			c.viper.SetDefault(key, val)
 		}
 	}
 }
@@ -36,7 +35,7 @@ func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 func (c *Config) RegisterPausedInterval(cmd *cobra.Command) {
 	key := "paused-interval"
 	cmd.PersistentFlags().Duration(key, time.Minute, "Interval to scan paused devices")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -49,7 +48,7 @@ func (c *Config) RegisterPausedInterval(cmd *cobra.Command) {
 func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 	key := "playing-interval"
 	cmd.PersistentFlags().Duration(key, 500*time.Millisecond, "Interval to scan playing devices")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
@@ -63,7 +62,7 @@ func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 		if err == nil {
 			val := (time.Duration(parsed) * time.Second).String()
 			slog.Warn(fmt.Sprintf(`SBCPOLLINTERVAL is deprecated. Please set %q instead.`, "CSS_PLAYING_INTERVAL="+val))
-			viper.SetDefault(key, val)
+			c.viper.SetDefault(key, val)
 		}
 	}
 }

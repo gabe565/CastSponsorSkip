@@ -9,13 +9,12 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	key := "categories"
 	cmd.PersistentFlags().StringSliceP(key, "c", []string{"sponsor"}, "Comma-separated list of SponsorBlock categories to skip")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, completeCategories); err != nil {
@@ -25,14 +24,14 @@ func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	if env := os.Getenv("SBCCATEGORIES"); env != "" {
 		val := strings.Split(env, " ")
 		slog.Warn(fmt.Sprintf(`SBCCATEGORIES is deprecated. Please set %q instead.`, "CSS_CATEGORIES="+strings.Join(val, ",")))
-		viper.SetDefault(key, val)
+		c.viper.SetDefault(key, val)
 	}
 }
 
 func (c *Config) RegisterActionTypes(cmd *cobra.Command) {
 	key := "action-types"
 	cmd.PersistentFlags().StringSlice(key, []string{"skip", "mute"}, "SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped.")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {

@@ -6,26 +6,25 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 func (c *Config) RegisterYouTubeAPIKey(cmd *cobra.Command) {
 	key := "youtube-api-key"
 	cmd.PersistentFlags().String(key, "", "YouTube API key for fallback video identification (required on some Chromecast devices).")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 
 	if env := os.Getenv("SBCYOUTUBEAPIKEY"); env != "" {
 		slog.Warn(fmt.Sprintf(`SBCYOUTUBEAPIKEY is deprecated. Please set %q instead.`, "CSS_YOUTUBE_API_KEY="+env))
-		viper.SetDefault(key, env)
+		c.viper.SetDefault(key, env)
 	}
 }
 
 func (c *Config) RegisterMuteAds(cmd *cobra.Command) {
 	key := "mute-ads"
 	cmd.PersistentFlags().Bool(key, true, "Mutes the device while an ad is playing")
-	if err := viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
 }

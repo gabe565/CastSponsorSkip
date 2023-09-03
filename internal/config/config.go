@@ -12,6 +12,8 @@ import (
 var Default = &Config{}
 
 type Config struct {
+	viper *viper.Viper `mapstructure:"-"`
+
 	LogLevel string `mapstructure:"log-level"`
 
 	DiscoverInterval time.Duration `mapstructure:"discover-interval"`
@@ -28,6 +30,7 @@ type Config struct {
 }
 
 func (c *Config) RegisterFlags(cmd *cobra.Command) {
+	c.viper = viper.New()
 	c.RegisterLogLevel(cmd)
 	c.RegisterNetworkInterface(cmd)
 	c.RegisterDiscoverInterval(cmd)
@@ -40,17 +43,17 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 }
 
 func (c *Config) Load() error {
-	viper.SetConfigName("castsponsorskip")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("$HOME/.config/")
-	viper.AddConfigPath("$HOME/")
-	viper.AddConfigPath("/etc/castsponsorskip/")
+	c.viper.SetConfigName("castsponsorskip")
+	c.viper.SetConfigType("yaml")
+	c.viper.AddConfigPath("$HOME/.config/")
+	c.viper.AddConfigPath("$HOME/")
+	c.viper.AddConfigPath("/etc/castsponsorskip/")
 
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("CSS")
-	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
+	c.viper.AutomaticEnv()
+	c.viper.SetEnvPrefix("CSS")
+	c.viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
-	if err := viper.ReadInConfig(); err != nil {
+	if err := c.viper.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error
 		} else {
@@ -59,5 +62,5 @@ func (c *Config) Load() error {
 		}
 	}
 
-	return viper.Unmarshal(c)
+	return c.viper.Unmarshal(c)
 }
