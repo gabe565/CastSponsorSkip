@@ -47,9 +47,7 @@ func TestFlags(t *testing.T) {
 		"--youtube-api-key=AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe",
 		"--mute-ads",
 	})
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		return nil
-	}
+	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
 
 	if err := cmd.Execute(); !assert.NoError(t, err) {
 		return
@@ -102,9 +100,7 @@ func TestEnvs(t *testing.T) {
 	}) {
 		return
 	}
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		return nil
-	}
+	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
 
 	if err := cmd.Execute(); !assert.NoError(t, err) {
 		return
@@ -147,9 +143,7 @@ func TestSBCEnvs(t *testing.T) {
 	}) {
 		return
 	}
-	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		return nil
-	}
+	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
 
 	if err := cmd.Execute(); !assert.NoError(t, err) {
 		return
