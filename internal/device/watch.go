@@ -294,6 +294,8 @@ func (d *Device) queryVideoId(castMedia *cast.Media) error {
 			d.logger.Warn("Video ID not found. Please set a YouTube API key.")
 		} else {
 			d.logger.Info("Video ID not found. Searching for video on YouTube...")
+			d.prevArtist = currArtist
+			d.prevTitle = currTitle
 			if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
 				castMedia.Media.ContentId, err = youtube.QueryVideoId(d.ctx, currArtist, currTitle)
 				if errors.Is(err, youtube.ErrNoVideos) || errors.Is(err, youtube.ErrNoId) {
@@ -304,8 +306,6 @@ func (d *Device) queryVideoId(castMedia *cast.Media) error {
 				return err
 			}
 		}
-		d.prevArtist = currArtist
-		d.prevTitle = currTitle
 	}
 	return nil
 }
