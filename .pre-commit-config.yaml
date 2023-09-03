@@ -8,6 +8,7 @@ repos:
       - id: go-vet-mod
       - id: golangci-lint-mod
         args: [--fix]
+      - id: go-test-mod
 
   - repo: local
     hooks:
