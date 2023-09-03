@@ -112,7 +112,7 @@ func (d *Device) Close() error {
 	return nil
 }
 
-func (d *Device) BeginTick() error {
+func (d *Device) BeginTick(opts ...application.ApplicationOption) error {
 	defer func() {
 		if r := recover(); r != nil {
 			d.logger.Error("Recovered from panic.", "error", r)
@@ -120,7 +120,7 @@ func (d *Device) BeginTick() error {
 		}
 	}()
 
-	if err := d.connect(); err != nil {
+	if err := d.connect(opts...); err != nil {
 		d.logger.Error("Failed to connect to device.", "error", err.Error())
 		return err
 	}
@@ -204,14 +204,16 @@ func (d *Device) tick() error {
 	return nil
 }
 
-func (d *Device) connect() error {
+func (d *Device) connect(opts ...application.ApplicationOption) error {
 	if d.app != nil {
 		_ = d.app.Close(false)
 	}
-	d.app = application.NewApplication(
+	opts = append(
+		opts,
 		application.WithSkipadSleep(config.Default.PlayingInterval),
 		application.WithSkipadRetries(int(time.Minute/config.Default.PlayingInterval)),
 	)
+	d.app = application.NewApplication(opts...)
 	d.app.AddMessageFunc(d.onMessage)
 
 	if err := util.Retry(d.ctx, 6, 500*time.Millisecond, func(try uint) error {
