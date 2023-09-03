@@ -19,13 +19,14 @@ var (
 
 var service *youtube.Service
 
-func CreateService(ctx context.Context) error {
+func CreateService(ctx context.Context, opts ...option.ClientOption) error {
 	var err error
-	service, err = youtube.NewService(
-		ctx,
+	opts = append(
+		opts,
 		option.WithAPIKey(config.Default.YouTubeAPIKey),
 		option.WithTelemetryDisabled(),
 	)
+	service, err = youtube.NewService(ctx, opts...)
 	return err
 }
 
