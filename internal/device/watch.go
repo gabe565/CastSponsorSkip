@@ -162,20 +162,20 @@ func (d *Device) tick() error {
 		return nil
 	}
 
-	if castMedia.Media.ContentId == "" {
-		if err := d.queryVideoId(castMedia); err != nil {
-			d.logger.Error("Failed to find video on YouTube.", "error", err.Error())
-		}
-		if castMedia.Media.ContentId == "" {
-			d.changeTickInterval(config.Default.PausedInterval)
-			return nil
-		}
-	}
-
 	switch castMedia.CustomData.PlayerState {
 	case StateAd:
 		d.muteAd(castVol)
 	default:
+		if castMedia.Media.ContentId == "" {
+			if err := d.queryVideoId(castMedia); err != nil {
+				d.logger.Error("Failed to find video on YouTube.", "error", err.Error())
+			}
+			if castMedia.Media.ContentId == "" {
+				d.changeTickInterval(config.Default.PausedInterval)
+				return nil
+			}
+		}
+
 		if castMedia.Media.ContentId != d.prevVideoId {
 			d.logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
 			d.prevVideoId = castMedia.Media.ContentId
