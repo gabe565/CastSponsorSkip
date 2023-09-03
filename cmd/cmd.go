@@ -103,7 +103,7 @@ func run(cmd *cobra.Command, args []string) (err error) {
 			case entry := <-entries:
 				group.Add(1)
 				go func() {
-					if d := device.NewDevice(ctx, entry); d != nil {
+					if d := device.NewDevice(entry, device.WithContext(ctx)); d != nil {
 						_ = d.BeginTick()
 						_ = d.Close()
 					}

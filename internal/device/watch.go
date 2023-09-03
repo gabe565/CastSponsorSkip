@@ -52,7 +52,7 @@ type Device struct {
 	mutedSegmentId int
 }
 
-func NewDevice(ctx context.Context, entry castdns.CastEntry) *Device {
+func NewDevice(entry castdns.CastEntry, opts ...Option) *Device {
 	if entry.Device == "Google Cast Group" {
 		return nil
 	} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
@@ -80,15 +80,17 @@ func NewDevice(ctx context.Context, entry castdns.CastEntry) *Device {
 	listeners[entry.UUID] = struct{}{}
 	listenerMu.Unlock()
 
-	subctx, cancel := context.WithCancel(ctx)
-
-	return &Device{
-		ctx:            subctx,
-		cancel:         cancel,
+	device := &Device{
 		entry:          entry,
 		logger:         logger,
 		mutedSegmentId: NoMutedSegment,
 	}
+
+	for _, opt := range opts {
+		opt(device)
+	}
+
+	return device
 }
 
 func (d *Device) Close() error {
@@ -99,7 +101,9 @@ func (d *Device) Close() error {
 	}()
 
 	d.unmuteSegment()
-	d.cancel()
+	if d.cancel != nil {
+		d.cancel()
+	}
 
 	if d.ticker != nil {
 		d.ticker.Stop()
