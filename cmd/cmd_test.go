@@ -43,7 +43,7 @@ func TestFlags(t *testing.T) {
 		"--categories=a,b,c",
 		"--action-types=d,e,f",
 		"--youtube-api-key=AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe",
-		"--mute-ads",
+		"--mute-ads=false",
 	})
 	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
 
@@ -59,7 +59,7 @@ func TestFlags(t *testing.T) {
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
-	assert.Equal(t, true, config.Default.MuteAds)
+	assert.Equal(t, false, config.Default.MuteAds)
 }
 
 func TestEnvs(t *testing.T) {
@@ -89,7 +89,7 @@ func TestEnvs(t *testing.T) {
 	_ = os.Setenv("CSS_CATEGORIES", "a,b,c")
 	_ = os.Setenv("CSS_ACTION_TYPES", "d,e,f")
 	_ = os.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
-	_ = os.Setenv("CSS_MUTE_ADS", "true")
+	_ = os.Setenv("CSS_MUTE_ADS", "false")
 
 	var cmd *cobra.Command
 	if !assert.NotPanics(t, func() {
@@ -111,7 +111,7 @@ func TestEnvs(t *testing.T) {
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
-	assert.Equal(t, true, config.Default.MuteAds)
+	assert.Equal(t, false, config.Default.MuteAds)
 }
 
 func TestSBCEnvs(t *testing.T) {
