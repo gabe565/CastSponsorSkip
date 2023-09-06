@@ -138,9 +138,10 @@ systemctl enable --now castsponsorskip
 </details>
 
 ## Configuration
-### Envs
-You can configure the following parameters by setting the appropriate command line flag or environment variable:
+CastSponsorSkip can be configured with envs, command-line flags, or a config file. Some notable envs are listed below, but all [flags](./docs/castsponsorskip.md) can be set with envs.  
+To use an env that is not listed here, capitalize all characters, replace `-` with `_`, and prefix with `CSS_`. For example, `--paused-interval=1m` would become `CSS_PAUSED_INTERVAL=1m`.
 
+### Notable Envs
 | Env                     | Description                                                                                                                                                  | Default        |
 |-------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------|
 | `CSS_DISCOVER_INTERVAL` | Interval to restart the DNS discovery client.                                                                                                                | `5m`           |
