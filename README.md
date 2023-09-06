@@ -148,7 +148,6 @@ You can configure the following parameters by setting the appropriate command li
 | `CSS_PLAYING_INTERVAL`  | Time to wait between each poll of the Cast device status when playing.                                                                                       | `500ms`        |
 | `CSS_CATEGORIES`        | Comma-separated list of SponsorBlock categories to skip, see [category list](https://wiki.sponsor.ajay.app/w/Types#Category).                                | `sponsor`      |
 | `CSS_YOUTUBE_API_KEY`   | [YouTube API key](https://developers.google.com/youtube/registering_an_application) for fallback video identification (required on some Chromecast devices). | ` `            |
-| `CSS_NETWORK_INTERFACE` | Optionally configure the network interface to use.                                                                                                           | All interfaces |
 | `CSS_MUTE_ADS`          | Mutes the device while an ad is playing.                                                                                                                     | `true`         |
 
 > **Note**
