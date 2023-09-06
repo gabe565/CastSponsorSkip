@@ -16,5 +16,4 @@ repos:
         name: usage-docs
         entry: go run ./internal/generate/docs
         language: system
-        types: [go]
         pass_filenames: false
