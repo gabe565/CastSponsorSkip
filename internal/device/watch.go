@@ -110,6 +110,12 @@ func (d *Device) Close() error {
 	}
 
 	if d.app != nil {
+		defer func() {
+			if r := recover(); r != nil {
+				d.logger.Debug("Panic during close", "error", r, "stack", debug.Stack())
+			}
+		}()
+
 		return d.app.Close(false)
 	}
 
