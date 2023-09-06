@@ -26,7 +26,7 @@ castsponsorskip [flags]
   -h, --help                         help for castsponsorskip
       --log-level string             Log level (debug, info, warn, error) (default "info")
       --mute-ads                     Mutes the device while an ad is playing (default true)
-  -i, --network-interface string     Network interface to use for multicast dns discovery
+  -i, --network-interface string     Network interface to use for multicast dns discovery. (default all interfaces)
       --paused-interval duration     Interval to scan paused devices (default 1m0s)
       --playing-interval duration    Interval to scan playing devices (default 500ms)
   -v, --version                      version for castsponsorskip
