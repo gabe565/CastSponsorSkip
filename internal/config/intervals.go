@@ -74,7 +74,7 @@ func (c *Config) RegisterSkipDelay(cmd *cobra.Command) {
 		panic(err)
 	}
 	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		return []string{"1m", "2m", "5m", "10m", "30m", "1h"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+		return []string{"500ms", "1s", "2s", "3s", "5s", "10s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
 	}
