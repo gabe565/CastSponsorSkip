@@ -66,3 +66,16 @@ func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 		}
 	}
 }
+
+func (c *Config) RegisterSkipDelay(cmd *cobra.Command) {
+	key := "skip-delay"
+	cmd.PersistentFlags().Duration(key, Default.SkipDelay, "Delay skipping the start of a segment")
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+		panic(err)
+	}
+	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"500ms", "1s", "2s", "3s", "5s", "10s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}); err != nil {
+		panic(err)
+	}
+}

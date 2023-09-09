@@ -22,6 +22,7 @@ func Reset() {
 		DiscoverInterval: 5 * time.Minute,
 		PausedInterval:   time.Minute,
 		PlayingInterval:  500 * time.Millisecond,
+		SkipDelay: 0,
 
 		NetworkInterface: "",
 
@@ -41,6 +42,7 @@ type Config struct {
 	DiscoverInterval time.Duration `mapstructure:"discover-interval"`
 	PausedInterval   time.Duration `mapstructure:"paused-interval"`
 	PlayingInterval  time.Duration `mapstructure:"playing-interval"`
+	SkipDelay        time.Duration `mapstructure:"skip-delay"`
 
 	NetworkInterface string `mapstructure:"network-interface"`
 
@@ -58,6 +60,7 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.RegisterDiscoverInterval(cmd)
 	c.RegisterPausedInterval(cmd)
 	c.RegisterPlayingInterval(cmd)
+	c.RegisterSkipDelay(cmd)
 	c.RegisterCategories(cmd)
 	c.RegisterActionTypes(cmd)
 	c.RegisterYouTubeAPIKey(cmd)
