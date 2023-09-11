@@ -194,7 +194,7 @@ func (d *Device) tick() error {
 		}
 
 		for i, segment := range d.segments {
-			if (segment.Segment[0] + float32(config.Default.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
+			if (segment.Segment[0]+float32(config.Default.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
 				d.handleSegment(castMedia, castVol, segment, i)
 			}
 		}

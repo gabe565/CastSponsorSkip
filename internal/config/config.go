@@ -22,7 +22,7 @@ func Reset() {
 		DiscoverInterval: 5 * time.Minute,
 		PausedInterval:   time.Minute,
 		PlayingInterval:  500 * time.Millisecond,
-		SkipDelay: 0,
+		SkipDelay:        0,
 
 		NetworkInterface: "",
 
