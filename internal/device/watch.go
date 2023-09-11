@@ -222,6 +222,7 @@ func (d *Device) connect(opts ...application.ApplicationOption) error {
 		opts,
 		application.WithSkipadSleep(config.Default.PlayingInterval),
 		application.WithSkipadRetries(int(time.Minute/config.Default.PlayingInterval)),
+		application.WithIface(config.Default.NetworkInterface),
 	)
 	d.app = application.NewApplication(opts...)
 	d.app.AddMessageFunc(d.onMessage)

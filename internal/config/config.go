@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"net"
 	"strings"
 	"time"
 
@@ -24,7 +25,7 @@ func Reset() {
 		PlayingInterval:  500 * time.Millisecond,
 		SkipDelay:        0,
 
-		NetworkInterface: "",
+		NetworkInterface: nil,
 
 		Categories:  []string{"sponsor"},
 		ActionTypes: []string{"skip", "mute"},
@@ -44,7 +45,8 @@ type Config struct {
 	PlayingInterval  time.Duration `mapstructure:"playing-interval"`
 	SkipDelay        time.Duration `mapstructure:"skip-delay"`
 
-	NetworkInterface string `mapstructure:"network-interface"`
+	NetworkInterfaceName string `mapstructure:"network-interface"`
+	NetworkInterface     *net.Interface
 
 	Categories  []string
 	ActionTypes []string `mapstructure:"action-types"`
@@ -87,5 +89,16 @@ func (c *Config) Load() error {
 		}
 	}
 
-	return c.viper.Unmarshal(c)
+	if err := c.viper.Unmarshal(c); err != nil {
+		return err
+	}
+
+	if c.NetworkInterfaceName != "" {
+		var err error
+		if c.NetworkInterface, err = net.InterfaceByName(c.NetworkInterfaceName); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

@@ -15,19 +15,10 @@ import (
 var ErrDeviceNotFound = errors.New("device not found")
 
 func DiscoverCastDNSEntryByUuid(ctx context.Context, uuid string) (castdns.CastEntry, error) {
-	var iface *net.Interface
-	if config.Default.NetworkInterface != "" {
-		var err error
-		iface, err = net.InterfaceByName(config.Default.NetworkInterface)
-		if err != nil {
-			return castdns.CastEntry{}, err
-		}
-	}
-
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	entries, err := castdns.DiscoverCastDNSEntries(ctx, iface)
+	entries, err := castdns.DiscoverCastDNSEntries(ctx, config.Default.NetworkInterface)
 	if err != nil {
 		return castdns.CastEntry{}, err
 	}
@@ -64,14 +55,8 @@ func DiscoverCastDNSEntries(ctx context.Context, iface *net.Interface, ch chan c
 }
 
 func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
-	var iface *net.Interface
-	if config.Default.NetworkInterface != "" {
-		var err error
-		iface, err = net.InterfaceByName(config.Default.NetworkInterface)
-		if err != nil {
-			return nil, err
-		}
-		slog.Info("Searching for devices...", "interface", config.Default.NetworkInterface)
+	if config.Default.NetworkInterface != nil {
+		slog.Info("Searching for devices...", "interface", config.Default.NetworkInterfaceName)
 	} else {
 		slog.Info("Searching for devices...")
 	}
@@ -87,7 +72,7 @@ func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
 				return
 			}
 
-			if err := DiscoverCastDNSEntries(ctx, iface, ch); err != nil {
+			if err := DiscoverCastDNSEntries(ctx, config.Default.NetworkInterface, ch); err != nil {
 				slog.Error("Failed to discover devices.", "error", err.Error())
 				continue
 			}

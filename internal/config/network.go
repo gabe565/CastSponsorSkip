@@ -9,7 +9,7 @@ import (
 
 func (c *Config) RegisterNetworkInterface(cmd *cobra.Command) {
 	key := "network-interface"
-	cmd.PersistentFlags().StringP(key, "i", Default.NetworkInterface, "Network interface to use for multicast dns discovery. (default all interfaces)")
+	cmd.PersistentFlags().StringP(key, "i", Default.NetworkInterfaceName, "Network interface to use for multicast dns discovery. (default all interfaces)")
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}

@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"math/rand"
+	"net"
 	"os"
 	"strconv"
 	"testing"
@@ -19,6 +20,12 @@ func randDuration() time.Duration {
 	return time.Duration(randSecs) * time.Second
 }
 
+func getNetworkInterfaceName(t *testing.T) string {
+	interfaces, err := net.Interfaces()
+	assert.NoError(t, err)
+	return interfaces[0].Name
+}
+
 func TestFlags(t *testing.T) {
 	defer func() {
 		config.Reset()
@@ -27,6 +34,7 @@ func TestFlags(t *testing.T) {
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
 	playingInterval := randDuration()
+	networkInterface := getNetworkInterfaceName(t)
 
 	var cmd *cobra.Command
 	if !assert.NotPanics(t, func() {
@@ -36,7 +44,7 @@ func TestFlags(t *testing.T) {
 	}
 	cmd.SetArgs([]string{
 		"--log-level=debug",
-		"--network-interface=eno1",
+		"--network-interface=" + networkInterface,
 		"--discover-interval=" + discoverInterval.String(),
 		"--paused-interval=" + pausedInterval.String(),
 		"--playing-interval=" + playingInterval.String(),
@@ -52,7 +60,7 @@ func TestFlags(t *testing.T) {
 	}
 
 	assert.Equal(t, "debug", config.Default.LogLevel)
-	assert.Equal(t, "eno1", config.Default.NetworkInterface)
+	assert.Equal(t, networkInterface, config.Default.NetworkInterfaceName)
 	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
 	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
@@ -70,6 +78,7 @@ func TestEnvs(t *testing.T) {
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
 	playingInterval := randDuration()
+	networkInterface := getNetworkInterfaceName(t)
 
 	defer func() {
 		_ = os.Unsetenv("CSS_LOG_LEVEL")
@@ -82,7 +91,7 @@ func TestEnvs(t *testing.T) {
 		_ = os.Unsetenv("CSS_MUTE_ADS")
 	}()
 	_ = os.Setenv("CSS_LOG_LEVEL", "warn")
-	_ = os.Setenv("CSS_NETWORK_INTERFACE", "eno1")
+	_ = os.Setenv("CSS_NETWORK_INTERFACE", networkInterface)
 	_ = os.Setenv("CSS_DISCOVER_INTERVAL", discoverInterval.String())
 	_ = os.Setenv("CSS_PAUSED_INTERVAL", pausedInterval.String())
 	_ = os.Setenv("CSS_PLAYING_INTERVAL", playingInterval.String())
@@ -104,7 +113,7 @@ func TestEnvs(t *testing.T) {
 	}
 
 	assert.Equal(t, "warn", config.Default.LogLevel)
-	assert.Equal(t, "eno1", config.Default.NetworkInterface)
+	assert.Equal(t, networkInterface, config.Default.NetworkInterfaceName)
 	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
 	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
