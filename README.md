@@ -1,5 +1,6 @@
 # CastSponsorSkip
 
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/gabe565/CastSponsorSkip)](https://github.com/gabe565/CastSponsorSkip/releases)
 [![Build](https://github.com/gabe565/CastSponsorSkip/actions/workflows/build.yml/badge.svg)](https://github.com/gabe565/CastSponsorSkip/actions/workflows/build.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/gabe565/CastSponsorSkip)](https://goreportcard.com/report/github.com/gabe565/CastSponsorSkip)
 
