@@ -47,10 +47,10 @@ changelog:
   groups:
     - title: Features
       order: 0
-      regexp: "^(feat)"
+      regexp: "(feat)"
     - title: Fixes
       order: 1
-      regexp: "^(fix|perf)"
+      regexp: "(fix|perf)"
     - title: Others
       order: 999
 brews:
