@@ -177,9 +177,7 @@ func (d *Device) tick() error {
 		d.muteAd(castVol)
 	default:
 		if castMedia.Media.ContentId == "" {
-			if err := d.queryVideoId(castMedia); err != nil {
-				d.logger.Error("Failed to find video on YouTube.", "error", err.Error())
-			}
+			d.queryVideoId(castMedia)
 			if castMedia.Media.ContentId == "" {
 				d.changeTickInterval(config.Default.PausedInterval)
 				return nil
@@ -291,7 +289,7 @@ func (d *Device) update() error {
 	})
 }
 
-func (d *Device) queryVideoId(castMedia *cast.Media) error {
+func (d *Device) queryVideoId(castMedia *cast.Media) {
 	var currArtist string
 	if castMedia.Media.Metadata.Artist != "" {
 		currArtist = castMedia.Media.Metadata.Artist
@@ -309,16 +307,19 @@ func (d *Device) queryVideoId(castMedia *cast.Media) error {
 			d.logger.Info("Video ID not found. Searching for video on YouTube...")
 			d.prevArtist = currArtist
 			d.prevTitle = currTitle
-			return util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
+			if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
 				castMedia.Media.ContentId, err = youtube.QueryVideoId(d.ctx, currArtist, currTitle)
-				if errors.Is(err, youtube.ErrNoVideos) || errors.Is(err, youtube.ErrNoId) {
-					return util.HaltRetries(err)
+				if err != nil {
+					d.logger.Error("YouTube search failed.", "error", err.Error())
 				}
 				return err
-			})
+			}); err != nil {
+				d.logger.Debug("Halting YouTube search retries.")
+				return
+			}
+			d.logger.Debug("YouTube search found video ID", "video_id", castMedia.Media.ContentId)
 		}
 	}
-	return nil
 }
 
 func (d *Device) muteAd(castVol *cast.Volume) {
