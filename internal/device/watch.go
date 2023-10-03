@@ -308,7 +308,7 @@ func (d *Device) queryVideoId(castMedia *cast.Media) {
 			d.prevArtist = currArtist
 			d.prevTitle = currTitle
 			go func() {
-				if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
+				if err := util.Retry(d.ctx, 3, time.Second, func(try uint) (err error) {
 					castMedia.Media.ContentId, err = youtube.QueryVideoId(d.ctx, currArtist, currTitle)
 					if err != nil {
 						d.logger.Error("YouTube search failed.", "error", err.Error())
