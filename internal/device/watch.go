@@ -186,7 +186,9 @@ func (d *Device) tick() error {
 			}
 			d.prevVideoId = castMedia.Media.ContentId
 			d.unmuteSegment()
-			d.querySegments(castMedia)
+			d.segments = nil
+			go d.querySegments(castMedia)
+			break
 		}
 
 		for i, segment := range d.segments {
@@ -305,17 +307,19 @@ func (d *Device) queryVideoId(castMedia *cast.Media) {
 			d.logger.Info("Video ID not found. Searching for video on YouTube...")
 			d.prevArtist = currArtist
 			d.prevTitle = currTitle
-			if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
-				castMedia.Media.ContentId, err = youtube.QueryVideoId(d.ctx, currArtist, currTitle)
-				if err != nil {
-					d.logger.Error("YouTube search failed.", "error", err.Error())
+			go func() {
+				if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
+					castMedia.Media.ContentId, err = youtube.QueryVideoId(d.ctx, currArtist, currTitle)
+					if err != nil {
+						d.logger.Error("YouTube search failed.", "error", err.Error())
+					}
+					return err
+				}); err != nil {
+					d.logger.Debug("Halting YouTube search retries.")
+					return
 				}
-				return err
-			}); err != nil {
-				d.logger.Debug("Halting YouTube search retries.")
-				return
-			}
-			d.logger.Debug("YouTube search found video ID", "video_id", castMedia.Media.ContentId)
+				d.logger.Debug("YouTube search found video ID", "video_id", castMedia.Media.ContentId)
+			}()
 		}
 	}
 }
