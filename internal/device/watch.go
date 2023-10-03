@@ -178,14 +178,12 @@ func (d *Device) tick() error {
 	default:
 		if castMedia.Media.ContentId == "" {
 			d.queryVideoId(castMedia)
-			if castMedia.Media.ContentId == "" {
-				d.changeTickInterval(config.Default.PausedInterval)
-				return nil
-			}
 		}
 
 		if castMedia.Media.ContentId != d.prevVideoId {
-			d.logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
+			if castMedia.Media.ContentId != "" {
+				d.logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
+			}
 			d.prevVideoId = castMedia.Media.ContentId
 			d.unmuteSegment()
 			d.querySegments(castMedia)
@@ -382,6 +380,10 @@ func (d *Device) unmuteSegment() {
 }
 
 func (d *Device) querySegments(castMedia *cast.Media) {
+	if castMedia.Media.ContentId == "" {
+		return
+	}
+
 	if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(try uint) (err error) {
 		d.segments, err = sponsorblock.QuerySegments(d.ctx, castMedia.Media.ContentId)
 		return err
