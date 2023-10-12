@@ -8,7 +8,7 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
-	github.com/vishen/go-chromecast v0.3.2-0.20230828160317-e92af477dd65
+	github.com/vishen/go-chromecast v0.3.2-0.20231012024214-cbfdbcde1407
 	google.golang.org/api v0.146.0
 )
 
