@@ -38,6 +38,7 @@ type Device struct {
 	cancel context.CancelFunc
 
 	entry  castdns.CastEntry
+	opts   []application.ApplicationOption
 	app    *application.Application
 	logger *slog.Logger
 
@@ -109,6 +110,10 @@ func (d *Device) Close() error {
 		d.ticker.Stop()
 	}
 
+	return d.closeApp()
+}
+
+func (d *Device) closeApp() error {
 	if d.app != nil {
 		defer func() {
 			if r := recover(); r != nil {
@@ -118,7 +123,6 @@ func (d *Device) Close() error {
 
 		return d.app.Close(false)
 	}
-
 	return nil
 }
 
@@ -213,9 +217,12 @@ func (d *Device) tick() error {
 }
 
 func (d *Device) connect(opts ...application.ApplicationOption) error {
+	logLevel := slog.LevelInfo
 	if d.app != nil {
-		_ = d.app.Close(false)
+		logLevel = slog.LevelDebug
+		_ = d.closeApp()
 	}
+	d.opts = opts
 	opts = append(
 		opts,
 		application.WithSkipadSleep(config.Default.PlayingInterval),
@@ -241,7 +248,7 @@ func (d *Device) connect(opts ...application.ApplicationOption) error {
 		return err
 	}
 	if d.ctx.Err() == nil {
-		d.logger.Info("Connected to cast device.")
+		d.logger.Log(d.ctx, logLevel, "Connected to cast device.")
 	}
 
 	return nil
@@ -280,13 +287,21 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 func (d *Device) update() error {
 	d.logger.Debug("Update")
 
-	return util.Retry(d.ctx, 6, 500*time.Millisecond, func(try uint) error {
-		if err := d.app.Update(); err != nil {
-			d.logger.Debug("Failed to update device. Retrying...", "try", try, "error", err.Error())
+	err := d.app.Update()
+	if err != nil {
+		d.logger.Debug("Failed to update device. Reconnecting...", "error", err.Error())
+
+		if subErr := d.connect(d.opts...); subErr != nil {
+			d.logger.Debug("Failed to reconnect.", "error", subErr.Error())
 			return err
 		}
-		return nil
-	})
+
+		if subErr := d.app.Update(); subErr == nil {
+			return nil
+		}
+	}
+
+	return err
 }
 
 func (d *Device) queryVideoId(castMedia *cast.Media) {
