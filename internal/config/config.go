@@ -100,5 +100,13 @@ func (c *Config) Load() error {
 		}
 	}
 
+	for i, category := range c.Categories {
+		c.Categories[i] = strings.TrimSpace(category)
+	}
+
+	for i, actionType := range c.ActionTypes {
+		c.ActionTypes[i] = strings.TrimSpace(actionType)
+	}
+
 	return nil
 }
