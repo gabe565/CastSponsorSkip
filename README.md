@@ -41,7 +41,7 @@ Additionally, CastSponsorSkip will look for skippable YouTube ads, and automatic
 <details>
   <summary>Click to expand</summary>
 
-A Home Assistant addon is provided by @alexbelgium. See [alexbelgium/hassio-addons](https://github.com/alexbelgium/hassio-addons/tree/master/sponsorblockcast) for installation instructions.
+A Home Assistant addon is provided by @alexbelgium and @bruvv. See [alexbelgium/hassio-addons](https://github.com/alexbelgium/hassio-addons/tree/master/sponsorblockcast) for installation instructions.
 </details>
 
 
