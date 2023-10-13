@@ -227,8 +227,8 @@ github.com/stretchr/testify v1.8.4 h1:CcVxjf3Q8PM0mHUKJCdn+eZZtm5yQwehR5yeSVQQcU
 github.com/stretchr/testify v1.8.4/go.mod h1:sz/lmYIOXD/1dqDmKjjqLyZ2RngseejIcXlSw2iwfAo=
 github.com/subosito/gotenv v1.6.0 h1:9NlTDc1FTs4qu0DDq7AEtTPNw6SVm7uBMsUCUjABIf8=
 github.com/subosito/gotenv v1.6.0/go.mod h1:Dk4QP5c2W3ibzajGcXpNraDfq2IrhjMIvMSWPKKo0FU=
-github.com/vishen/go-chromecast v0.3.2-0.20231012024214-cbfdbcde1407 h1:P2OiJqyjnHrkizIELxNTDS5m5UgW4tYF3WAo5681xvk=
-github.com/vishen/go-chromecast v0.3.2-0.20231012024214-cbfdbcde1407/go.mod h1:9q404hQyRkAyR4xFtQjBA+MfAd6oSf1/l5SYZJ8yxjk=
+github.com/vishen/go-chromecast v0.3.2-0.20231012231916-ce26f51593c1 h1:7ziwnJC0Kzkxdmf0WZUWtOhuBEzzitmB9AI4HKhJgpY=
+github.com/vishen/go-chromecast v0.3.2-0.20231012231916-ce26f51593c1/go.mod h1:9q404hQyRkAyR4xFtQjBA+MfAd6oSf1/l5SYZJ8yxjk=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
