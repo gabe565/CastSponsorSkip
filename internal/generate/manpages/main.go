@@ -65,4 +65,8 @@ func main() {
 	if err := f.Close(); err != nil {
 		panic(err)
 	}
+
+	if err := os.Chtimes(f.Name(), date, date); err != nil {
+		panic(err)
+	}
 }

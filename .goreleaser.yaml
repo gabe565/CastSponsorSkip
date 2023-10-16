@@ -1,7 +1,7 @@
 project_name: castsponsorskip
 before:
   hooks:
-    - go run ./internal/generate/completions
+    - go run ./internal/generate/completions --date={{ .CommitDate }}
     - go run ./internal/generate/manpages --version={{ .Version }} --date={{ .CommitDate }}
 builds:
   - env:
@@ -13,7 +13,7 @@ builds:
       - -w
       - -X main.version=v{{.Version}}
       - -X main.commit={{.ShortCommit}}
-      - -X main.date={{.Date}}
+      - -X main.date={{.CommitDate}}
       - -X main.builtBy=goreleaser
     goarch:
       - amd64
@@ -22,6 +22,7 @@ builds:
     goarm:
       - "6"
       - "7"
+    mod_timestamp: "{{.CommitTimestamp}}"
 archives:
   - format: tar.gz
     # use zip for windows archives
