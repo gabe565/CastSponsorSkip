@@ -330,6 +330,8 @@ func (d *Device) queryVideoId() {
 		d.queryState = QueryStarted
 		d.meta.PrevArtist = d.meta.CurrArtist
 		d.meta.PrevTitle = d.meta.CurrTitle
+		d.unmuteSegment()
+		d.segments = nil
 		go func() {
 			if err := util.Retry(d.ctx, 3, time.Second, func(try uint) (err error) {
 				contentId, err := youtube.QueryVideoId(d.ctx, d.meta.CurrArtist, d.meta.CurrTitle)
