@@ -191,7 +191,6 @@ func (d *Device) tick() error {
 			d.queryState = QueryNone
 		} else {
 			d.queryVideoId()
-			break
 		}
 
 		if d.meta.CurrVideoId != d.meta.PrevVideoId {
