@@ -190,7 +190,7 @@ func (d *Device) tick() error {
 				d.meta.PrevVideoId = d.meta.CurrVideoId
 				d.meta.PrevArtist = d.meta.CurrArtist
 				d.meta.PrevTitle = d.meta.CurrTitle
-				d.logger.Info("Detected video stream.", "video_id", d.meta.CurrVideoId)
+				d.logger.Info("Detected video stream.", "video_id", castMedia.Media.ContentId)
 			}
 			break
 		} else if castMedia.Media.ContentId != "" {
