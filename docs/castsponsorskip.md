@@ -34,6 +34,7 @@ castsponsorskip [flags]
       --paused-interval duration     Interval to scan paused devices (default 1m0s)
       --playing-interval duration    Interval to scan playing devices (default 500ms)
       --skip-delay duration          Delay skipping the start of a segment
+      --skip-sponsors                Skip sponsored segments with SponsorBlock (default true)
   -v, --version                      version for castsponsorskip
       --youtube-api-key string       YouTube API key for fallback video identification (required on some Chromecast devices).
 ```

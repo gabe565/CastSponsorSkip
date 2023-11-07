@@ -11,6 +11,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+func (c *Config) RegisterSkipSponsors(cmd *cobra.Command) {
+	key := "skip-sponsors"
+	cmd.PersistentFlags().Bool(key, Default.SkipSponsors, "Skip sponsored segments with SponsorBlock")
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+		panic(err)
+	}
+}
+
 func (c *Config) RegisterCategories(cmd *cobra.Command) {
 	key := "categories"
 	cmd.PersistentFlags().StringSliceP(key, "c", Default.Categories, "Comma-separated list of SponsorBlock categories to skip")

@@ -27,8 +27,9 @@ func Reset() {
 
 		NetworkInterface: nil,
 
-		Categories:  []string{"sponsor"},
-		ActionTypes: []string{"skip", "mute"},
+		SkipSponsors: true,
+		Categories:   []string{"sponsor"},
+		ActionTypes:  []string{"skip", "mute"},
 
 		YouTubeAPIKey: "",
 		MuteAds:       true,
@@ -48,8 +49,9 @@ type Config struct {
 	NetworkInterfaceName string `mapstructure:"network-interface"`
 	NetworkInterface     *net.Interface
 
-	Categories  []string
-	ActionTypes []string `mapstructure:"action-types"`
+	SkipSponsors bool `mapstructure:"skip-sponsors"`
+	Categories   []string
+	ActionTypes  []string `mapstructure:"action-types"`
 
 	YouTubeAPIKey string `mapstructure:"youtube-api-key"`
 	MuteAds       bool   `mapstructure:"mute-ads"`
@@ -63,6 +65,7 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.RegisterPausedInterval(cmd)
 	c.RegisterPlayingInterval(cmd)
 	c.RegisterSkipDelay(cmd)
+	c.RegisterSkipSponsors(cmd)
 	c.RegisterCategories(cmd)
 	c.RegisterActionTypes(cmd)
 	c.RegisterYouTubeAPIKey(cmd)

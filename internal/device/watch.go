@@ -186,7 +186,15 @@ func (d *Device) tick() error {
 		}
 		d.meta.CurrTitle = castMedia.Media.Metadata.Title
 
-		if castMedia.Media.ContentId != "" {
+		if !config.Default.SkipSponsors {
+			if d.meta.CurrVideoId != d.meta.PrevVideoId || !d.meta.SameVideo() {
+				d.meta.PrevVideoId = d.meta.CurrVideoId
+				d.meta.PrevArtist = d.meta.CurrArtist
+				d.meta.PrevTitle = d.meta.CurrTitle
+				d.logger.Info("Detected video stream.", "video_id", d.meta.CurrVideoId)
+			}
+			break
+		} else if castMedia.Media.ContentId != "" {
 			d.meta.CurrVideoId = castMedia.Media.ContentId
 			d.queryState = QueryNone
 		} else {
