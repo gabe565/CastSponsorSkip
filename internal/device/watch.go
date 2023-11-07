@@ -322,13 +322,8 @@ func (d *Device) update() error {
 }
 
 func (d *Device) queryVideoId() {
-	switch d.queryState {
-	case QueryStarted:
+	if d.queryState == QueryStarted || d.meta.Empty() || d.meta.SameVideo() {
 		return
-	case QueryFailed, QuerySuccess:
-		if d.meta.Empty() || d.meta.SameVideo() {
-			return
-		}
 	}
 
 	if config.Default.YouTubeAPIKey == "" {
