@@ -300,7 +300,7 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 }
 
 func (d *Device) update() error {
-	d.logger.Debug("Update")
+	d.logger.Debug("Requesting update.")
 
 	err := d.app.Update()
 	if err != nil {
@@ -330,9 +330,9 @@ func (d *Device) queryVideoId() {
 	d.segments = nil
 
 	if config.Default.YouTubeAPIKey == "" {
-		d.logger.Warn("Video ID not found. Please set a YouTube API key.")
+		d.logger.Error("Video ID not set. Please configure a YouTube API key.")
 	} else {
-		d.logger.Info("Video ID not found. Searching for video on YouTube...")
+		d.logger.Info("Video ID not set. Searching YouTube for video ID...")
 		go func() {
 			err := util.Retry(d.ctx, 3, time.Second, func(try uint) (err error) {
 				contentId, err := youtube.QueryVideoId(d.ctx, d.meta.CurrArtist, d.meta.CurrTitle)
@@ -345,9 +345,9 @@ func (d *Device) queryVideoId() {
 				return nil
 			})
 			if err == nil {
-				d.logger.Debug("YouTube search found video ID", "video_id", d.meta.CurrVideoId)
+				d.logger.Debug("YouTube search returned video ID.", "video_id", d.meta.CurrVideoId)
 			} else {
-				d.logger.Debug("Halting YouTube search retries.")
+				d.logger.Error("Halting YouTube search retries.")
 			}
 		}()
 	}
