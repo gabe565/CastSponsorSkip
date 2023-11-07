@@ -324,14 +324,15 @@ func (d *Device) queryVideoId() {
 		return
 	}
 
+	d.meta.PrevArtist = d.meta.CurrArtist
+	d.meta.PrevTitle = d.meta.CurrTitle
+	d.unmuteSegment()
+	d.segments = nil
+
 	if config.Default.YouTubeAPIKey == "" {
 		d.logger.Warn("Video ID not found. Please set a YouTube API key.")
 	} else {
 		d.logger.Info("Video ID not found. Searching for video on YouTube...")
-		d.meta.PrevArtist = d.meta.CurrArtist
-		d.meta.PrevTitle = d.meta.CurrTitle
-		d.unmuteSegment()
-		d.segments = nil
 		go func() {
 			if err := util.Retry(d.ctx, 3, time.Second, func(try uint) (err error) {
 				contentId, err := youtube.QueryVideoId(d.ctx, d.meta.CurrArtist, d.meta.CurrTitle)
