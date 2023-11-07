@@ -46,7 +46,6 @@ type Device struct {
 	ticker       *time.Ticker
 
 	meta           VideoMeta
-	queryState     QueryState
 	mediaSessionId int
 	segments       []sponsorblock.Segment
 	mutedSegmentId int
@@ -196,7 +195,6 @@ func (d *Device) tick() error {
 			break
 		} else if castMedia.Media.ContentId != "" {
 			d.meta.CurrVideoId = castMedia.Media.ContentId
-			d.queryState = QueryNone
 		} else {
 			d.queryVideoId()
 		}
@@ -322,7 +320,7 @@ func (d *Device) update() error {
 }
 
 func (d *Device) queryVideoId() {
-	if d.queryState == QueryStarted || d.meta.Empty() || d.meta.SameVideo() {
+	if d.meta.Empty() || d.meta.SameVideo() {
 		return
 	}
 
@@ -330,7 +328,6 @@ func (d *Device) queryVideoId() {
 		d.logger.Warn("Video ID not found. Please set a YouTube API key.")
 	} else {
 		d.logger.Info("Video ID not found. Searching for video on YouTube...")
-		d.queryState = QueryStarted
 		d.meta.PrevArtist = d.meta.CurrArtist
 		d.meta.PrevTitle = d.meta.CurrTitle
 		d.unmuteSegment()
@@ -340,12 +337,10 @@ func (d *Device) queryVideoId() {
 				contentId, err := youtube.QueryVideoId(d.ctx, d.meta.CurrArtist, d.meta.CurrTitle)
 				if err != nil {
 					d.logger.Error("YouTube search failed.", "error", err.Error())
-					d.queryState = QueryFailed
 					return err
 				}
 
 				d.meta.CurrVideoId = contentId
-				d.queryState = QuerySuccess
 				return nil
 			}); err != nil {
 				d.logger.Debug("Halting YouTube search retries.")
