@@ -334,7 +334,7 @@ func (d *Device) queryVideoId() {
 	} else {
 		d.logger.Info("Video ID not found. Searching for video on YouTube...")
 		go func() {
-			if err := util.Retry(d.ctx, 3, time.Second, func(try uint) (err error) {
+			err := util.Retry(d.ctx, 3, time.Second, func(try uint) (err error) {
 				contentId, err := youtube.QueryVideoId(d.ctx, d.meta.CurrArtist, d.meta.CurrTitle)
 				if err != nil {
 					d.logger.Error("YouTube search failed.", "error", err.Error())
@@ -343,11 +343,12 @@ func (d *Device) queryVideoId() {
 
 				d.meta.CurrVideoId = contentId
 				return nil
-			}); err != nil {
+			})
+			if err == nil {
+				d.logger.Debug("YouTube search found video ID", "video_id", d.meta.CurrVideoId)
+			} else {
 				d.logger.Debug("Halting YouTube search retries.")
-				return
 			}
-			d.logger.Debug("YouTube search found video ID", "video_id", d.meta.CurrVideoId)
 		}()
 	}
 }
