@@ -251,10 +251,11 @@ func (d *Device) connect(opts ...application.ApplicationOption) error {
 		if err := d.app.Start(d.entry.GetAddr(), d.entry.GetPort()); err != nil {
 			d.logger.Debug("Failed to connect to device. Retrying...", "try", try, "error", err.Error())
 
-			var subErr error
-			if d.entry, subErr = DiscoverCastDNSEntryByUuid(d.ctx, d.entry.UUID); subErr != nil {
+			newEntry, subErr := DiscoverCastDNSEntryByUuid(d.ctx, d.entry.UUID)
+			if subErr != nil {
 				return subErr
 			}
+			d.entry = newEntry
 
 			return err
 		}
