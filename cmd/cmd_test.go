@@ -52,6 +52,7 @@ func TestFlags(t *testing.T) {
 		"--action-types=d,e,f",
 		"--youtube-api-key=AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe",
 		"--mute-ads=false",
+		"--devices=192.168.1.1,192.168.1.2",
 	})
 	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
 
@@ -68,6 +69,8 @@ func TestFlags(t *testing.T) {
 	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
 	assert.Equal(t, false, config.Default.MuteAds)
+	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, config.Default.DeviceAddrStrs)
+	assert.Len(t, config.Default.DeviceAddrs, 2)
 }
 
 func TestEnvs(t *testing.T) {
@@ -89,6 +92,7 @@ func TestEnvs(t *testing.T) {
 		_ = os.Unsetenv("CSS_CATEGORIES")
 		_ = os.Unsetenv("CSS_YOUTUBE_API_KEY")
 		_ = os.Unsetenv("CSS_MUTE_ADS")
+		_ = os.Unsetenv("CSS_DEVICES")
 	}()
 	_ = os.Setenv("CSS_LOG_LEVEL", "warn")
 	_ = os.Setenv("CSS_NETWORK_INTERFACE", networkInterface)
@@ -99,6 +103,7 @@ func TestEnvs(t *testing.T) {
 	_ = os.Setenv("CSS_ACTION_TYPES", "d,e,f")
 	_ = os.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 	_ = os.Setenv("CSS_MUTE_ADS", "false")
+	_ = os.Setenv("CSS_DEVICES", "192.168.1.1,192.168.1.2")
 
 	var cmd *cobra.Command
 	if !assert.NotPanics(t, func() {
@@ -121,6 +126,8 @@ func TestEnvs(t *testing.T) {
 	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
 	assert.Equal(t, false, config.Default.MuteAds)
+	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, config.Default.DeviceAddrStrs)
+	assert.Len(t, config.Default.DeviceAddrs, 2)
 }
 
 func TestSBCEnvs(t *testing.T) {
