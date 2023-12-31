@@ -3,11 +3,14 @@ package config
 import (
 	"fmt"
 	"net"
+	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	castdns "github.com/vishen/go-chromecast/dns"
 )
 
 var Default Config
@@ -41,10 +44,12 @@ type Config struct {
 
 	LogLevel string `mapstructure:"log-level"`
 
-	DiscoverInterval time.Duration `mapstructure:"discover-interval"`
-	PausedInterval   time.Duration `mapstructure:"paused-interval"`
-	PlayingInterval  time.Duration `mapstructure:"playing-interval"`
-	SkipDelay        time.Duration `mapstructure:"skip-delay"`
+	DeviceAddrStrs   []string            `mapstructure:"devices"`
+	DeviceAddrs      []castdns.CastEntry `mapstructure:"-"`
+	DiscoverInterval time.Duration       `mapstructure:"discover-interval"`
+	PausedInterval   time.Duration       `mapstructure:"paused-interval"`
+	PlayingInterval  time.Duration       `mapstructure:"playing-interval"`
+	SkipDelay        time.Duration       `mapstructure:"skip-delay"`
 
 	NetworkInterfaceName string `mapstructure:"network-interface"`
 	NetworkInterface     *net.Interface
@@ -59,6 +64,7 @@ type Config struct {
 
 func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.viper = viper.New()
+	c.RegisterDevices(cmd)
 	c.RegisterLogLevel(cmd)
 	c.RegisterNetworkInterface(cmd)
 	c.RegisterDiscoverInterval(cmd)
@@ -109,6 +115,39 @@ func (c *Config) Load() error {
 
 	for i, actionType := range c.ActionTypes {
 		c.ActionTypes[i] = strings.TrimSpace(actionType)
+	}
+
+	if len(c.DeviceAddrStrs) != 0 {
+		c.DeviceAddrs = make([]castdns.CastEntry, 0, len(c.DeviceAddrStrs))
+		for _, device := range c.DeviceAddrStrs {
+			u := url.URL{Host: device}
+
+			castEntry := castdns.CastEntry{
+				DeviceName: device,
+				UUID:       device,
+			}
+
+			if port := u.Port(); port == "" {
+				castEntry.Port = 8009
+			} else {
+				port, err := strconv.ParseUint(port, 10, 16)
+				if err != nil {
+					return err
+				}
+
+				castEntry.Port = int(port)
+			}
+
+			if ip := net.ParseIP(u.Hostname()); ip == nil {
+				return fmt.Errorf("failed to parse IP %q", device)
+			} else if ip.To4() != nil {
+				castEntry.AddrV4 = ip
+			} else {
+				castEntry.AddrV6 = ip
+			}
+
+			c.DeviceAddrs = append(c.DeviceAddrs, castEntry)
+		}
 	}
 
 	return nil
