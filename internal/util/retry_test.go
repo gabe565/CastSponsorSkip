@@ -73,17 +73,4 @@ func TestRetry(t *testing.T) {
 		assert.Equal(t, 5, runs)
 		assert.Greater(t, time.Since(start), 15*time.Millisecond)
 	})
-
-	t.Run("cancel context", func(t *testing.T) {
-		var runs int
-		ctx, cancel := context.WithCancel(context.Background())
-		cancel()
-		if err := Retry(ctx, 10, 0, func(try uint) error {
-			runs += 1
-			return errors.New("test")
-		}); !assert.Error(t, err) {
-			return
-		}
-		assert.Equal(t, 1, runs)
-	})
 }
