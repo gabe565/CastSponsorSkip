@@ -14,11 +14,10 @@ import (
 )
 
 var (
-	ErrNotConnected   = errors.New("not connected to YouTube")
-	ErrNoVideos       = errors.New("search returned no videos")
-	ErrNoId           = errors.New("search result missing video ID")
-	ErrNoSnippet      = errors.New("search result missing metadata")
-	ErrInvalidSnippet = errors.New("search result does not match video metadata")
+	ErrNotConnected = errors.New("not connected to YouTube")
+	ErrNoVideos     = errors.New("search returned no videos")
+	ErrNoMatches    = errors.New("no search results matched video metadata")
+	ErrNoId         = errors.New("search result missing video ID")
 )
 
 var service *youtube.Service
@@ -43,28 +42,29 @@ func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
 	slog.Debug("Searching for video ID", "query", query)
 	response, err := service.Search.List([]string{"id", "snippet"}).
 		Q(query).
-		MaxResults(1).
 		Context(ctx).
 		Do()
 	if err != nil {
 		return "", err
 	}
 
-	if len(response.Items) == 0 || response.Items[0] == nil {
+	if len(response.Items) == 0 {
 		return "", util.HaltRetries(ErrNoVideos)
 	}
 
-	item := response.Items[0]
-	if item.Id == nil || item.Id.VideoId == "" {
-		return "", util.HaltRetries(ErrNoId)
-	}
-	if item.Snippet == nil {
-		return "", util.HaltRetries(ErrNoSnippet)
+	for _, item := range response.Items {
+		if item == nil || item.Snippet == nil {
+			continue
+		}
+		if !strings.HasPrefix(item.Snippet.ChannelTitle, artist) || !strings.HasPrefix(item.Snippet.Title, title) {
+			continue
+		}
+		if item.Id == nil || item.Id.VideoId == "" {
+			return "", util.HaltRetries(ErrNoId)
+		}
+
+		return item.Id.VideoId, nil
 	}
 
-	if !strings.HasPrefix(item.Snippet.ChannelTitle, artist) || !strings.HasPrefix(item.Snippet.Title, title) {
-		return "", util.HaltRetries(ErrInvalidSnippet)
-	}
-
-	return item.Id.VideoId, nil
+	return "", util.HaltRetries(ErrNoMatches)
 }
