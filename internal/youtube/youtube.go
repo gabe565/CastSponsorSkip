@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/util"
@@ -13,9 +14,11 @@ import (
 )
 
 var (
-	ErrNotConnected = errors.New("not connected to YouTube")
-	ErrNoVideos     = errors.New("search returned no videos")
-	ErrNoId         = errors.New("search result does not have a valid video ID")
+	ErrNotConnected   = errors.New("not connected to YouTube")
+	ErrNoVideos       = errors.New("search returned no videos")
+	ErrNoId           = errors.New("search result missing video ID")
+	ErrNoSnippet      = errors.New("search result missing metadata")
+	ErrInvalidSnippet = errors.New("search result does not match video metadata")
 )
 
 var service *youtube.Service
@@ -38,7 +41,7 @@ func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
 
 	query := fmt.Sprintf(`%q+intitle:%q`, artist, title)
 	slog.Debug("Searching for video ID", "query", query)
-	response, err := service.Search.List([]string{"id"}).
+	response, err := service.Search.List([]string{"id", "snippet"}).
 		Q(query).
 		MaxResults(1).
 		Context(ctx).
@@ -54,6 +57,13 @@ func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
 	item := response.Items[0]
 	if item.Id == nil || item.Id.VideoId == "" {
 		return "", util.HaltRetries(ErrNoId)
+	}
+	if item.Snippet == nil {
+		return "", util.HaltRetries(ErrNoSnippet)
+	}
+
+	if !strings.HasPrefix(item.Snippet.ChannelTitle, artist) || !strings.HasPrefix(item.Snippet.Title, title) {
+		return "", util.HaltRetries(ErrInvalidSnippet)
 	}
 
 	return item.Id.VideoId, nil

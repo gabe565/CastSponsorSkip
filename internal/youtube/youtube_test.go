@@ -51,7 +51,13 @@ func TestQueryVideoId(t *testing.T) {
 
 				response := &youtube.SearchListResponse{}
 				if tt.found {
-					response.Items = []*youtube.SearchResult{{Id: &youtube.ResourceId{VideoId: tt.want}}}
+					response.Items = []*youtube.SearchResult{{
+						Id: &youtube.ResourceId{VideoId: tt.want},
+						Snippet: &youtube.SearchResultSnippet{
+							ChannelTitle: tt.args.artist,
+							Title:        tt.args.title,
+						},
+					}}
 				}
 
 				b, err := json.Marshal(response)
