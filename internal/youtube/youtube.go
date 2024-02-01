@@ -56,7 +56,7 @@ func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
 		if item == nil || item.Snippet == nil {
 			continue
 		}
-		if !strings.HasPrefix(item.Snippet.ChannelTitle, artist) || !strings.HasPrefix(item.Snippet.Title, title) {
+		if !strings.Contains(strings.ToLower(item.Snippet.ChannelTitle), strings.ToLower(artist)) {
 			continue
 		}
 		if item.Id == nil || item.Id.VideoId == "" {
