@@ -348,7 +348,7 @@ func (d *Device) queryVideoId() {
 			if err == nil {
 				d.logger.Debug("YouTube search returned video ID.", "video_id", d.meta.CurrVideoId)
 			} else {
-				d.logger.Error("Halting YouTube search retries.")
+				d.logger.Debug("Halting YouTube search retries.")
 			}
 		}()
 	}
