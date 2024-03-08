@@ -201,7 +201,7 @@ When using `docker-compose.yaml`, you can simply edit the `environment` directiv
 - Compiles to a single binary. No dependencies are required other than CastSponsorSkip.
 - Scans Cast device status much less frequently when a YouTube video is not playing, resulting in decreased CPU usage and less stress on the Cast device.
 - Written Go, which is the same language as `go-chromecast`. This means `go-chromecast` functions can be called directly instead of relying on shell scripts, child commands, or string parsing.
-- `go-chromecast` only needs to be loaded once within a single Go program, resulting on lower memory usage.
+- `go-chromecast` only needs to be loaded once within a single Go program, resulting in lower memory usage.
 - Dependency updates are automated with Renovate.
 
 I own 12 Google Cast devices, and have compared CPU and memory usage of the two programs. Note that CPU usage is measured in "milliCPU", meaning that 1m is equal to 1/1000 of a CPU. Here are the averages:
