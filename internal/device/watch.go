@@ -23,6 +23,7 @@ import (
 const (
 	StatePlaying   = "PLAYING"
 	StateBuffering = "BUFFERING"
+	StateIdle      = "IDLE"
 	StateAd        = 1081
 
 	NoMutedSegment = -1
@@ -37,6 +38,7 @@ type Device struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
+	mu     sync.Mutex
 	entry  castdns.CastEntry
 	opts   []application.ApplicationOption
 	app    *application.Application
@@ -45,6 +47,7 @@ type Device struct {
 	tickInterval time.Duration
 	ticker       *time.Ticker
 
+	state          string
 	meta           VideoMeta
 	segments       []sponsorblock.Segment
 	mutedSegmentId int
@@ -224,7 +227,11 @@ func (d *Device) tick() error {
 		}
 	}
 
-	d.changeTickInterval(config.Default.PlayingInterval)
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	if d.state != StateIdle {
+		d.changeTickInterval(config.Default.PlayingInterval)
+	}
 	return nil
 }
 
@@ -273,14 +280,22 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 	switch msgType {
 	case "RECEIVER_STATUS":
 		appId, _ := jsonparser.GetString(payload, "status", "applications", "[0]", "displayName")
-		if appId == "YouTube" {
+		d.mu.Lock()
+		defer d.mu.Unlock()
+		if appId == "YouTube" && d.state != StateIdle {
 			d.changeTickInterval(config.Default.PlayingInterval)
 		}
 	case "MEDIA_STATUS":
 		playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
+		d.mu.Lock()
+		defer d.mu.Unlock()
+		d.state = playerState
 		switch playerState {
 		case StatePlaying, StateBuffering:
 			d.changeTickInterval(config.Default.PlayingInterval)
+		case StateIdle:
+			d.changeTickInterval(config.Default.PausedInterval)
+			d.unmuteSegment()
 		}
 	case "CLOSE":
 		d.unmuteSegment()
