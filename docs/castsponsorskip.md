@@ -23,20 +23,21 @@ castsponsorskip [flags]
 ### Options
 
 ```
-      --action-types strings         SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped. (default [skip,mute])
-  -c, --categories strings           Comma-separated list of SponsorBlock categories to skip (default [sponsor])
-      --completion string            Output command-line completion code for the specified shell. Can be 'bash', 'zsh', 'fish', or 'powershell'.
-      --devices strings              Comma-separated list of device addresses. This will disable discovery and is not recommended unless discovery fails
-      --discover-interval duration   Interval to restart the DNS discovery client (default 5m0s)
-  -h, --help                         help for castsponsorskip
-      --log-level string             Log level (debug, info, warn, error) (default "info")
-      --mute-ads                     Mutes the device while an ad is playing (default true)
-  -i, --network-interface string     Network interface to use for multicast dns discovery. (default all interfaces)
-      --paused-interval duration     Interval to scan paused devices (default 1m0s)
-      --playing-interval duration    Interval to scan playing devices (default 500ms)
-      --skip-delay duration          Delay skipping the start of a segment
-      --skip-sponsors                Skip sponsored segments with SponsorBlock (default true)
-  -v, --version                      version for castsponsorskip
-      --youtube-api-key string       YouTube API key for fallback video identification (required on some Chromecast devices).
+      --action-types strings               SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped. (default [skip,mute])
+  -c, --categories strings                 Comma-separated list of SponsorBlock categories to skip (default [sponsor])
+      --completion string                  Output command-line completion code for the specified shell. Can be 'bash', 'zsh', 'fish', or 'powershell'.
+      --devices strings                    Comma-separated list of device addresses. This will disable discovery and is not recommended unless discovery fails
+      --discover-interval duration         Interval to restart the DNS discovery client (default 5m0s)
+  -h, --help                               help for castsponsorskip
+      --ignore-segment-duration duration   Ignores the previous sponsored segment for a set amount of time. Useful if you want to to go back and watch a segment. (default 1m0s)
+      --log-level string                   Log level (debug, info, warn, error) (default "info")
+      --mute-ads                           Mutes the device while an ad is playing (default true)
+  -i, --network-interface string           Network interface to use for multicast dns discovery. (default all interfaces)
+      --paused-interval duration           Interval to scan paused devices (default 1m0s)
+      --playing-interval duration          Interval to scan playing devices (default 500ms)
+      --skip-delay duration                Delay skipping the start of a segment
+      --skip-sponsors                      Skip sponsored segments with SponsorBlock (default true)
+  -v, --version                            version for castsponsorskip
+      --youtube-api-key string             YouTube API key for fallback video identification (required on some Chromecast devices).
 ```
 

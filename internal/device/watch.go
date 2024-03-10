@@ -26,7 +26,8 @@ const (
 	StateIdle      = "IDLE"
 	StateAd        = 1081
 
-	NoMutedSegment = -1
+	NoMutedSegment   = -1
+	NoSkippedSegment = -1
 )
 
 var (
@@ -47,10 +48,12 @@ type Device struct {
 	tickInterval time.Duration
 	ticker       *time.Ticker
 
-	state          string
-	meta           VideoMeta
-	segments       []sponsorblock.Segment
-	mutedSegmentId int
+	state             string
+	meta              VideoMeta
+	segments          []sponsorblock.Segment
+	prevSegmentIdx    int
+	prevSegmentIgnore time.Time
+	mutedSegmentId    int
 }
 
 func NewDevice(entry castdns.CastEntry, opts ...Option) *Device {
@@ -85,6 +88,7 @@ func NewDevice(entry castdns.CastEntry, opts ...Option) *Device {
 		entry:          entry,
 		logger:         logger,
 		mutedSegmentId: NoMutedSegment,
+		prevSegmentIdx: NoSkippedSegment,
 	}
 
 	for _, opt := range opts {
@@ -201,6 +205,7 @@ func (d *Device) tick() error {
 
 		if d.meta.CurrVideoId != d.meta.PrevVideoId {
 			d.segments = nil
+			d.prevSegmentIdx = NoSkippedSegment
 			if d.meta.CurrVideoId != "" {
 				d.logger.Info("Detected video stream.", "video_id", d.meta.CurrVideoId)
 				d.meta.PrevVideoId = d.meta.CurrVideoId
@@ -304,6 +309,7 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 	case "CLOSE":
 		d.unmuteSegment()
 		d.segments = nil
+		d.prevSegmentIdx = NoSkippedSegment
 		d.meta.Clear()
 	}
 }
@@ -337,6 +343,7 @@ func (d *Device) queryVideoId() {
 	d.meta.PrevTitle = d.meta.CurrTitle
 	d.unmuteSegment()
 	d.segments = nil
+	d.prevSegmentIdx = NoSkippedSegment
 
 	if config.Default.YouTubeAPIKey == "" {
 		d.logger.Error("Video ID not set. Please configure a YouTube API key.")
@@ -393,12 +400,22 @@ func (d *Device) handleSegment(castMedia *cast.Media, castVol *cast.Volume, segm
 	to := time.Duration(segment.Segment[1]) * time.Second
 	switch segment.ActionType {
 	case sponsorblock.ActionTypeSkip:
+		if i == d.prevSegmentIdx {
+			if now := time.Now(); now.Before(d.prevSegmentIgnore) {
+				d.logger.Debug("Ignoring segment.", "category", segment.Category, "from", from, "to", to, "until", d.prevSegmentIgnore.Truncate(time.Second).String())
+				d.prevSegmentIgnore = now.Add(config.Default.IgnoreSegmentDuration)
+				return
+			}
+		}
+
 		d.logger.Info("Skipping to timestamp.", "category", segment.Category, "from", from, "to", to)
 		// Cast API seems to ignore decimals, so add 100ms to seek time in case sponsorship ends at 0.9 seconds.
 		if err := d.app.SeekToTime(segment.Segment[1] + 0.1); err != nil {
 			d.logger.Warn("Failed to seek to timestamp.", "to", segment.Segment[1], "error", err.Error())
 		}
 		castMedia.CurrentTime = segment.Segment[1]
+		d.prevSegmentIdx = i
+		d.prevSegmentIgnore = time.Now().Add(config.Default.IgnoreSegmentDuration)
 	case sponsorblock.ActionTypeMute:
 		if !castVol.Muted || i != d.mutedSegmentId {
 			d.logger.Info("Mute segment.", "category", segment.Category, "from", from, "to", to)

@@ -23,10 +23,11 @@ func Reset() {
 	Default = Config{
 		LogLevel: "info",
 
-		DiscoverInterval: 5 * time.Minute,
-		PausedInterval:   time.Minute,
-		PlayingInterval:  500 * time.Millisecond,
-		SkipDelay:        0,
+		DiscoverInterval:      5 * time.Minute,
+		PausedInterval:        time.Minute,
+		PlayingInterval:       500 * time.Millisecond,
+		SkipDelay:             0,
+		IgnoreSegmentDuration: time.Minute,
 
 		NetworkInterface: nil,
 
@@ -44,12 +45,13 @@ type Config struct {
 
 	LogLevel string `mapstructure:"log-level"`
 
-	DeviceAddrStrs   []string            `mapstructure:"devices"`
-	DeviceAddrs      []castdns.CastEntry `mapstructure:"-"`
-	DiscoverInterval time.Duration       `mapstructure:"discover-interval"`
-	PausedInterval   time.Duration       `mapstructure:"paused-interval"`
-	PlayingInterval  time.Duration       `mapstructure:"playing-interval"`
-	SkipDelay        time.Duration       `mapstructure:"skip-delay"`
+	DeviceAddrStrs        []string            `mapstructure:"devices"`
+	DeviceAddrs           []castdns.CastEntry `mapstructure:"-"`
+	DiscoverInterval      time.Duration       `mapstructure:"discover-interval"`
+	PausedInterval        time.Duration       `mapstructure:"paused-interval"`
+	PlayingInterval       time.Duration       `mapstructure:"playing-interval"`
+	SkipDelay             time.Duration       `mapstructure:"skip-delay"`
+	IgnoreSegmentDuration time.Duration       `mapstructure:"ignore-segment-duration"`
 
 	NetworkInterfaceName string `mapstructure:"network-interface"`
 	NetworkInterface     *net.Interface
@@ -71,6 +73,7 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.RegisterPausedInterval(cmd)
 	c.RegisterPlayingInterval(cmd)
 	c.RegisterSkipDelay(cmd)
+	c.RegisterSegmentIgnore(cmd)
 	c.RegisterSkipSponsors(cmd)
 	c.RegisterCategories(cmd)
 	c.RegisterActionTypes(cmd)

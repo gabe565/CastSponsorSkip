@@ -79,3 +79,16 @@ func (c *Config) RegisterSkipDelay(cmd *cobra.Command) {
 		panic(err)
 	}
 }
+
+func (c *Config) RegisterSegmentIgnore(cmd *cobra.Command) {
+	key := "ignore-segment-duration"
+	cmd.PersistentFlags().Duration(key, Default.IgnoreSegmentDuration, "Ignores the previous sponsored segment for a set amount of time. Useful if you want to to go back and watch a segment.")
+	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
+		panic(err)
+	}
+	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		return []string{"30s", "1m", "2m", "5m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}); err != nil {
+		panic(err)
+	}
+}
