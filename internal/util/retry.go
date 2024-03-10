@@ -23,7 +23,7 @@ func HaltRetries(err error) error {
 
 func Retry(ctx context.Context, attempts uint, sleep time.Duration, fn func(try uint) error) error {
 	var err error
-	for i := uint(0); i < attempts; i += 1 {
+	for i := range attempts {
 		if err = fn(i); err == nil {
 			return nil
 		} else {
