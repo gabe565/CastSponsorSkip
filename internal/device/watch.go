@@ -286,9 +286,13 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 			d.changeTickInterval(config.Default.PlayingInterval)
 		}
 	case "MEDIA_STATUS":
-		playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
-		d.mu.Lock()
-		defer d.mu.Unlock()
+		var playerState string
+		customPlayerState, _ := jsonparser.GetInt(payload, "status", "[0]", "customData", "playerState")
+		if customPlayerState == 5 {
+			playerState = StateIdle
+		} else {
+			playerState, _ = jsonparser.GetString(payload, "status", "[0]", "playerState")
+		}
 		d.state = playerState
 		switch playerState {
 		case StatePlaying, StateBuffering:
