@@ -46,7 +46,6 @@ type Device struct {
 	ticker       *time.Ticker
 
 	meta           VideoMeta
-	mediaSessionId int
 	segments       []sponsorblock.Segment
 	mutedSegmentId int
 }
@@ -163,12 +162,10 @@ func (d *Device) tick() error {
 	castApp, castMedia, castVol := d.app.Status()
 
 	if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil {
-		d.mediaSessionId = 0
 		d.changeTickInterval(config.Default.PausedInterval)
 		return nil
 	}
 
-	d.mediaSessionId = castMedia.MediaSessionId
 	if castMedia.PlayerState != StatePlaying && castMedia.PlayerState != StateBuffering {
 		d.changeTickInterval(config.Default.PausedInterval)
 		return nil
@@ -280,23 +277,15 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 			d.changeTickInterval(config.Default.PlayingInterval)
 		}
 	case "MEDIA_STATUS":
-		currMediaSessionId, err := jsonparser.GetInt(payload, "status", "[0]", "mediaSessionId")
-		if err != nil {
-			return
-		}
-
 		playerState, _ := jsonparser.GetString(payload, "status", "[0]", "playerState")
 		switch playerState {
 		case StatePlaying, StateBuffering:
-			if int(currMediaSessionId) == d.mediaSessionId {
-				d.changeTickInterval(config.Default.PlayingInterval)
-			}
+			d.changeTickInterval(config.Default.PlayingInterval)
 		}
 	case "CLOSE":
 		d.unmuteSegment()
 		d.segments = nil
 		d.meta.Clear()
-		d.mediaSessionId = 0
 	}
 }
 
