@@ -1,27 +1,28 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
 )
 
-var completionFlag string
-
 func CompletionFlag(cmd *cobra.Command) {
-	cmd.PersistentFlags().StringVar(&completionFlag, "completion", "", "Output command-line completion code for the specified shell. Can be 'bash', 'zsh', 'fish', or 'powershell'.")
+	cmd.PersistentFlags().String("completion", "", "Output command-line completion code for the specified shell. Can be 'bash', 'zsh', 'fish', or 'powershell'.")
 	err := cmd.RegisterFlagCompletionFunc("completion", completionCompletion)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func completionCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func completionCompletion(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	return []string{"bash", "zsh", "fish", "powershell"}, cobra.ShellCompDirectiveNoFileComp
 }
 
-func completion(cmd *cobra.Command) error {
-	switch completionFlag {
+var ErrInvalidShell = errors.New("invalid shell")
+
+func completion(cmd *cobra.Command, shell string) error {
+	switch shell {
 	case "bash":
 		if err := cmd.Root().GenBashCompletion(cmd.OutOrStdout()); err != nil {
 			return err
@@ -39,7 +40,7 @@ func completion(cmd *cobra.Command) error {
 			return err
 		}
 	default:
-		return fmt.Errorf("%v: invalid shell", completionFlag)
+		return fmt.Errorf("%w: %s", ErrInvalidShell, shell)
 	}
 	return nil
 }

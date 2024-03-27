@@ -28,7 +28,7 @@ func NewCommand(version, commit string) *cobra.Command {
 		RunE:    run,
 		Version: buildVersion(version, commit),
 
-		ValidArgsFunction: func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		ValidArgsFunction: func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},
 		DisableAutoGenTag: true,
@@ -42,7 +42,7 @@ func NewCommand(version, commit string) *cobra.Command {
 	return cmd
 }
 
-func preRun(cmd *cobra.Command, args []string) error {
+func preRun(cmd *cobra.Command, _ []string) error {
 	if err := config.Default.Load(); err != nil {
 		return err
 	}
@@ -69,9 +69,11 @@ func preRun(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func run(cmd *cobra.Command, args []string) (err error) {
-	if completionFlag != "" {
-		return completion(cmd)
+func run(cmd *cobra.Command, _ []string) error {
+	if shell, err := cmd.Flags().GetString("completion"); err != nil {
+		panic(err)
+	} else if shell != "" {
+		return completion(cmd, shell)
 	}
 
 	slog.Info("CastSponsorSkip " + cmd.Version)

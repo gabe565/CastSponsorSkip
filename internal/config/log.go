@@ -10,7 +10,7 @@ func (c *Config) RegisterLogLevel(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"debug", "info", "warn", "error"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)

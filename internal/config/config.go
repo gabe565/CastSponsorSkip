@@ -1,7 +1,9 @@
 package config
 
 import (
+	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"net/url"
 	"strconv"
@@ -13,14 +15,11 @@ import (
 	castdns "github.com/vishen/go-chromecast/dns"
 )
 
-var Default Config
+//nolint:gochecknoglobals
+var Default = NewDefault()
 
-func init() {
-	Reset()
-}
-
-func Reset() {
-	Default = Config{
+func NewDefault() *Config {
+	return &Config{
 		LogLevel: "info",
 
 		DiscoverInterval:      5 * time.Minute,
@@ -81,6 +80,8 @@ func (c *Config) RegisterFlags(cmd *cobra.Command) {
 	c.RegisterMuteAds(cmd)
 }
 
+var ErrInvalidIP = errors.New("failed to parse IP")
+
 func (c *Config) Load() error {
 	c.viper.SetConfigName("castsponsorskip")
 	c.viper.SetConfigType("yaml")
@@ -93,8 +94,10 @@ func (c *Config) Load() error {
 	c.viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 
 	if err := c.viper.ReadInConfig(); err != nil {
+		//nolint:errorlint
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 			// Config file not found; ignore error
+			slog.Debug("could not find config file")
 		} else {
 			// Config file was found but another error was produced
 			return fmt.Errorf("fatal error reading config file: %w", err)
@@ -142,7 +145,7 @@ func (c *Config) Load() error {
 			}
 
 			if ip := net.ParseIP(u.Hostname()); ip == nil {
-				return fmt.Errorf("failed to parse IP %q", device)
+				return fmt.Errorf("%w: %q", ErrInvalidIP, device)
 			} else if ip.To4() != nil {
 				castEntry.AddrV4 = ip
 			} else {

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"math/rand"
 	"net"
-	"os"
 	"strconv"
 	"testing"
 	"time"
@@ -12,24 +11,25 @@ import (
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func randDuration() time.Duration {
 	highest := int((10 * time.Minute).Seconds())
-	randSecs := rand.Intn(highest)
+	randSecs := rand.Intn(highest) //nolint:gosec
 	return time.Duration(randSecs) * time.Second
 }
 
 func getNetworkInterfaceName(t *testing.T) string {
 	interfaces, err := net.Interfaces()
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	return interfaces[0].Name
 }
 
 func TestFlags(t *testing.T) {
-	defer func() {
-		config.Reset()
-	}()
+	t.Cleanup(func() {
+		config.Default = config.NewDefault()
+	})
 
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
@@ -54,11 +54,9 @@ func TestFlags(t *testing.T) {
 		"--mute-ads=false",
 		"--devices=192.168.1.1,192.168.1.2",
 	})
-	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
+	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
-	if err := cmd.Execute(); !assert.NoError(t, err) {
-		return
-	}
+	require.NoError(t, cmd.Execute())
 
 	assert.Equal(t, "debug", config.Default.LogLevel)
 	assert.Equal(t, networkInterface, config.Default.NetworkInterfaceName)
@@ -68,42 +66,31 @@ func TestFlags(t *testing.T) {
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
-	assert.Equal(t, false, config.Default.MuteAds)
+	assert.False(t, config.Default.MuteAds)
 	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, config.Default.DeviceAddrStrs)
 	assert.Len(t, config.Default.DeviceAddrs, 2)
 }
 
 func TestEnvs(t *testing.T) {
-	defer func() {
-		config.Reset()
-	}()
+	t.Cleanup(func() {
+		config.Default = config.NewDefault()
+	})
 
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
 	playingInterval := randDuration()
 	networkInterface := getNetworkInterfaceName(t)
 
-	defer func() {
-		_ = os.Unsetenv("CSS_LOG_LEVEL")
-		_ = os.Unsetenv("CSS_NETWORK_INTERFACE")
-		_ = os.Unsetenv("CSS_DISCOVER_INTERVAL")
-		_ = os.Unsetenv("CSS_PAUSED_INTERVAL")
-		_ = os.Unsetenv("CSS_PLAYING_INTERVAL")
-		_ = os.Unsetenv("CSS_CATEGORIES")
-		_ = os.Unsetenv("CSS_YOUTUBE_API_KEY")
-		_ = os.Unsetenv("CSS_MUTE_ADS")
-		_ = os.Unsetenv("CSS_DEVICES")
-	}()
-	_ = os.Setenv("CSS_LOG_LEVEL", "warn")
-	_ = os.Setenv("CSS_NETWORK_INTERFACE", networkInterface)
-	_ = os.Setenv("CSS_DISCOVER_INTERVAL", discoverInterval.String())
-	_ = os.Setenv("CSS_PAUSED_INTERVAL", pausedInterval.String())
-	_ = os.Setenv("CSS_PLAYING_INTERVAL", playingInterval.String())
-	_ = os.Setenv("CSS_CATEGORIES", "a,b,c")
-	_ = os.Setenv("CSS_ACTION_TYPES", "d,e,f")
-	_ = os.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
-	_ = os.Setenv("CSS_MUTE_ADS", "false")
-	_ = os.Setenv("CSS_DEVICES", "192.168.1.1,192.168.1.2")
+	t.Setenv("CSS_LOG_LEVEL", "warn")
+	t.Setenv("CSS_NETWORK_INTERFACE", networkInterface)
+	t.Setenv("CSS_DISCOVER_INTERVAL", discoverInterval.String())
+	t.Setenv("CSS_PAUSED_INTERVAL", pausedInterval.String())
+	t.Setenv("CSS_PLAYING_INTERVAL", playingInterval.String())
+	t.Setenv("CSS_CATEGORIES", "a,b,c")
+	t.Setenv("CSS_ACTION_TYPES", "d,e,f")
+	t.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
+	t.Setenv("CSS_MUTE_ADS", "false")
+	t.Setenv("CSS_DEVICES", "192.168.1.1,192.168.1.2")
 
 	var cmd *cobra.Command
 	if !assert.NotPanics(t, func() {
@@ -111,11 +98,9 @@ func TestEnvs(t *testing.T) {
 	}) {
 		return
 	}
-	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
+	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
-	if err := cmd.Execute(); !assert.NoError(t, err) {
-		return
-	}
+	require.NoError(t, cmd.Execute())
 
 	assert.Equal(t, "warn", config.Default.LogLevel)
 	assert.Equal(t, networkInterface, config.Default.NetworkInterfaceName)
@@ -125,29 +110,23 @@ func TestEnvs(t *testing.T) {
 	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
 	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
-	assert.Equal(t, false, config.Default.MuteAds)
+	assert.False(t, config.Default.MuteAds)
 	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, config.Default.DeviceAddrStrs)
 	assert.Len(t, config.Default.DeviceAddrs, 2)
 }
 
 func TestSBCEnvs(t *testing.T) {
-	defer func() {
-		config.Reset()
-	}()
+	t.Cleanup(func() {
+		config.Default = config.NewDefault()
+	})
 
 	discoverInterval := randDuration()
 	playingInterval := randDuration()
 
-	defer func() {
-		_ = os.Unsetenv("SBCSCANINTERVAL")
-		_ = os.Unsetenv("SBCPOLLINTERVAL")
-		_ = os.Unsetenv("SBCCATEGORIES")
-		_ = os.Unsetenv("SBCYOUTUBEAPIKEY")
-	}()
-	_ = os.Setenv("SBCSCANINTERVAL", strconv.Itoa(int(discoverInterval.Seconds())))
-	_ = os.Setenv("SBCPOLLINTERVAL", strconv.Itoa(int(playingInterval.Seconds())))
-	_ = os.Setenv("SBCCATEGORIES", "a b c")
-	_ = os.Setenv("SBCYOUTUBEAPIKEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
+	t.Setenv("SBCSCANINTERVAL", strconv.Itoa(int(discoverInterval.Seconds())))
+	t.Setenv("SBCPOLLINTERVAL", strconv.Itoa(int(playingInterval.Seconds())))
+	t.Setenv("SBCCATEGORIES", "a b c")
+	t.Setenv("SBCYOUTUBEAPIKEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 
 	var cmd *cobra.Command
 	if !assert.NotPanics(t, func() {
@@ -155,11 +134,9 @@ func TestSBCEnvs(t *testing.T) {
 	}) {
 		return
 	}
-	cmd.RunE = func(cmd *cobra.Command, args []string) error { return nil }
+	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
-	if err := cmd.Execute(); !assert.NoError(t, err) {
-		return
-	}
+	require.NoError(t, cmd.Execute())
 
 	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
 	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
@@ -169,14 +146,14 @@ func TestSBCEnvs(t *testing.T) {
 
 func TestCompletionFlag(t *testing.T) {
 	tests := []struct {
-		shell        string
-		errAssertion assert.ErrorAssertionFunc
+		shell   string
+		wantErr require.ErrorAssertionFunc
 	}{
-		{"bash", assert.NoError},
-		{"zsh", assert.NoError},
-		{"fish", assert.NoError},
-		{"powershell", assert.NoError},
-		{"invalid", assert.Error},
+		{"bash", require.NoError},
+		{"zsh", require.NoError},
+		{"fish", require.NoError},
+		{"powershell", require.NoError},
+		{"invalid", require.Error},
 	}
 	for _, tt := range tests {
 		t.Run(tt.shell, func(t *testing.T) {
@@ -185,11 +162,7 @@ func TestCompletionFlag(t *testing.T) {
 
 			var buf bytes.Buffer
 			cmd.SetOut(&buf)
-
-			if err := cmd.Execute(); !tt.errAssertion(t, err) {
-				return
-			}
-
+			tt.wantErr(t, cmd.Execute())
 			assert.NotZero(t, buf.Bytes())
 		})
 	}

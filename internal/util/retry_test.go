@@ -7,69 +7,66 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+var errTest = errors.New("test")
 
 func TestRetry(t *testing.T) {
 	t.Run("halt", func(t *testing.T) {
-		targetErr := errors.New("test")
 		var runs int
-		if err := Retry(context.Background(), 10, 0, func(try uint) error {
-			runs += 1
-			return HaltRetries(targetErr)
-		}); !assert.ErrorIs(t, targetErr, err) {
-			return
-		}
+		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+			runs++
+			return HaltRetries(errTest)
+		})
+		require.ErrorIs(t, err, errTest)
 		assert.Equal(t, 1, runs)
 	})
 
 	t.Run("max", func(t *testing.T) {
 		var runs int
-		if err := Retry(context.Background(), 10, 0, func(try uint) error {
-			runs += 1
-			return errors.New("test")
-		}); !assert.Error(t, err) {
-			return
-		}
+		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+			runs++
+			return errTest
+		})
+		require.Error(t, err)
 		assert.Equal(t, 10, runs)
 	})
 
 	t.Run("pass on first run", func(t *testing.T) {
 		var runs int
-		if err := Retry(context.Background(), 10, 0, func(try uint) error {
-			runs += 1
+		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+			runs++
 			return nil
-		}); !assert.NoError(t, err) {
-			return
-		}
+		})
+		require.NoError(t, err)
 		assert.Equal(t, 1, runs)
 	})
 
 	t.Run("pass on fifth run", func(t *testing.T) {
 		var runs int
-		if err := Retry(context.Background(), 10, 0, func(try uint) error {
-			runs += 1
+		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+			runs++
 			if runs < 5 {
-				return errors.New("test")
+				return errTest
 			}
 			return nil
-		}); !assert.NoError(t, err) {
-			return
-		}
+		})
+		require.NoError(t, err)
 		assert.Equal(t, 5, runs)
 	})
 
 	t.Run("sleep backoff", func(t *testing.T) {
 		var runs int
 		start := time.Now()
-		if err := Retry(context.Background(), 10, time.Millisecond, func(try uint) error {
-			runs += 1
+		err := Retry(context.Background(), 10, time.Millisecond, func(_ uint) error {
+			runs++
 			if runs < 5 {
-				return errors.New("test")
+				return errTest
 			}
 			return nil
-		}); !assert.NoError(t, err) {
-			return
-		}
+		})
+		require.NoError(t, err)
 		assert.Equal(t, 5, runs)
 		assert.Greater(t, time.Since(start), 15*time.Millisecond)
 	})

@@ -2,23 +2,24 @@ package util
 
 import (
 	"context"
+	"errors"
 	"time"
 )
 
-type ErrHaltRetries struct {
+type HaltRetriesError struct {
 	Err error
 }
 
-func (err ErrHaltRetries) Error() string {
+func (err HaltRetriesError) Error() string {
 	return err.Err.Error()
 }
 
-func (err ErrHaltRetries) Unwrap() error {
+func (err HaltRetriesError) Unwrap() error {
 	return err.Err
 }
 
 func HaltRetries(err error) error {
-	return ErrHaltRetries{Err: err}
+	return HaltRetriesError{Err: err}
 }
 
 func Retry(ctx context.Context, attempts uint, sleep time.Duration, fn func(try uint) error) error {
@@ -26,11 +27,11 @@ func Retry(ctx context.Context, attempts uint, sleep time.Duration, fn func(try 
 	for i := range attempts {
 		if err = fn(i); err == nil {
 			return nil
-		} else {
-			switch err := err.(type) {
-			case ErrHaltRetries:
-				return err.Err
-			}
+		}
+
+		var haltRetriesErr HaltRetriesError
+		if errors.As(err, &haltRetriesErr) {
+			return haltRetriesErr.Err
 		}
 
 		select {

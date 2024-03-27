@@ -14,7 +14,7 @@ import (
 
 var ErrDeviceNotFound = errors.New("device not found")
 
-func DiscoverCastDNSEntryByUuid(ctx context.Context, uuid string) (castdns.CastEntry, error) {
+func DiscoverCastDNSEntryByUUID(ctx context.Context, uuid string) (castdns.CastEntry, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 

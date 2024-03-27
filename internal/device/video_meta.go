@@ -1,20 +1,20 @@
 package device
 
 type VideoMeta struct {
-	CurrVideoId string
+	CurrVideoID string
 	CurrArtist  string
 	CurrTitle   string
 
-	PrevVideoId string
+	PrevVideoID string
 	PrevArtist  string
 	PrevTitle   string
 }
 
 func (v *VideoMeta) Clear() {
-	v.CurrVideoId = ""
+	v.CurrVideoID = ""
 	v.CurrArtist = ""
 	v.CurrTitle = ""
-	v.PrevVideoId = ""
+	v.PrevVideoID = ""
 	v.PrevArtist = ""
 	v.PrevTitle = ""
 }
