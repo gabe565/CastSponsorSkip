@@ -167,7 +167,7 @@ To use an env that is not listed here, capitalize all characters, replace `-` wi
 | `CSS_DEVICES`           | Comma-separated list of device addresses. This will disable discovery and is not recommended unless discovery fails.                                                                                                  | `[]`      |
 | `CSS_SKIP_SPONSORS`     | Toggles sponsored segment skipping via the SponsorBlock API. If disabled, only YouTube ads will be skipped.                                                                                                           | `true`    |
 
-> **Note**
+> [!NOTE]
 > [sponsorblockcast envs](https://github.com/nichobi/sponsorblockcast#configuration) are also supported to simplify the migration to CastSponsorSkip. When used, a deprecation warning will be logged with an updated env key and value. There are currently no plans to remove these envs.
 
 ### Flags
