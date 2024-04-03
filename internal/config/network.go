@@ -18,7 +18,7 @@ func (c *Config) RegisterNetworkInterface(cmd *cobra.Command) {
 	}
 }
 
-func completeNetworkInterface(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func completeNetworkInterface(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 	interfaces, err := net.Interfaces()
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError

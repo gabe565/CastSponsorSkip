@@ -16,7 +16,7 @@ func (c *Config) RegisterDiscoverInterval(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"5m", "10m", "15m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
@@ -38,7 +38,7 @@ func (c *Config) RegisterPausedInterval(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1m", "2m", "5m", "10m", "30m", "1h"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
@@ -51,7 +51,7 @@ func (c *Config) RegisterPlayingInterval(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"1s", "2s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
@@ -73,7 +73,7 @@ func (c *Config) RegisterSkipDelay(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"500ms", "1s", "2s", "3s", "5s", "10s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)
@@ -86,7 +86,7 @@ func (c *Config) RegisterSegmentIgnore(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"30s", "1m", "2m", "5m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 	}); err != nil {
 		panic(err)

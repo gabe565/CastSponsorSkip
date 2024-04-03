@@ -22,19 +22,20 @@ type Video struct {
 }
 
 type Segment struct {
-	Segment       [2]float32
-	UUID          string
-	Category      string
-	VideoDuration float32
-	ActionType    string
-	Locked        int
-	Votes         int
-	Description   string
+	Segment       [2]float32 `json:"segment"`
+	UUID          string     `json:"UUID"`
+	Category      string     `json:"category"`
+	VideoDuration float32    `json:"videoDuration"`
+	ActionType    string     `json:"actionType"`
+	Locked        int        `json:"locked"`
+	Votes         int        `json:"votes"`
+	Description   string     `json:"description"`
 }
 
 var ErrStatusCode = errors.New("invalid response status")
 
-var baseUrl = url.URL{
+//nolint:gochecknoglobals
+var baseURL = url.URL{
 	Scheme: "https",
 	Host:   "sponsor.ajay.app",
 }
@@ -51,7 +52,7 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 		query.Add("actionType", actionType)
 	}
 
-	u := baseUrl
+	u := baseURL
 	u.Path = path.Join("api", "skipSegments", checksum[:4])
 	u.RawQuery = query.Encode()
 
@@ -75,10 +76,9 @@ func QuerySegments(ctx context.Context, id string) ([]Segment, error) {
 	if resp.StatusCode != http.StatusOK {
 		if resp.StatusCode == http.StatusNotFound {
 			return nil, nil
-		} else {
-			body, _ := io.ReadAll(resp.Body)
-			return nil, fmt.Errorf("%w: %s %s", ErrStatusCode, resp.Status, body)
 		}
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("%w: %s %s", ErrStatusCode, resp.Status, body)
 	}
 
 	var videos []Video

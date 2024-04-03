@@ -1,12 +1,14 @@
 package config
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 )
@@ -42,15 +44,24 @@ func (c *Config) RegisterActionTypes(cmd *cobra.Command) {
 	if err := c.viper.BindPFlag(key, cmd.PersistentFlags().Lookup(key)); err != nil {
 		panic(err)
 	}
-	if err := cmd.RegisterFlagCompletionFunc(key, func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	if err := cmd.RegisterFlagCompletionFunc(key, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 		return []string{"skip", "mute"}, cobra.ShellCompDirectiveNoFileComp
 	}); err != nil {
 		panic(err)
 	}
 }
 
-func completeCategories(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	response, err := http.Get("https://github.com/ajayyy/SponsorBlock/raw/master/config.json.example")
+func completeCategories(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	const srcURL = "https://github.com/ajayyy/SponsorBlock/raw/master/config.json.example"
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, srcURL, nil)
+	if err != nil {
+		return nil, cobra.ShellCompDirectiveError
+	}
+
+	response, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, cobra.ShellCompDirectiveError
 	}
@@ -59,6 +70,8 @@ func completeCategories(cmd *cobra.Command, args []string, toComplete string) ([
 	if err := json.NewDecoder(response.Body).Decode(&config); err != nil {
 		return nil, cobra.ShellCompDirectiveNoFileComp
 	}
+
+	_ = response.Body.Close()
 
 	wikiLinks, ok := config["wikiLinks"].(map[string]any)
 	if !ok {

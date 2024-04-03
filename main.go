@@ -6,6 +6,7 @@ import (
 	"github.com/gabe565/castsponsorskip/cmd"
 )
 
+//nolint:gochecknoglobals
 var (
 	version = "beta"
 	commit  = ""

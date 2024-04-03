@@ -17,9 +17,10 @@ var (
 	ErrNotConnected = errors.New("not connected to YouTube")
 	ErrNoVideos     = errors.New("search returned no videos")
 	ErrNoMatches    = errors.New("no search results matched video metadata")
-	ErrNoId         = errors.New("search result missing video ID")
+	ErrNoID         = errors.New("search result missing video ID")
 )
 
+//nolint:gochecknoglobals
 var service *youtube.Service
 
 func CreateService(ctx context.Context, opts ...option.ClientOption) error {
@@ -33,7 +34,7 @@ func CreateService(ctx context.Context, opts ...option.ClientOption) error {
 	return err
 }
 
-func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
+func QueryVideoID(ctx context.Context, artist, title string) (string, error) {
 	if service == nil {
 		return "", util.HaltRetries(ErrNotConnected)
 	}
@@ -60,7 +61,7 @@ func QueryVideoId(ctx context.Context, artist, title string) (string, error) {
 			continue
 		}
 		if item.Id == nil || item.Id.VideoId == "" {
-			return "", util.HaltRetries(ErrNoId)
+			return "", util.HaltRetries(ErrNoID)
 		}
 
 		return item.Id.VideoId, nil

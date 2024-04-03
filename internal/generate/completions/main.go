@@ -11,8 +11,6 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-var Shells = []string{"bash", "zsh", "fish"}
-
 func main() {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 
@@ -41,7 +39,7 @@ func main() {
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)
 
-	for _, shell := range Shells {
+	for _, shell := range []string{"bash", "zsh", "fish"} {
 		rootCmd.SetArgs([]string{"--completion=" + shell})
 		if err := rootCmd.Execute(); err != nil {
 			panic(err)

@@ -9,6 +9,7 @@ import (
 
 	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
 )
@@ -25,7 +26,7 @@ func TestQueryVideoId(t *testing.T) {
 		found     bool
 		want      string
 		wantQuery string
-		wantErr   assert.ErrorAssertionFunc
+		wantErr   require.ErrorAssertionFunc
 	}{
 		{
 			"simple",
@@ -33,7 +34,7 @@ func TestQueryVideoId(t *testing.T) {
 			true,
 			"dQw4w9WgXcQ",
 			`"Rick Astley"+intitle:"Rick Astley - Never Gonna Give You Up (Official Music Video)"`,
-			assert.NoError,
+			require.NoError,
 		},
 		{
 			"not found",
@@ -41,7 +42,7 @@ func TestQueryVideoId(t *testing.T) {
 			false,
 			"",
 			`"gabe565"+intitle:"Nonexistent video"`,
-			assert.Error,
+			require.Error,
 		},
 	}
 	for _, tt := range tests {
@@ -61,29 +62,25 @@ func TestQueryVideoId(t *testing.T) {
 				}
 
 				b, err := json.Marshal(response)
-				if !assert.NoError(t, err) {
-					return
-				}
+				require.NoError(t, err)
 
 				_, _ = w.Write(b)
 			}))
-			defer server.Close()
+			t.Cleanup(server.Close)
 
-			defer func(key string) {
-				config.Default.YouTubeAPIKey = key
-			}(config.Default.YouTubeAPIKey)
 			config.Default.YouTubeAPIKey = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
-			if err := CreateService(context.Background(), option.WithEndpoint(server.URL)); !assert.NoError(t, err) {
-				return
-			}
-			defer func() {
-				service = nil
-			}()
+			t.Cleanup(func() {
+				config.Default = config.NewDefault()
+			})
 
-			got, err := QueryVideoId(tt.args.ctx, tt.args.artist, tt.args.title)
-			if !tt.wantErr(t, err) {
-				return
-			}
+			err := CreateService(context.Background(), option.WithEndpoint(server.URL))
+			require.NoError(t, err)
+			t.Cleanup(func() {
+				service = nil
+			})
+
+			got, err := QueryVideoID(tt.args.ctx, tt.args.artist, tt.args.title)
+			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
