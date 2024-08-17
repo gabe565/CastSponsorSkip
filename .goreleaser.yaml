@@ -1,3 +1,4 @@
+version: 2
 project_name: castsponsorskip
 before:
   hooks:
@@ -35,7 +36,7 @@ archives:
 checksum:
   name_template: "checksums.txt"
 snapshot:
-  name_template: "{{ incpatch .Version }}-beta"
+  version_template: "{{ incpatch .Version }}-beta"
 changelog:
   sort: asc
   filters:
