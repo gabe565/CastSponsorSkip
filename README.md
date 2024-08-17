@@ -156,6 +156,8 @@ CastSponsorSkip can be configured with envs, command-line flags, or a config fil
 To use an env that is not listed here, capitalize all characters, replace `-` with `_`, and prefix with `CSS_`. For example, `--paused-interval=1m` would become `CSS_PAUSED_INTERVAL=1m`.
 
 ### Notable Envs
+Here's a list of commonly used envs. Also see [full env reference](docs/envs.md).
+
 | Env                     | Description                                                                                                                                                                                                           | Default   |
 |-------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------|
 | `CSS_DISCOVER_INTERVAL` | Interval to restart the DNS discovery client.                                                                                                                                                                         | `5m`      |
@@ -171,7 +173,7 @@ To use an env that is not listed here, capitalize all characters, replace `-` wi
 > [sponsorblockcast envs](https://github.com/nichobi/sponsorblockcast#configuration) are also supported to simplify the migration to CastSponsorSkip. When used, a deprecation warning will be logged with an updated env key and value. There are currently no plans to remove these envs.
 
 ### Flags
-See command-line flag documentation [here](./docs/castsponsorskip.md).
+See [command-line reference](./docs/castsponsorskip.md).
 
 ### Systemd
 To modify the variables when running as a systemd service, create an override for the service with:
