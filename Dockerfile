@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/root/.cache \
     go build -ldflags="-w -s" -trimpath
 
 
-FROM alpine:3.19
+FROM alpine:3.20
 WORKDIR /app
 
 RUN apk add --no-cache tzdata
