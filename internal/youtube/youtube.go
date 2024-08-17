@@ -7,7 +7,6 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/gabe565/castsponsorskip/internal/util"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
@@ -23,11 +22,11 @@ var (
 //nolint:gochecknoglobals
 var service *youtube.Service
 
-func CreateService(ctx context.Context, opts ...option.ClientOption) error {
+func CreateService(ctx context.Context, apiKey string, opts ...option.ClientOption) error {
 	var err error
 	opts = append(
 		opts,
-		option.WithAPIKey(config.Default.YouTubeAPIKey),
+		option.WithAPIKey(apiKey),
 		option.WithTelemetryDisabled(),
 	)
 	service, err = youtube.NewService(ctx, opts...)

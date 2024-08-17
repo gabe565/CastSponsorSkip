@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/gabe565/castsponsorskip/internal/config"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/api/option"
@@ -68,12 +67,7 @@ func TestQueryVideoId(t *testing.T) {
 			}))
 			t.Cleanup(server.Close)
 
-			config.Default.YouTubeAPIKey = "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe"
-			t.Cleanup(func() {
-				config.Default = config.NewDefault()
-			})
-
-			err := CreateService(context.Background(), option.WithEndpoint(server.URL))
+			err := CreateService(context.Background(), "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", option.WithEndpoint(server.URL))
 			require.NoError(t, err)
 			t.Cleanup(func() {
 				service = nil

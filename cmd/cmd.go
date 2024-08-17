@@ -34,22 +34,24 @@ func NewCommand(version, commit string) *cobra.Command {
 		DisableAutoGenTag: true,
 	}
 	cmd.SetVersionTemplate("CastSponsorSkip {{ .Version }}\n")
-
-	CompletionFlag(cmd)
-	config.Default.RegisterFlags(cmd)
 	cmd.InitDefaultVersionFlag()
+
+	config.RegisterFlags(cmd)
+	config.RegisterCompletions(cmd)
+	CompletionFlag(cmd)
 
 	return cmd
 }
 
 func preRun(cmd *cobra.Command, _ []string) error {
-	if err := config.Default.Load(); err != nil {
+	conf, err := config.Load(cmd)
+	if err != nil {
 		return err
 	}
 
-	if config.Default.LogLevel != "info" {
+	if conf.LogLevel != "info" {
 		var level slog.Level
-		switch config.Default.LogLevel {
+		switch conf.LogLevel {
 		case "debug":
 			level = slog.LevelDebug
 		case "warn":
@@ -66,6 +68,7 @@ func preRun(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
+	cmd.SetContext(config.NewContext(cmd.Context(), conf))
 	return nil
 }
 
@@ -76,18 +79,20 @@ func run(cmd *cobra.Command, _ []string) error {
 		return completion(cmd, shell)
 	}
 
+	conf := config.FromContext(cmd.Context())
+
 	slog.Info("CastSponsorSkip " + cmd.Version)
 
 	ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
 
-	if config.Default.YouTubeAPIKey != "" {
-		if err := youtube.CreateService(ctx); err != nil {
+	if conf.YouTubeAPIKey != "" {
+		if err := youtube.CreateService(ctx, conf.YouTubeAPIKey); err != nil {
 			return err
 		}
 	}
 
-	entries, err := device.BeginDiscover(ctx)
+	entries, err := device.BeginDiscover(ctx, conf)
 	if err != nil {
 		return err
 	}
@@ -101,7 +106,7 @@ func run(cmd *cobra.Command, _ []string) error {
 			case entry := <-entries:
 				group.Add(1)
 				go func() {
-					if d := device.NewDevice(entry, device.WithContext(ctx)); d != nil {
+					if d := device.NewDevice(conf, entry, device.WithContext(ctx)); d != nil {
 						_ = d.BeginTick()
 						_ = d.Close()
 					}

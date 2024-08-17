@@ -27,99 +27,93 @@ func getNetworkInterfaceName(t *testing.T) string {
 }
 
 func TestFlags(t *testing.T) {
-	t.Cleanup(func() {
-		config.Default = config.NewDefault()
-	})
-
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
 	playingInterval := randDuration()
+	skipDelay := randDuration()
+	ignoreSegmentDuration := randDuration()
 	networkInterface := getNetworkInterfaceName(t)
 
-	var cmd *cobra.Command
-	if !assert.NotPanics(t, func() {
-		cmd = NewCommand("", "")
-	}) {
-		return
-	}
+	cmd := NewCommand("", "")
 	cmd.SetArgs([]string{
 		"--log-level=debug",
-		"--network-interface=" + networkInterface,
+		"--devices=192.168.1.1,192.168.1.2",
 		"--discover-interval=" + discoverInterval.String(),
 		"--paused-interval=" + pausedInterval.String(),
 		"--playing-interval=" + playingInterval.String(),
+		"--skip-delay=" + skipDelay.String(),
+		"--ignore-segment-duration=" + ignoreSegmentDuration.String(),
+		"--network-interface=" + networkInterface,
 		"--categories=a,b,c",
 		"--action-types=d,e,f",
 		"--youtube-api-key=AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe",
 		"--mute-ads=false",
-		"--devices=192.168.1.1,192.168.1.2",
 	})
 	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
 	require.NoError(t, cmd.Execute())
 
-	assert.Equal(t, "debug", config.Default.LogLevel)
-	assert.Equal(t, networkInterface, config.Default.NetworkInterfaceName)
-	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
-	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
-	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
-	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
-	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
-	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
-	assert.False(t, config.Default.MuteAds)
-	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, config.Default.DeviceAddrStrs)
-	assert.Len(t, config.Default.DeviceAddrs, 2)
+	conf := config.FromContext(cmd.Context())
+	assert.Equal(t, "debug", conf.LogLevel)
+	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, conf.DeviceAddrStrs)
+	assert.Equal(t, discoverInterval, conf.DiscoverInterval)
+	assert.Equal(t, pausedInterval, conf.PausedInterval)
+	assert.Equal(t, playingInterval, conf.PlayingInterval)
+	assert.Equal(t, skipDelay, conf.SkipDelay)
+	assert.Equal(t, ignoreSegmentDuration, conf.IgnoreSegmentDuration)
+	assert.Equal(t, networkInterface, conf.NetworkInterfaceName)
+	assert.Equal(t, []string{"a", "b", "c"}, conf.Categories)
+	assert.Equal(t, []string{"d", "e", "f"}, conf.ActionTypes)
+	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", conf.YouTubeAPIKey)
+	assert.False(t, conf.MuteAds)
+	assert.Len(t, conf.DeviceAddrs, 2)
+	assert.NotNil(t, conf.NetworkInterface)
 }
 
 func TestEnvs(t *testing.T) {
-	t.Cleanup(func() {
-		config.Default = config.NewDefault()
-	})
-
 	discoverInterval := randDuration()
 	pausedInterval := randDuration()
 	playingInterval := randDuration()
+	skipDelay := randDuration()
+	ignoreSegmentDuration := randDuration()
 	networkInterface := getNetworkInterfaceName(t)
 
 	t.Setenv("CSS_LOG_LEVEL", "warn")
-	t.Setenv("CSS_NETWORK_INTERFACE", networkInterface)
+	t.Setenv("CSS_DEVICES", "192.168.1.1,192.168.1.2")
 	t.Setenv("CSS_DISCOVER_INTERVAL", discoverInterval.String())
 	t.Setenv("CSS_PAUSED_INTERVAL", pausedInterval.String())
 	t.Setenv("CSS_PLAYING_INTERVAL", playingInterval.String())
+	t.Setenv("CSS_SKIP_DELAY", skipDelay.String())
+	t.Setenv("CSS_IGNORE_SEGMENT_DURATION", ignoreSegmentDuration.String())
+	t.Setenv("CSS_NETWORK_INTERFACE", networkInterface)
 	t.Setenv("CSS_CATEGORIES", "a,b,c")
 	t.Setenv("CSS_ACTION_TYPES", "d,e,f")
 	t.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 	t.Setenv("CSS_MUTE_ADS", "false")
-	t.Setenv("CSS_DEVICES", "192.168.1.1,192.168.1.2")
 
-	var cmd *cobra.Command
-	if !assert.NotPanics(t, func() {
-		cmd = NewCommand("", "")
-	}) {
-		return
-	}
+	cmd := NewCommand("", "")
 	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
 	require.NoError(t, cmd.Execute())
 
-	assert.Equal(t, "warn", config.Default.LogLevel)
-	assert.Equal(t, networkInterface, config.Default.NetworkInterfaceName)
-	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
-	assert.Equal(t, pausedInterval, config.Default.PausedInterval)
-	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
-	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
-	assert.Equal(t, []string{"d", "e", "f"}, config.Default.ActionTypes)
-	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
-	assert.False(t, config.Default.MuteAds)
-	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, config.Default.DeviceAddrStrs)
-	assert.Len(t, config.Default.DeviceAddrs, 2)
+	conf := config.FromContext(cmd.Context())
+	assert.Equal(t, "warn", conf.LogLevel)
+	assert.Equal(t, []string{"192.168.1.1", "192.168.1.2"}, conf.DeviceAddrStrs)
+	assert.Equal(t, discoverInterval, conf.DiscoverInterval)
+	assert.Equal(t, pausedInterval, conf.PausedInterval)
+	assert.Equal(t, playingInterval, conf.PlayingInterval)
+	assert.Equal(t, skipDelay, conf.SkipDelay)
+	assert.Equal(t, ignoreSegmentDuration, conf.IgnoreSegmentDuration)
+	assert.Equal(t, networkInterface, conf.NetworkInterfaceName)
+	assert.Equal(t, []string{"a", "b", "c"}, conf.Categories)
+	assert.Equal(t, []string{"d", "e", "f"}, conf.ActionTypes)
+	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", conf.YouTubeAPIKey)
+	assert.False(t, conf.MuteAds)
+	assert.Len(t, conf.DeviceAddrs, 2)
+	assert.NotNil(t, conf.NetworkInterface)
 }
 
 func TestSBCEnvs(t *testing.T) {
-	t.Cleanup(func() {
-		config.Default = config.NewDefault()
-	})
-
 	discoverInterval := randDuration()
 	playingInterval := randDuration()
 
@@ -128,20 +122,16 @@ func TestSBCEnvs(t *testing.T) {
 	t.Setenv("SBCCATEGORIES", "a b c")
 	t.Setenv("SBCYOUTUBEAPIKEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 
-	var cmd *cobra.Command
-	if !assert.NotPanics(t, func() {
-		cmd = NewCommand("", "")
-	}) {
-		return
-	}
+	cmd := NewCommand("", "")
 	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
 	require.NoError(t, cmd.Execute())
 
-	assert.Equal(t, discoverInterval, config.Default.DiscoverInterval)
-	assert.Equal(t, playingInterval, config.Default.PlayingInterval)
-	assert.Equal(t, []string{"a", "b", "c"}, config.Default.Categories)
-	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", config.Default.YouTubeAPIKey)
+	conf := config.FromContext(cmd.Context())
+	assert.Equal(t, discoverInterval, conf.DiscoverInterval)
+	assert.Equal(t, playingInterval, conf.PlayingInterval)
+	assert.Equal(t, []string{"a", "b", "c"}, conf.Categories)
+	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", conf.YouTubeAPIKey)
 }
 
 func TestCompletionFlag(t *testing.T) {

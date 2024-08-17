@@ -37,6 +37,7 @@ var (
 )
 
 type Device struct {
+	config *config.Config
 	ctx    context.Context
 	cancel context.CancelFunc
 
@@ -57,7 +58,7 @@ type Device struct {
 	mutedSegmentID    int
 }
 
-func NewDevice(entry castdns.CastEntry, opts ...Option) *Device {
+func NewDevice(config *config.Config, entry castdns.CastEntry, opts ...Option) *Device {
 	if entry.Device == "Google Cast Group" {
 		return nil
 	} else if entry.Device == "" && entry.DeviceName == "" && entry.UUID == "" {
@@ -86,6 +87,7 @@ func NewDevice(entry castdns.CastEntry, opts ...Option) *Device {
 	listenerMu.Unlock()
 
 	device := &Device{
+		config:         config,
 		entry:          entry,
 		logger:         logger,
 		mutedSegmentID: NoMutedSegment,
@@ -147,7 +149,7 @@ func (d *Device) BeginTick(opts ...application.ApplicationOption) error {
 	if d.ticker != nil {
 		d.ticker.Stop()
 	}
-	d.ticker = time.NewTicker(config.Default.PlayingInterval)
+	d.ticker = time.NewTicker(d.config.PlayingInterval)
 
 	for {
 		select {
@@ -170,12 +172,12 @@ func (d *Device) tick() error {
 	castApp, castMedia, castVol := d.app.Status()
 
 	if castApp == nil || castApp.DisplayName != "YouTube" || castMedia == nil {
-		d.changeTickInterval(config.Default.PausedInterval)
+		d.changeTickInterval(d.config.PausedInterval)
 		return nil
 	}
 
 	if castMedia.PlayerState != StatePlaying && castMedia.PlayerState != StateBuffering {
-		d.changeTickInterval(config.Default.PausedInterval)
+		d.changeTickInterval(d.config.PausedInterval)
 		return nil
 	}
 
@@ -191,7 +193,7 @@ func (d *Device) tick() error {
 		d.meta.CurrTitle = castMedia.Media.Metadata.Title
 
 		switch {
-		case !config.Default.SkipSponsors:
+		case !d.config.SkipSponsors:
 			if d.meta.CurrVideoID != d.meta.PrevVideoID || !d.meta.SameVideo() {
 				d.meta.PrevVideoID = d.meta.CurrVideoID
 				d.meta.PrevArtist = d.meta.CurrArtist
@@ -217,7 +219,7 @@ func (d *Device) tick() error {
 		}
 
 		for i, segment := range d.segments {
-			if (segment.Segment[0]+float32(config.Default.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
+			if (segment.Segment[0]+float32(d.config.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
 				d.handleSegment(castMedia, castVol, segment, i)
 			}
 		}
@@ -236,7 +238,7 @@ func (d *Device) tick() error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if d.state != StateIdle {
-		d.changeTickInterval(config.Default.PlayingInterval)
+		d.changeTickInterval(d.config.PlayingInterval)
 	}
 	return nil
 }
@@ -250,9 +252,9 @@ func (d *Device) connect(opts ...application.ApplicationOption) error {
 	d.opts = opts
 	opts = append(
 		opts,
-		application.WithSkipadSleep(config.Default.PlayingInterval),
-		application.WithSkipadRetries(int(time.Minute/config.Default.PlayingInterval)),
-		application.WithIface(config.Default.NetworkInterface),
+		application.WithSkipadSleep(d.config.PlayingInterval),
+		application.WithSkipadRetries(int(time.Minute/d.config.PlayingInterval)),
+		application.WithIface(d.config.NetworkInterface),
 	)
 	d.app = application.NewApplication(opts...)
 	d.app.AddMessageFunc(d.onMessage)
@@ -261,7 +263,7 @@ func (d *Device) connect(opts ...application.ApplicationOption) error {
 		if err := d.app.Start(d.entry.GetAddr(), d.entry.GetPort()); err != nil {
 			d.logger.Debug("Failed to connect to device. Retrying...", "try", try, "error", err.Error())
 
-			newEntry, subErr := DiscoverCastDNSEntryByUUID(d.ctx, d.entry.UUID)
+			newEntry, subErr := DiscoverCastDNSEntryByUUID(d.ctx, d.config, d.entry.UUID)
 			if subErr != nil {
 				return subErr
 			}
@@ -289,7 +291,7 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 		d.mu.Lock()
 		defer d.mu.Unlock()
 		if appID == "YouTube" && d.state != StateIdle {
-			d.changeTickInterval(config.Default.PlayingInterval)
+			d.changeTickInterval(d.config.PlayingInterval)
 		}
 	case "MEDIA_STATUS":
 		var playerState string
@@ -302,9 +304,9 @@ func (d *Device) onMessage(msg *api.CastMessage) {
 		d.state = playerState
 		switch playerState {
 		case StatePlaying, StateBuffering:
-			d.changeTickInterval(config.Default.PlayingInterval)
+			d.changeTickInterval(d.config.PlayingInterval)
 		case StateIdle:
-			d.changeTickInterval(config.Default.PausedInterval)
+			d.changeTickInterval(d.config.PausedInterval)
 			d.unmuteSegment()
 		}
 	case "CLOSE":
@@ -346,7 +348,7 @@ func (d *Device) queryVideoID() {
 	d.segments = nil
 	d.prevSegmentIdx = NoSkippedSegment
 
-	if config.Default.YouTubeAPIKey == "" {
+	if d.config.YouTubeAPIKey == "" {
 		d.logger.Error("Video ID not set. Please configure a YouTube API key.")
 	} else {
 		d.logger.Info("Video ID not set. Searching YouTube for video ID...")
@@ -372,7 +374,7 @@ func (d *Device) queryVideoID() {
 
 func (d *Device) muteAd(castVol *cast.Volume) {
 	var shouldUnmute bool
-	if config.Default.MuteAds && !castVol.Muted {
+	if d.config.MuteAds && !castVol.Muted {
 		d.logger.Info("Detected ad. Muting and attempting to skip...")
 		if err := d.app.SetMuted(true); err == nil {
 			shouldUnmute = true
@@ -404,7 +406,7 @@ func (d *Device) handleSegment(castMedia *cast.Media, castVol *cast.Volume, segm
 		if i == d.prevSegmentIdx {
 			if now := time.Now(); now.Before(d.prevSegmentIgnore) {
 				d.logger.Debug("Ignoring segment.", "category", segment.Category, "from", from, "to", to, "until", d.prevSegmentIgnore.Truncate(time.Second).String())
-				d.prevSegmentIgnore = now.Add(config.Default.IgnoreSegmentDuration)
+				d.prevSegmentIgnore = now.Add(d.config.IgnoreSegmentDuration)
 				return
 			}
 		}
@@ -416,7 +418,7 @@ func (d *Device) handleSegment(castMedia *cast.Media, castVol *cast.Volume, segm
 		}
 		castMedia.CurrentTime = segment.Segment[1]
 		d.prevSegmentIdx = i
-		d.prevSegmentIgnore = time.Now().Add(config.Default.IgnoreSegmentDuration)
+		d.prevSegmentIgnore = time.Now().Add(d.config.IgnoreSegmentDuration)
 	case sponsorblock.ActionTypeMute:
 		if !castVol.Muted || i != d.mutedSegmentID {
 			d.logger.Info("Mute segment.", "category", segment.Category, "from", from, "to", to)
@@ -446,7 +448,7 @@ func (d *Device) querySegments() {
 
 	if err := util.Retry(d.ctx, 10, 500*time.Millisecond, func(_ uint) error {
 		var err error
-		d.segments, err = sponsorblock.QuerySegments(d.ctx, d.meta.CurrVideoID)
+		d.segments, err = sponsorblock.QuerySegments(d.ctx, d.config, d.meta.CurrVideoID)
 		return err
 	}); err == nil {
 		if len(d.segments) == 0 {

@@ -39,11 +39,9 @@ func TestQuerySegmentsRequest(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			config.Default.Categories = tt.args.categories
-			config.Default.ActionTypes = tt.args.actionTypes
-			t.Cleanup(func() {
-				config.Default = config.NewDefault()
-			})
+			conf := config.New()
+			conf.Categories = tt.args.categories
+			conf.ActionTypes = tt.args.actionTypes
 
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, tt.wantPath, r.URL.Path)
@@ -61,7 +59,7 @@ func TestQuerySegmentsRequest(t *testing.T) {
 			})
 			baseURL = *tempURL
 
-			_, err = QuerySegments(context.Background(), tt.args.id)
+			_, err = QuerySegments(context.Background(), conf, tt.args.id)
 			tt.wantErr(t, err)
 		})
 	}
@@ -136,7 +134,7 @@ func TestQuerySegmentsResponse(t *testing.T) {
 			})
 			baseURL = *tempURL
 
-			got, err := QuerySegments(context.Background(), tt.args.id)
+			got, err := QuerySegments(context.Background(), config.New(), tt.args.id)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})

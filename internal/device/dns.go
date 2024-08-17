@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
-	"net"
 	"time"
 
 	"github.com/gabe565/castsponsorskip/internal/config"
@@ -14,11 +13,11 @@ import (
 
 var ErrDeviceNotFound = errors.New("device not found")
 
-func DiscoverCastDNSEntryByUUID(ctx context.Context, uuid string) (castdns.CastEntry, error) {
+func DiscoverCastDNSEntryByUUID(ctx context.Context, conf *config.Config, uuid string) (castdns.CastEntry, error) {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	defer cancel()
 
-	entries, err := castdns.DiscoverCastDNSEntries(ctx, config.Default.NetworkInterface)
+	entries, err := castdns.DiscoverCastDNSEntries(ctx, conf.NetworkInterface)
 	if err != nil {
 		return castdns.CastEntry{}, err
 	}
@@ -35,11 +34,11 @@ func DiscoverCastDNSEntryByUUID(ctx context.Context, uuid string) (castdns.CastE
 	}
 }
 
-func DiscoverCastDNSEntries(ctx context.Context, iface *net.Interface, ch chan castdns.CastEntry) error {
-	subCtx, cancel := context.WithTimeout(ctx, config.Default.DiscoverInterval)
+func DiscoverCastDNSEntries(ctx context.Context, conf *config.Config, ch chan castdns.CastEntry) error {
+	subCtx, cancel := context.WithTimeout(ctx, conf.DiscoverInterval)
 	defer cancel()
 
-	entries, err := castdns.DiscoverCastDNSEntries(subCtx, iface)
+	entries, err := castdns.DiscoverCastDNSEntries(subCtx, conf.NetworkInterface)
 	if err != nil {
 		return err
 	}
@@ -54,7 +53,7 @@ func DiscoverCastDNSEntries(ctx context.Context, iface *net.Interface, ch chan c
 	}
 }
 
-func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
+func BeginDiscover(ctx context.Context, conf *config.Config) (<-chan castdns.CastEntry, error) {
 	ch := make(chan castdns.CastEntry)
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -62,9 +61,9 @@ func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
 		defer close(ch)
 		defer cancel()
 
-		if len(config.Default.DeviceAddrs) == 0 {
-			if config.Default.NetworkInterface != nil {
-				slog.Info("Searching for devices...", "interface", config.Default.NetworkInterfaceName)
+		if len(conf.DeviceAddrs) == 0 {
+			if conf.NetworkInterface != nil {
+				slog.Info("Searching for devices...", "interface", conf.NetworkInterfaceName)
 			} else {
 				slog.Info("Searching for devices...")
 			}
@@ -74,15 +73,15 @@ func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
 				case <-ctx.Done():
 					return
 				default:
-					if err := DiscoverCastDNSEntries(ctx, config.Default.NetworkInterface, ch); err != nil {
+					if err := DiscoverCastDNSEntries(ctx, conf, ch); err != nil {
 						slog.Error("Failed to discover devices.", "error", err.Error())
 						continue
 					}
 				}
 			}
 		} else {
-			if config.Default.NetworkInterface != nil {
-				slog.Info("Connecting to configured devices...", "interface", config.Default.NetworkInterfaceName)
+			if conf.NetworkInterface != nil {
+				slog.Info("Connecting to configured devices...", "interface", conf.NetworkInterfaceName)
 			} else {
 				slog.Info("Connecting to configured devices...")
 			}
@@ -94,10 +93,10 @@ func BeginDiscover(ctx context.Context) (<-chan castdns.CastEntry, error) {
 				case <-ctx.Done():
 					return
 				case <-timer.C:
-					for _, castEntry := range config.Default.DeviceAddrs {
+					for _, castEntry := range conf.DeviceAddrs {
 						ch <- castEntry
 					}
-					timer.Reset(config.Default.DiscoverInterval)
+					timer.Reset(conf.DiscoverInterval)
 				}
 			}
 		}
