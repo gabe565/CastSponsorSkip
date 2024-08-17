@@ -34,6 +34,7 @@ func New(opts ...Option) *cobra.Command {
 		SilenceErrors:     true,
 	}
 
+	config.InitLog(cmd.ErrOrStderr(), slog.LevelInfo, config.FormatAuto)
 	config.RegisterFlags(cmd)
 	config.RegisterCompletions(cmd)
 	CompletionFlag(cmd)
@@ -49,25 +50,6 @@ func preRun(cmd *cobra.Command, _ []string) error {
 	conf, err := config.Load(cmd)
 	if err != nil {
 		return err
-	}
-
-	if conf.LogLevel != "info" {
-		var level slog.Level
-		switch conf.LogLevel {
-		case "debug":
-			level = slog.LevelDebug
-		case "warn":
-			level = slog.LevelWarn
-		case "error":
-			level = slog.LevelError
-		default:
-			slog.Warn("Invalid log level. Defaulting to info.")
-		}
-		if level != slog.LevelInfo {
-			slog.SetDefault(slog.New(slog.NewTextHandler(cmd.ErrOrStderr(), &slog.HandlerOptions{
-				Level: level,
-			})))
-		}
 	}
 
 	cmd.SetContext(config.NewContext(cmd.Context(), conf))

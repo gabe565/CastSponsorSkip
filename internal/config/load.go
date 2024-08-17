@@ -104,6 +104,8 @@ func Load(cmd *cobra.Command) (*Config, error) {
 		return nil, err
 	}
 
+	c.InitLog(cmd.ErrOrStderr())
+
 	if c.NetworkInterfaceName != "" {
 		var err error
 		if c.NetworkInterface, err = net.InterfaceByName(c.NetworkInterfaceName); err != nil {

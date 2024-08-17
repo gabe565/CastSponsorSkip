@@ -1,8 +1,9 @@
 package names
 
 const (
-	FlagConfig   = "config"
-	FlagLogLevel = "log-level"
+	FlagConfig    = "config"
+	FlagLogLevel  = "log-level"
+	FlagLogFormat = "log-format"
 
 	FlagDevices               = "devices"
 	FlagDiscoverInterval      = "discover-interval"

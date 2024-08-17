@@ -1,7 +1,9 @@
 package config
 
 import (
+	"log/slog"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/gabe565/castsponsorskip/internal/config/names"
@@ -10,7 +12,8 @@ import (
 )
 
 type Config struct {
-	LogLevel string `yaml:"log-level"`
+	LogLevel  string `yaml:"log-level"`
+	LogFormat string `yaml:"log-format"`
 
 	DeviceAddrStrs        []string            `yaml:"devices"`
 	DeviceAddrs           []castdns.CastEntry `yaml:"-"`
@@ -33,7 +36,8 @@ type Config struct {
 
 func New() *Config {
 	return &Config{
-		LogLevel: "info",
+		LogLevel:  strings.ToLower(slog.LevelInfo.String()),
+		LogFormat: FormatAuto.String(),
 
 		DiscoverInterval:      5 * time.Minute,
 		PausedInterval:        time.Minute,
@@ -53,7 +57,8 @@ func RegisterFlags(cmd *cobra.Command) {
 	c := New()
 
 	fs.String(names.FlagConfig, "", "Config file path")
-	fs.String(names.FlagLogLevel, c.LogLevel, "Log level (debug, info, warn, error)")
+	fs.String(names.FlagLogLevel, c.LogLevel, "Log level (one of: debug, info, warn, error)")
+	fs.String(names.FlagLogFormat, c.LogFormat, "Log format (one of: "+strings.Join(LogFormatStrings(), ", ")+")")
 
 	fs.StringSlice(names.FlagDevices, c.DeviceAddrStrs, "Comma-separated list of device addresses. This will disable discovery and is not recommended unless discovery fails")
 	fs.Duration(names.FlagDiscoverInterval, c.DiscoverInterval, "Interval to restart the DNS discovery client")
