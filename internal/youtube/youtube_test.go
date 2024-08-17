@@ -62,7 +62,7 @@ func TestQueryVideoId(t *testing.T) {
 				}
 
 				b, err := json.Marshal(response)
-				require.NoError(t, err)
+				assert.NoError(t, err)
 
 				_, _ = w.Write(b)
 			}))

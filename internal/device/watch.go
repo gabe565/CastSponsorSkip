@@ -3,7 +3,6 @@ package device
 import (
 	"context"
 	"errors"
-	"io"
 	"log/slog"
 	"os"
 	"runtime/debug"
@@ -136,7 +135,7 @@ func (d *Device) BeginTick(opts ...application.ApplicationOption) error {
 	defer func() {
 		if r := recover(); r != nil {
 			d.logger.Error("Recovered from panic.", "error", r)
-			_, _ = io.WriteString(os.Stderr, string(debug.Stack()))
+			_, _ = os.Stderr.Write(debug.Stack())
 		}
 	}()
 
