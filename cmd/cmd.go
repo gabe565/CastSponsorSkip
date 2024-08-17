@@ -31,6 +31,7 @@ func New(opts ...Option) *cobra.Command {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},
 		DisableAutoGenTag: true,
+		SilenceErrors:     true,
 	}
 
 	config.RegisterFlags(cmd)
