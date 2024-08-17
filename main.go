@@ -6,14 +6,10 @@ import (
 	"github.com/gabe565/castsponsorskip/cmd"
 )
 
-//nolint:gochecknoglobals
-var (
-	version = "beta"
-	commit  = ""
-)
+var version = "beta"
 
 func main() {
-	rootCmd := cmd.NewCommand(version, commit)
+	rootCmd := cmd.New(cmd.WithVersion(version))
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

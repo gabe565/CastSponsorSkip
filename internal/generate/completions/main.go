@@ -34,7 +34,7 @@ func main() {
 		panic(err)
 	}
 
-	rootCmd := cmd.NewCommand("latest", "")
+	rootCmd := cmd.New()
 	name := rootCmd.Name()
 	var buf bytes.Buffer
 	rootCmd.SetOut(&buf)

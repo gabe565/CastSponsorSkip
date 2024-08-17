@@ -23,7 +23,7 @@ func main() {
 		log.Fatal(fmt.Errorf("failed to mkdir: %w", err))
 	}
 
-	rootCmd := cmd.NewCommand("latest", "")
+	rootCmd := cmd.New(cmd.WithVersion("beta"))
 
 	err = doc.GenMarkdownTree(rootCmd, output)
 	if err != nil {

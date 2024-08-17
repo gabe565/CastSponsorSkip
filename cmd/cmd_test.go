@@ -34,7 +34,7 @@ func TestFlags(t *testing.T) {
 	ignoreSegmentDuration := randDuration()
 	networkInterface := getNetworkInterfaceName(t)
 
-	cmd := NewCommand("", "")
+	cmd := New()
 	cmd.SetArgs([]string{
 		"--log-level=debug",
 		"--devices=192.168.1.1,192.168.1.2",
@@ -91,7 +91,7 @@ func TestEnvs(t *testing.T) {
 	t.Setenv("CSS_YOUTUBE_API_KEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 	t.Setenv("CSS_MUTE_ADS", "false")
 
-	cmd := NewCommand("", "")
+	cmd := New()
 	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
 	require.NoError(t, cmd.Execute())
@@ -122,7 +122,7 @@ func TestSBCEnvs(t *testing.T) {
 	t.Setenv("SBCCATEGORIES", "a b c")
 	t.Setenv("SBCYOUTUBEAPIKEY", "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe")
 
-	cmd := NewCommand("", "")
+	cmd := New()
 	cmd.RunE = func(_ *cobra.Command, _ []string) error { return nil }
 
 	require.NoError(t, cmd.Execute())
@@ -147,7 +147,7 @@ func TestCompletionFlag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.shell, func(t *testing.T) {
-			cmd := NewCommand("", "")
+			cmd := New()
 			cmd.SetArgs([]string{"--completion", tt.shell})
 
 			var buf bytes.Buffer

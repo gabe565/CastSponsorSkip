@@ -38,7 +38,7 @@ func main() {
 		panic(err)
 	}
 
-	rootCmd := cmd.NewCommand("beta", "")
+	rootCmd := cmd.New()
 	name := rootCmd.Name()
 
 	header := doc.GenManHeader{

@@ -19,26 +19,27 @@ import (
 //go:embed description.md
 var long string
 
-func NewCommand(version, commit string) *cobra.Command {
+func New(opts ...Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "castsponsorskip",
 		Short:   "Skip sponsored YouTube segments on local Cast devices",
 		Long:    long,
 		PreRunE: preRun,
 		RunE:    run,
-		Version: buildVersion(version, commit),
 
 		ValidArgsFunction: func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
 			return nil, cobra.ShellCompDirectiveNoFileComp
 		},
 		DisableAutoGenTag: true,
 	}
-	cmd.SetVersionTemplate("CastSponsorSkip {{ .Version }}\n")
-	cmd.InitDefaultVersionFlag()
 
 	config.RegisterFlags(cmd)
 	config.RegisterCompletions(cmd)
 	CompletionFlag(cmd)
+
+	for _, opt := range opts {
+		opt(cmd)
+	}
 
 	return cmd
 }
@@ -81,7 +82,7 @@ func run(cmd *cobra.Command, _ []string) error {
 
 	conf := config.FromContext(cmd.Context())
 
-	slog.Info("CastSponsorSkip " + cmd.Version)
+	slog.Info("CastSponsorSkip", "version", cmd.Annotations[VersionKey], "commit", cmd.Annotations[CommitKey])
 
 	ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()
@@ -130,11 +131,4 @@ func run(cmd *cobra.Command, _ []string) error {
 	<-forceCtx.Done()
 	slog.Info("Exiting.")
 	return nil
-}
-
-func buildVersion(version, commit string) string {
-	if commit != "" {
-		version += " (" + commit + ")"
-	}
-	return version
 }
