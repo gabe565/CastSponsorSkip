@@ -6,7 +6,7 @@ require (
 	github.com/buger/jsonparser v1.1.1
 	github.com/jedib0t/go-pretty/v6 v6.5.9
 	github.com/knadh/koanf/parsers/yaml v0.1.0
-	github.com/knadh/koanf/providers/env v0.1.0
+	github.com/knadh/koanf/providers/env v1.0.0
 	github.com/knadh/koanf/providers/file v1.1.0
 	github.com/knadh/koanf/providers/posflag v0.1.0
 	github.com/knadh/koanf/providers/structs v0.1.0
@@ -70,7 +70,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240730163845-b1a4ccb954bf // indirect
 	google.golang.org/grpc v1.64.1 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
