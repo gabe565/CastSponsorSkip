@@ -1,6 +1,6 @@
 module github.com/gabe565/castsponsorskip
 
-go 1.23.0
+go 1.23.2
 
 require (
 	github.com/buger/jsonparser v1.1.1
