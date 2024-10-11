@@ -15,7 +15,7 @@ func (c *Capability) UnmarshalString(s string) error {
 		return err
 	}
 
-	*c = Capability(i & 31)
+	*c = Capability(i & 31) //nolint:gosec
 	return nil
 }
 

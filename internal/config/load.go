@@ -139,7 +139,7 @@ func Load(cmd *cobra.Command) (*Config, error) {
 					return nil, err
 				}
 
-				castEntry.Port = int(port)
+				castEntry.Port = int(port) //nolint:gosec
 			}
 
 			if ip := net.ParseIP(u.Hostname()); ip == nil {
