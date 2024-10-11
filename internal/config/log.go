@@ -10,7 +10,7 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
-//go:generate enumer -type LogFormat -trimprefix Format -transform lower -text
+//go:generate go run github.com/dmarkham/enumer -type LogFormat -trimprefix Format -transform lower -text
 
 type LogFormat uint8
 
