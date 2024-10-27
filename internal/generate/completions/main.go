@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/gabe565/castsponsorskip/cmd"
+	"gabe565.com/castsponsorskip/cmd"
 	flag "github.com/spf13/pflag"
 )
 

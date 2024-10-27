@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gabe565/castsponsorskip/internal/config"
+	"gabe565.com/castsponsorskip/internal/config"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

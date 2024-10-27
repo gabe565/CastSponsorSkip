@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gabe565/castsponsorskip/internal/config"
-	"github.com/gabe565/castsponsorskip/internal/device"
-	"github.com/gabe565/castsponsorskip/internal/youtube"
+	"gabe565.com/castsponsorskip/internal/config"
+	"gabe565.com/castsponsorskip/internal/device"
+	"gabe565.com/castsponsorskip/internal/youtube"
 	"github.com/spf13/cobra"
 )
 

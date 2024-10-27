@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/gabe565/castsponsorskip/cmd"
+	"gabe565.com/castsponsorskip/cmd"
 )
 
 var version = "beta"

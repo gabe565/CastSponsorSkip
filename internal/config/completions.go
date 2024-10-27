@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gabe565/castsponsorskip/internal/config/names"
+	"gabe565.com/castsponsorskip/internal/config/names"
 	"github.com/spf13/cobra"
 )
 

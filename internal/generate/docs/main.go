@@ -10,9 +10,9 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/gabe565/castsponsorskip/cmd"
-	"github.com/gabe565/castsponsorskip/internal/config"
-	"github.com/gabe565/castsponsorskip/internal/config/names"
+	"gabe565.com/castsponsorskip/cmd"
+	"gabe565.com/castsponsorskip/internal/config"
+	"gabe565.com/castsponsorskip/internal/config/names"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"

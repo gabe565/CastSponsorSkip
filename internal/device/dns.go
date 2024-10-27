@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/gabe565/castsponsorskip/internal/config"
+	"gabe565.com/castsponsorskip/internal/config"
 	castdns "github.com/vishen/go-chromecast/dns"
 )
 

@@ -7,7 +7,7 @@ import (
 	"log/slog"
 	"strings"
 
-	"github.com/gabe565/castsponsorskip/internal/util"
+	"gabe565.com/castsponsorskip/internal/util"
 	"google.golang.org/api/option"
 	"google.golang.org/api/youtube/v3"
 )

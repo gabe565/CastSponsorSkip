@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/gabe565/castsponsorskip/internal/config/names"
-	"github.com/gabe565/castsponsorskip/internal/config/sponsorblockcast"
+	"gabe565.com/castsponsorskip/internal/config/names"
+	"gabe565.com/castsponsorskip/internal/config/sponsorblockcast"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"

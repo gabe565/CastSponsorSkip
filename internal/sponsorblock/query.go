@@ -13,7 +13,7 @@ import (
 	"net/url"
 	"path"
 
-	"github.com/gabe565/castsponsorskip/internal/config"
+	"gabe565.com/castsponsorskip/internal/config"
 )
 
 type Video struct {

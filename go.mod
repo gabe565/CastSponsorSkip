@@ -1,4 +1,4 @@
-module github.com/gabe565/castsponsorskip
+module gabe565.com/castsponsorskip
 
 go 1.23.4
 

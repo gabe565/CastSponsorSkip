@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gabe565/castsponsorskip/cmd"
+	"gabe565.com/castsponsorskip/cmd"
 	"github.com/spf13/cobra/doc"
 	flag "github.com/spf13/pflag"
 )
