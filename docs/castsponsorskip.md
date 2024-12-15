@@ -32,7 +32,7 @@ castsponsorskip [flags]
   -h, --help                               help for castsponsorskip
       --ignore-segment-duration duration   Ignores the previous sponsored segment for a set amount of time. Useful if you want to to go back and watch a segment. (default 1m0s)
       --log-format string                  Log format (one of: auto, color, plain, json) (default "auto")
-      --log-level string                   Log level (one of: debug, info, warn, error) (default "info")
+      --log-level string                   Log level (one of: debug, info, warn, error, none) (default "info")
       --mute-ads                           Mutes the device while an ad is playing (default true)
   -i, --network-interface string           Network interface to use for multicast dns discovery. (default all interfaces)
       --paused-interval duration           Interval to scan paused devices (default 1m0s)

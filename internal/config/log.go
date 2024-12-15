@@ -23,7 +23,9 @@ const (
 
 func (c *Config) InitLog(w io.Writer) {
 	var level slog.Level
-	if err := level.UnmarshalText([]byte(c.LogLevel)); err != nil {
+	if c.LogLevel == "none" {
+		level = slog.LevelError + 1
+	} else if err := level.UnmarshalText([]byte(c.LogLevel)); err != nil {
 		slog.Warn("Invalid log level. Defaulting to info.", "value", c.LogLevel)
 		level = slog.LevelInfo
 		c.LogLevel = level.String()

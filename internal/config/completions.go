@@ -16,7 +16,7 @@ import (
 func RegisterCompletions(cmd *cobra.Command) {
 	if err := errors.Join(
 		cmd.RegisterFlagCompletionFunc(names.FlagLogLevel, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"debug", "info", "warn", "error"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+			return []string{"debug", "info", "warn", "error", "none"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
 		}),
 		cmd.RegisterFlagCompletionFunc(names.FlagNetworkInterface, completeNetworkInterface),
 		cmd.RegisterFlagCompletionFunc(names.FlagDiscoverInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {

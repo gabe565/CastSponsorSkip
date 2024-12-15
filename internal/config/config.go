@@ -57,7 +57,7 @@ func RegisterFlags(cmd *cobra.Command) {
 	c := New()
 
 	fs.String(names.FlagConfig, "", "Config file path")
-	fs.String(names.FlagLogLevel, c.LogLevel, "Log level (one of: debug, info, warn, error)")
+	fs.String(names.FlagLogLevel, c.LogLevel, "Log level (one of: debug, info, warn, error, none)")
 	fs.String(names.FlagLogFormat, c.LogFormat, "Log format (one of: "+strings.Join(LogFormatStrings(), ", ")+")")
 
 	fs.StringSlice(names.FlagDevices, c.DeviceAddrStrs, "Comma-separated list of device addresses. This will disable discovery and is not recommended unless discovery fails")
