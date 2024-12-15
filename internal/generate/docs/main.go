@@ -13,6 +13,7 @@ import (
 	"gabe565.com/castsponsorskip/cmd"
 	"gabe565.com/castsponsorskip/internal/config"
 	"gabe565.com/castsponsorskip/internal/config/names"
+	"gabe565.com/utils/cobrax"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
@@ -32,7 +33,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	root := cmd.New(cmd.WithVersion("beta"))
+	root := cmd.New(cobrax.WithVersion("beta"))
 
 	if err := errors.Join(
 		generateFlagDoc(root, output),

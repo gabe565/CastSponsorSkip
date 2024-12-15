@@ -12,6 +12,7 @@ import (
 
 	"gabe565.com/castsponsorskip/internal/config/names"
 	"gabe565.com/castsponsorskip/internal/config/sponsorblockcast"
+	"gabe565.com/utils/must"
 	"github.com/knadh/koanf/parsers/yaml"
 	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
@@ -38,9 +39,7 @@ func Load(cmd *cobra.Command) (*Config, error) {
 	// Find config file
 	cfgFiles := make([]string, 0, 4)
 	var fileRequired bool
-	if cfgFile, err := cmd.Flags().GetString(names.FlagConfig); err != nil {
-		panic(err)
-	} else if cfgFile != "" {
+	if cfgFile := must.Must2(cmd.Flags().GetString(names.FlagConfig)); cfgFile != "" {
 		cfgFiles = append(cfgFiles, cfgFile)
 		fileRequired = true
 	} else {

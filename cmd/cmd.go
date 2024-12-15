@@ -13,13 +13,14 @@ import (
 	"gabe565.com/castsponsorskip/internal/config"
 	"gabe565.com/castsponsorskip/internal/device"
 	"gabe565.com/castsponsorskip/internal/youtube"
+	"gabe565.com/utils/cobrax"
 	"github.com/spf13/cobra"
 )
 
 //go:embed description.md
 var long string
 
-func New(opts ...Option) *cobra.Command {
+func New(opts ...cobrax.Option) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "castsponsorskip",
 		Short:   "Skip sponsored YouTube segments on local Cast devices",
@@ -37,7 +38,6 @@ func New(opts ...Option) *cobra.Command {
 	config.InitLog(cmd.ErrOrStderr(), slog.LevelInfo, config.FormatAuto)
 	config.RegisterFlags(cmd)
 	config.RegisterCompletions(cmd)
-	CompletionFlag(cmd)
 
 	for _, opt := range opts {
 		opt(cmd)
@@ -57,15 +57,9 @@ func preRun(cmd *cobra.Command, _ []string) error {
 }
 
 func run(cmd *cobra.Command, _ []string) error {
-	if shell, err := cmd.Flags().GetString("completion"); err != nil {
-		panic(err)
-	} else if shell != "" {
-		return completion(cmd, shell)
-	}
-
 	conf := config.FromContext(cmd.Context())
 
-	slog.Info("CastSponsorSkip", "version", cmd.Annotations[VersionKey], "commit", cmd.Annotations[CommitKey])
+	slog.Info("CastSponsorSkip", "version", cobrax.GetVersion(cmd), "commit", cobrax.GetCommit(cmd))
 
 	ctx, cancel := signal.NotifyContext(cmd.Context(), os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 	defer cancel()

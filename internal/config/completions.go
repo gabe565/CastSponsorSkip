@@ -3,44 +3,40 @@ package config
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net"
 	"net/http"
 	"strings"
 	"time"
 
 	"gabe565.com/castsponsorskip/internal/config/names"
+	"gabe565.com/utils/must"
 	"github.com/spf13/cobra"
 )
 
 func RegisterCompletions(cmd *cobra.Command) {
-	if err := errors.Join(
-		cmd.RegisterFlagCompletionFunc(names.FlagLogLevel, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"debug", "info", "warn", "error", "none"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
-		}),
-		cmd.RegisterFlagCompletionFunc(names.FlagNetworkInterface, completeNetworkInterface),
-		cmd.RegisterFlagCompletionFunc(names.FlagDiscoverInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"5m", "10m", "15m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
-		}),
-		cmd.RegisterFlagCompletionFunc(names.FlagPausedInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"1m", "2m", "5m", "10m", "30m", "1h"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
-		}),
-		cmd.RegisterFlagCompletionFunc(names.FlagPlayingInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"1s", "2s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
-		}),
-		cmd.RegisterFlagCompletionFunc(names.FlagSkipDelay, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"500ms", "1s", "2s", "3s", "5s", "10s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
-		}),
-		cmd.RegisterFlagCompletionFunc(names.FlagIgnoreSegmentDuration, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"30s", "1m", "2m", "5m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
-		}),
-		cmd.RegisterFlagCompletionFunc(names.FlagCategories, completeCategories),
-		cmd.RegisterFlagCompletionFunc(names.FlagActionTypes, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
-			return []string{"skip", "mute"}, cobra.ShellCompDirectiveNoFileComp
-		}),
-	); err != nil {
-		panic(err)
-	}
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagLogLevel, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"debug", "info", "warn", "error", "none"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagNetworkInterface, completeNetworkInterface))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagDiscoverInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"5m", "10m", "15m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagPausedInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1m", "2m", "5m", "10m", "30m", "1h"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagPlayingInterval, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"1s", "2s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagSkipDelay, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"500ms", "1s", "2s", "3s", "5s", "10s"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagIgnoreSegmentDuration, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"30s", "1m", "2m", "5m"}, cobra.ShellCompDirectiveNoFileComp | cobra.ShellCompDirectiveKeepOrder
+	}))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagCategories, completeCategories))
+	must.Must(cmd.RegisterFlagCompletionFunc(names.FlagActionTypes, func(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {
+		return []string{"skip", "mute"}, cobra.ShellCompDirectiveNoFileComp
+	}))
 }
 
 func completeNetworkInterface(_ *cobra.Command, _ []string, _ string) ([]string, cobra.ShellCompDirective) {

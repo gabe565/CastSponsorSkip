@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bytes"
 	"math/rand"
 	"net"
 	"strconv"
@@ -132,28 +131,4 @@ func TestSBCEnvs(t *testing.T) {
 	assert.Equal(t, playingInterval, conf.PlayingInterval)
 	assert.Equal(t, []string{"a", "b", "c"}, conf.Categories)
 	assert.Equal(t, "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", conf.YouTubeAPIKey)
-}
-
-func TestCompletionFlag(t *testing.T) {
-	tests := []struct {
-		shell   string
-		wantErr require.ErrorAssertionFunc
-	}{
-		{"bash", require.NoError},
-		{"zsh", require.NoError},
-		{"fish", require.NoError},
-		{"powershell", require.NoError},
-		{"invalid", require.Error},
-	}
-	for _, tt := range tests {
-		t.Run(tt.shell, func(t *testing.T) {
-			cmd := New()
-			cmd.SetArgs([]string{"--completion", tt.shell})
-
-			var buf bytes.Buffer
-			cmd.SetOut(&buf)
-			tt.wantErr(t, cmd.Execute())
-			assert.NotZero(t, buf.Bytes())
-		})
-	}
 }

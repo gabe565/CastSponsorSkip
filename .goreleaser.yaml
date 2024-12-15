@@ -12,7 +12,7 @@ builds:
     ldflags:
       - -s
       - -w
-      - -X main.version=v{{.Version}}
+      - -X main.version={{.Version}}
     goarch:
       - amd64
       - arm
