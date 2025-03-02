@@ -17,7 +17,7 @@ require (
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.10.0
-	github.com/vishen/go-chromecast v0.3.3-0.20241212194413-502624332d67
+	github.com/vishen/go-chromecast v0.3.3-0.20250302030646-b0b5a20967d1
 	google.golang.org/api v0.211.0
 )
 
@@ -62,7 +62,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.32.0 // indirect
 	golang.org/x/crypto v0.31.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.32.0 // indirect
+	golang.org/x/net v0.33.0 // indirect
 	golang.org/x/oauth2 v0.24.0 // indirect
 	golang.org/x/sync v0.10.0 // indirect
 	golang.org/x/sys v0.28.0 // indirect
