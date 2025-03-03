@@ -7,8 +7,6 @@ import (
 	"time"
 
 	"gabe565.com/castsponsorskip/internal/config/names"
-	"gabe565.com/utils/cobrax"
-	"gabe565.com/utils/must"
 	"github.com/spf13/cobra"
 	castdns "github.com/vishen/go-chromecast/dns"
 )
@@ -57,7 +55,6 @@ func New() *Config {
 func RegisterFlags(cmd *cobra.Command) {
 	fs := cmd.Flags()
 	c := New()
-	must.Must(cobrax.RegisterCompletionFlag(cmd))
 
 	fs.String(names.FlagConfig, "", "Config file path")
 	fs.String(names.FlagLogLevel, c.LogLevel, "Log level (one of: debug, info, warn, error, none)")

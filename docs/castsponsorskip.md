@@ -25,7 +25,6 @@ castsponsorskip [flags]
 ```
       --action-types strings               SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped. (default [skip,mute])
   -c, --categories strings                 Comma-separated list of SponsorBlock categories to skip (default [sponsor])
-      --completion string                  Generate the autocompletion script for the specified shell (one of bash, zsh, fish, powershell)
       --config string                      Config file path
       --devices strings                    Comma-separated list of device addresses. This will disable discovery and is not recommended unless discovery fails
       --discover-interval duration         Interval to restart the DNS discovery client (default 5m0s)

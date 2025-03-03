@@ -3,7 +3,7 @@ module gabe565.com/castsponsorskip
 go 1.24.0
 
 require (
-	gabe565.com/utils v0.0.0-20241213205714-152b8de1d3fe
+	gabe565.com/utils v0.0.0-20250302063333-ede73b14282c
 	github.com/buger/jsonparser v1.1.1
 	github.com/dmarkham/enumer v1.5.10
 	github.com/jedib0t/go-pretty/v6 v6.6.7
