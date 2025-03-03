@@ -9,7 +9,7 @@ import (
 	"github.com/lmittmann/tint"
 )
 
-//go:generate go run github.com/dmarkham/enumer -type LogFormat -trimprefix Format -transform lower -text
+//go:generate go tool enumer -type LogFormat -trimprefix Format -transform lower -text
 
 type LogFormat uint8
 
