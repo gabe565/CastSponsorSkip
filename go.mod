@@ -1,6 +1,6 @@
 module gabe565.com/castsponsorskip
 
-go 1.23.4
+go 1.24.0
 
 require (
 	gabe565.com/utils v0.0.0-20241213205714-152b8de1d3fe
