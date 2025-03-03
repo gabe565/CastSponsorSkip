@@ -1,7 +1,6 @@
 package sponsorblock
 
 import (
-	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -59,7 +58,7 @@ func TestQuerySegmentsRequest(t *testing.T) {
 			})
 			baseURL = *tempURL
 
-			_, err = QuerySegments(context.Background(), conf, tt.args.id)
+			_, err = QuerySegments(t.Context(), conf, tt.args.id)
 			tt.wantErr(t, err)
 		})
 	}
@@ -134,7 +133,7 @@ func TestQuerySegmentsResponse(t *testing.T) {
 			})
 			baseURL = *tempURL
 
-			got, err := QuerySegments(context.Background(), config.New(), tt.args.id)
+			got, err := QuerySegments(t.Context(), config.New(), tt.args.id)
 			tt.wantErr(t, err)
 			assert.Equal(t, tt.want, got)
 		})

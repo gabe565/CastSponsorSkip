@@ -67,7 +67,7 @@ func TestQueryVideoId(t *testing.T) {
 			}))
 			t.Cleanup(server.Close)
 
-			err := CreateService(context.Background(), "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", option.WithEndpoint(server.URL))
+			err := CreateService(t.Context(), "AIzaSyDaGmWKa4JsXZ-HjGw7ISLn_3namBGewQe", option.WithEndpoint(server.URL))
 			require.NoError(t, err)
 			t.Cleanup(func() {
 				service = nil

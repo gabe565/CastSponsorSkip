@@ -1,7 +1,6 @@
 package util
 
 import (
-	"context"
 	"errors"
 	"testing"
 	"time"
@@ -15,7 +14,7 @@ var errTest = errors.New("test")
 func TestRetry(t *testing.T) {
 	t.Run("halt", func(t *testing.T) {
 		var runs int
-		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+		err := Retry(t.Context(), 10, 0, func(_ uint) error {
 			runs++
 			return HaltRetries(errTest)
 		})
@@ -25,7 +24,7 @@ func TestRetry(t *testing.T) {
 
 	t.Run("max", func(t *testing.T) {
 		var runs int
-		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+		err := Retry(t.Context(), 10, 0, func(_ uint) error {
 			runs++
 			return errTest
 		})
@@ -35,7 +34,7 @@ func TestRetry(t *testing.T) {
 
 	t.Run("pass on first run", func(t *testing.T) {
 		var runs int
-		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+		err := Retry(t.Context(), 10, 0, func(_ uint) error {
 			runs++
 			return nil
 		})
@@ -45,7 +44,7 @@ func TestRetry(t *testing.T) {
 
 	t.Run("pass on fifth run", func(t *testing.T) {
 		var runs int
-		err := Retry(context.Background(), 10, 0, func(_ uint) error {
+		err := Retry(t.Context(), 10, 0, func(_ uint) error {
 			runs++
 			if runs < 5 {
 				return errTest
@@ -59,7 +58,7 @@ func TestRetry(t *testing.T) {
 	t.Run("sleep backoff", func(t *testing.T) {
 		var runs int
 		start := time.Now()
-		err := Retry(context.Background(), 10, time.Millisecond, func(_ uint) error {
+		err := Retry(t.Context(), 10, time.Millisecond, func(_ uint) error {
 			runs++
 			if runs < 5 {
 				return errTest
