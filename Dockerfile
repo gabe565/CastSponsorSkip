@@ -9,7 +9,7 @@ COPY cmd/ cmd/
 COPY internal/ internal/
 
 RUN --mount=type=cache,target=/root/.cache \
-    go build -ldflags="-w -s" -trimpath
+    go build -ldflags="-w -s" -trimpath -tags grpcnotrace
 
 
 FROM alpine:3.21.3
