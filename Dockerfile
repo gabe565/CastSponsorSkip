@@ -1,5 +1,9 @@
-FROM golang:1.24.0-alpine AS go-builder
+FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.6.1 AS xx
+
+FROM --platform=$BUILDPLATFORM golang:1.24.0-alpine AS go-builder
 WORKDIR /app
+
+COPY --from=xx / /
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -8,8 +12,9 @@ COPY *.go ./
 COPY cmd/ cmd/
 COPY internal/ internal/
 
+ARG TARGETPLATFORM
 RUN --mount=type=cache,target=/root/.cache \
-    go build -ldflags="-w -s" -trimpath -tags grpcnotrace
+  CGO_ENABLED=0 xx-go build -ldflags="-w -s" -trimpath -tags grpcnotrace
 
 
 FROM alpine:3.21.3
