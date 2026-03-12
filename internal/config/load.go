@@ -86,6 +86,9 @@ func Load(cmd *cobra.Command) (*Config, error) {
 
 		switch k {
 		case names.FlagDevices, names.FlagCategories, names.FlagActionTypes:
+			if v == "" {
+				return k, []string{}
+			}
 			return k, strings.Split(v, ",")
 		default:
 			return k, v
@@ -123,6 +126,9 @@ func Load(cmd *cobra.Command) (*Config, error) {
 	if len(c.DeviceAddrStrs) != 0 {
 		c.DeviceAddrs = make([]castdns.CastEntry, 0, len(c.DeviceAddrStrs))
 		for _, device := range c.DeviceAddrStrs {
+			if device == "" {
+				continue
+			}
 			u := url.URL{Host: device}
 
 			castEntry := castdns.CastEntry{
