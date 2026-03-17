@@ -81,18 +81,21 @@ func Load(cmd *cobra.Command) (*Config, error) {
 	}
 
 	// Load envs
-	if err := k.Load(env.ProviderWithValue(EnvPrefix, ".", func(k string, v string) (string, any) {
-		k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, EnvPrefix)), "_", "-")
+	if err := k.Load(env.Provider(".", env.Opt{
+		Prefix: EnvPrefix,
+		TransformFunc: func(k, v string) (string, any) {
+			k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, EnvPrefix)), "_", "-")
 
-		switch k {
-		case names.FlagDevices, names.FlagCategories, names.FlagActionTypes:
-			if v == "" {
-				return k, []string{}
+			switch k {
+			case names.FlagDevices, names.FlagCategories, names.FlagActionTypes:
+				if v == "" {
+					return k, []string{}
+				}
+				return k, strings.Split(v, ",")
+			default:
+				return k, v
 			}
-			return k, strings.Split(v, ",")
-		default:
-			return k, v
-		}
+		},
 	}), nil); err != nil {
 		return nil, err
 	}
