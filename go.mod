@@ -16,7 +16,7 @@ require (
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
-	github.com/vishen/go-chromecast v0.3.3-0.20250302030646-b0b5a20967d1
+	github.com/vishen/go-chromecast v0.3.4
 	google.golang.org/api v0.223.0
 )
 

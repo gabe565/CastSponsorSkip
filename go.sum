@@ -117,8 +117,8 @@ github.com/stretchr/objx v0.5.2/go.mod h1:FRsXN1f5AsAjCGJKqEizvkpNtU+EGNCLh3NxZ/
 github.com/stretchr/testify v1.7.0/go.mod h1:6Fq8oRcR53rry900zMqJjRRixrwX3KX962/h/Wwjteg=
 github.com/stretchr/testify v1.11.1 h1:7s2iGBzp5EwR7/aIZr8ao5+dra3wiQyKjjFuvgVKu7U=
 github.com/stretchr/testify v1.11.1/go.mod h1:wZwfW3scLgRK+23gO65QZefKpKQRnfz6sD981Nm4B6U=
-github.com/vishen/go-chromecast v0.3.3-0.20250302030646-b0b5a20967d1 h1:kBrIjW47xnVLTV2JDxzKpa0bIkDI0sy6WDPpyAMaiUE=
-github.com/vishen/go-chromecast v0.3.3-0.20250302030646-b0b5a20967d1/go.mod h1:Y2e5LdSRjwUEgGodn1hCePNEx5J9jo/2PiWq7bRr33M=
+github.com/vishen/go-chromecast v0.3.4 h1:ELRwOoNaxwIsKCXuxCXXku92+H/qKLj3a6ZN6LDD+H8=
+github.com/vishen/go-chromecast v0.3.4/go.mod h1:9ht6970KP5YmO0WpJJPMfInai2HA5w+q+UWId3QLxBc=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 go.opentelemetry.io/auto/sdk v1.1.0 h1:cH53jehLUN6UFLY71z+NDOiNJqDdPRaXzTel0sJySYA=
