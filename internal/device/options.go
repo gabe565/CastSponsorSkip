@@ -8,6 +8,6 @@ type Option func(device *Device)
 
 func WithContext(ctx context.Context) Option {
 	return func(device *Device) {
-		device.ctx, device.cancel = context.WithCancel(ctx)
+		device.ctx, device.cancel = context.WithCancel(ctx) //nolint:gosec
 	}
 }

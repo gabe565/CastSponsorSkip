@@ -62,7 +62,7 @@ func generateEnvDoc(cmd *cobra.Command, output string) error {
 		var value string
 		switch fv := flag.Value.(type) {
 		case pflag.SliceValue:
-			value = strings.Join(flag.Value.(pflag.SliceValue).GetSlice(), ",")
+			value = strings.Join(flag.Value.(pflag.SliceValue).GetSlice(), ",") //nolint:errcheck
 		default:
 			value = fv.String()
 		}

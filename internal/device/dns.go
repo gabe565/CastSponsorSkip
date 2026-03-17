@@ -55,10 +55,11 @@ func DiscoverCastDNSEntries(ctx context.Context, conf *config.Config, ch chan ca
 
 func BeginDiscover(ctx context.Context, conf *config.Config) (<-chan castdns.CastEntry, error) {
 	ch := make(chan castdns.CastEntry)
-	ctx, cancel := context.WithCancel(ctx)
 
 	go func() {
 		defer close(ch)
+
+		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
 		if len(conf.DeviceAddrs) == 0 {

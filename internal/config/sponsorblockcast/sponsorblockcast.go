@@ -31,7 +31,9 @@ func (s SponsorBlockCast) Read() (map[string]any, error) {
 		parsed, err := strconv.Atoi(env)
 		if err == nil {
 			val := (time.Duration(parsed) * time.Second).String()
-			slog.Warn(fmt.Sprintf(`SBCSCANINTERVAL is deprecated. Please set %q instead.`, "CSS_DISCOVER_INTERVAL="+val))
+			slog.Warn(
+				fmt.Sprintf(`SBCSCANINTERVAL is deprecated. Please set %q instead.`, "CSS_DISCOVER_INTERVAL="+val),
+			)
 			result[names.FlagDiscoverInterval] = val
 		}
 	}
@@ -47,11 +49,18 @@ func (s SponsorBlockCast) Read() (map[string]any, error) {
 
 	if env := os.Getenv("SBCCATEGORIES"); env != "" {
 		val := strings.Split(env, " ")
-		slog.Warn(fmt.Sprintf(`SBCCATEGORIES is deprecated. Please set %q instead.`, "CSS_CATEGORIES="+strings.Join(val, ",")))
+		//nolint:gosec
+		slog.Warn(
+			fmt.Sprintf(
+				`SBCCATEGORIES is deprecated. Please set %q instead.`,
+				"CSS_CATEGORIES="+strings.Join(val, ","),
+			),
+		)
 		result[names.FlagCategories] = val
 	}
 
 	if env := os.Getenv("SBCYOUTUBEAPIKEY"); env != "" {
+		//nolint:gosec
 		slog.Warn(fmt.Sprintf(`SBCYOUTUBEAPIKEY is deprecated. Please set %q instead.`, "CSS_YOUTUBE_API_KEY="+env))
 		result[names.FlagYouTubeAPIKey] = env
 	}

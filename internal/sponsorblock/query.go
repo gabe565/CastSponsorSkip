@@ -57,12 +57,10 @@ func QuerySegments(ctx context.Context, conf *config.Config, id string) ([]Segme
 	u.RawQuery = query.Encode()
 
 	slog.Debug("Request segments", "url", u.String())
-	req, err := http.NewRequest(http.MethodGet, u.String(), nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 	if err != nil {
 		return nil, err
 	}
-
-	req = req.WithContext(ctx)
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {

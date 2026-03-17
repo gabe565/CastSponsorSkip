@@ -15,7 +15,7 @@ import (
 
 func randDuration() time.Duration {
 	highest := int((10 * time.Minute).Seconds())
-	randSecs := rand.Intn(highest) //nolint:gosec
+	randSecs := rand.Intn(highest)
 	return time.Duration(randSecs) * time.Second
 }
 

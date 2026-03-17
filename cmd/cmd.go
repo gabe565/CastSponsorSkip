@@ -82,14 +82,12 @@ func run(cmd *cobra.Command, _ []string) error {
 			case <-ctx.Done():
 				return
 			case entry := <-entries:
-				group.Add(1)
-				go func() {
+				group.Go(func() {
 					if d := device.NewDevice(conf, entry, device.WithContext(ctx)); d != nil {
 						_ = d.BeginTick()
 						_ = d.Close()
 					}
-					group.Done()
-				}()
+				})
 			}
 		}
 	}()

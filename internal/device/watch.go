@@ -219,7 +219,8 @@ func (d *Device) tick() error {
 		}
 
 		for i, segment := range d.segments {
-			if (segment.Segment[0]+float32(d.config.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
+			if (segment.Segment[0]+float32(d.config.SkipDelay.Seconds())) <= castMedia.CurrentTime &&
+				castMedia.CurrentTime < segment.Segment[1]-1 {
 				d.handleSegment(castMedia, castVol, segment, i)
 			}
 		}
@@ -405,7 +406,13 @@ func (d *Device) handleSegment(castMedia *cast.Media, castVol *cast.Volume, segm
 	case sponsorblock.ActionTypeSkip:
 		if i == d.prevSegmentIdx {
 			if now := time.Now(); now.Before(d.prevSegmentIgnore) {
-				d.logger.Debug("Ignoring segment.", "category", segment.Category, "from", from, "to", to, "until", d.prevSegmentIgnore.Truncate(time.Second).String())
+				d.logger.Debug(
+					"Ignoring segment.",
+					"category", segment.Category,
+					"from", from,
+					"to", to,
+					"until", d.prevSegmentIgnore.Truncate(time.Second).String(),
+				)
 				d.prevSegmentIgnore = now.Add(d.config.IgnoreSegmentDuration)
 				return
 			}
