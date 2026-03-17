@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"context"
 	_ "embed"
 	"log/slog"
 	"os"
 	"os/signal"
 	"sync"
 	"syscall"
-	"time"
 
 	"gabe565.com/castsponsorskip/internal/config"
 	"gabe565.com/castsponsorskip/internal/device"
@@ -76,34 +74,21 @@ func run(cmd *cobra.Command, _ []string) error {
 	}
 
 	var group sync.WaitGroup
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case entry := <-entries:
-				group.Go(func() {
-					if d := device.NewDevice(conf, entry, device.WithContext(ctx)); d != nil {
-						_ = d.BeginTick()
-						_ = d.Close()
-					}
-				})
-			}
+	for {
+		select {
+		case <-ctx.Done():
+			cancel()
+			slog.Info("Gracefully closing connections... Press Ctrl+C again to force exit.")
+			group.Wait()
+			slog.Info("Exiting.")
+			return nil
+		case entry := <-entries:
+			group.Go(func() {
+				if d := device.NewDevice(conf, entry, device.WithContext(ctx)); d != nil {
+					_ = d.BeginTick()
+					_ = d.Close()
+				}
+			})
 		}
-	}()
-
-	<-ctx.Done()
-	slog.Info("Gracefully closing connections... Press Ctrl+C again to force exit.")
-
-	forceCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
-	go func() {
-		group.Wait()
-		cancel()
-	}()
-	forceCtx, cancel = signal.NotifyContext(forceCtx, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
-	defer cancel()
-	<-forceCtx.Done()
-	slog.Info("Exiting.")
-	return nil
+	}
 }
