@@ -1,4 +1,4 @@
-FROM alpine:3.21.3
+FROM alpine:3.23.3
 WORKDIR /app
 
 RUN apk add --no-cache tzdata

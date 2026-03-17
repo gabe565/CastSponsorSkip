@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/root/.cache \
   CGO_ENABLED=0 xx-go build -ldflags="-w -s" -trimpath -tags grpcnotrace
 
 
-FROM alpine:3.21.3
+FROM alpine:3.23.3
 WORKDIR /app
 
 RUN apk add --no-cache tzdata
