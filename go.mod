@@ -3,7 +3,7 @@ module gabe565.com/castsponsorskip
 go 1.26.1
 
 require (
-	gabe565.com/utils v0.0.0-20250302063333-ede73b14282c
+	gabe565.com/utils v0.0.0-20260310002041-b3b94f17b36b
 	github.com/buger/jsonparser v1.1.1
 	github.com/jedib0t/go-pretty/v6 v6.6.7
 	github.com/knadh/koanf/parsers/yaml v0.1.0
