@@ -10,7 +10,7 @@ require (
 	github.com/knadh/koanf/providers/env v1.1.0
 	github.com/knadh/koanf/providers/file v1.1.2
 	github.com/knadh/koanf/providers/posflag v1.0.1
-	github.com/knadh/koanf/providers/structs v0.1.0
+	github.com/knadh/koanf/providers/structs v1.0.0
 	github.com/knadh/koanf/v2 v2.3.3
 	github.com/lmittmann/tint v1.0.7
 	github.com/spf13/cobra v1.10.2
