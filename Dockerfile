@@ -1,9 +1,5 @@
-FROM --platform=$BUILDPLATFORM tonistiigi/xx:1.6.1 AS xx
-
 FROM --platform=$BUILDPLATFORM golang:1.26.1-alpine AS go-builder
 WORKDIR /app
-
-COPY --from=xx / /
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -12,9 +8,11 @@ COPY *.go ./
 COPY cmd/ cmd/
 COPY internal/ internal/
 
-ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
 RUN --mount=type=cache,target=/root/.cache \
-  CGO_ENABLED=0 xx-go build -ldflags="-w -s" -trimpath -tags grpcnotrace
+  CGO_ENABLED=0 GOOS="$TARGETOS" GOARCH="$TARGETARCH" \
+  go build -ldflags="-w -s" -trimpath -tags grpcnotrace
 
 
 FROM alpine:3.23.3
