@@ -59,9 +59,6 @@ func BeginDiscover(ctx context.Context, conf *config.Config) (<-chan castdns.Cas
 	go func() {
 		defer close(ch)
 
-		ctx, cancel := context.WithCancel(ctx)
-		defer cancel()
-
 		if len(conf.DeviceAddrs) == 0 {
 			if conf.NetworkInterface != nil {
 				slog.Info("Searching for devices...", "interface", conf.NetworkInterfaceName)
