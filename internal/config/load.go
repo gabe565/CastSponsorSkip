@@ -85,7 +85,7 @@ func Load(cmd *cobra.Command) (*Config, error) {
 		k = strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(k, EnvPrefix)), "_", "-")
 
 		switch k {
-		case names.FlagDevices, names.FlagCategories, names.FlagActionTypes:
+		case names.FlagDevices, names.FlagCategories, names.FlagActionTypes, names.FlagAllowChannels:
 			return k, strings.Split(v, ",")
 		default:
 			return k, v
@@ -118,6 +118,10 @@ func Load(cmd *cobra.Command) (*Config, error) {
 
 	for i, actionType := range c.ActionTypes {
 		c.ActionTypes[i] = strings.TrimSpace(actionType)
+	}
+
+	for i, allowChannel := range c.AllowChannels {
+		c.AllowChannels[i] = strings.TrimSpace(allowChannel)
 	}
 
 	if len(c.DeviceAddrStrs) != 0 {

@@ -29,6 +29,7 @@ type Config struct {
 	SkipSponsors bool     `yaml:"skip-sponsors"`
 	Categories   []string `yaml:"categories"`
 	ActionTypes  []string `yaml:"action-types"`
+	AllowChannels []string `yaml:"allow-channels"`
 
 	YouTubeAPIKey string `yaml:"youtube-api-key"`
 	MuteAds       bool   `yaml:"mute-ads"`
@@ -47,6 +48,7 @@ func New() *Config {
 		SkipSponsors: true,
 		Categories:   []string{"sponsor"},
 		ActionTypes:  []string{"skip", "mute"},
+		AllowChannels: []string{},
 
 		MuteAds: true,
 	}
@@ -72,6 +74,7 @@ func RegisterFlags(cmd *cobra.Command) {
 	fs.Bool(names.FlagSkipSponsors, c.SkipSponsors, "Skip sponsored segments with SponsorBlock")
 	fs.StringSliceP(names.FlagCategories, "c", c.Categories, "Comma-separated list of SponsorBlock categories to skip")
 	fs.StringSlice(names.FlagActionTypes, c.ActionTypes, "SponsorBlock action types to handle. Shorter segments that overlap with content can be muted instead of skipped.")
+	fs.StringSliceP(names.FlagAllowChannels, "a", c.AllowChannels, "Comma-separated list of channel names or IDs to allowlist (will not skip sponsors)")
 
 	fs.String(names.FlagYouTubeAPIKey, c.YouTubeAPIKey, "YouTube API key for fallback video identification (required on some Chromecast devices).")
 	fs.Bool(names.FlagMuteAds, c.MuteAds, "Mutes the device while an ad is playing")

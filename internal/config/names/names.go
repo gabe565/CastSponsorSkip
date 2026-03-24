@@ -17,6 +17,7 @@ const (
 	FlagSkipSponsors = "skip-sponsors"
 	FlagCategories   = "categories"
 	FlagActionTypes  = "action-types"
+	FlagAllowChannels = "allow-channels"
 
 	FlagYouTubeAPIKey = "youtube-api-key"
 	FlagMuteAds       = "mute-ads"

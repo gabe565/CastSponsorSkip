@@ -6,6 +6,7 @@ import (
 	"log/slog"
 	"os"
 	"runtime/debug"
+	"strings"
 	"sync"
 	"time"
 
@@ -218,9 +219,20 @@ func (d *Device) tick() error {
 			break
 		}
 
-		for i, segment := range d.segments {
-			if (segment.Segment[0]+float32(d.config.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
-				d.handleSegment(castMedia, castVol, segment, i)
+		// Skip processing if the channel is in the allowlist
+		allowed := false
+		for _, allowChannel := range d.config.AllowChannels {
+			if strings.EqualFold(d.meta.CurrArtist, allowChannel) {
+				allowed = true
+				break
+			}
+		}
+
+		if !allowed {
+			for i, segment := range d.segments {
+				if (segment.Segment[0]+float32(d.config.SkipDelay.Seconds())) <= castMedia.CurrentTime && castMedia.CurrentTime < segment.Segment[1]-1 {
+					d.handleSegment(castMedia, castVol, segment, i)
+				}
 			}
 		}
 
