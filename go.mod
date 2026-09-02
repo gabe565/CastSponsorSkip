@@ -4,7 +4,7 @@ go 1.26.1
 
 require (
 	gabe565.com/utils v0.0.0-20260310002041-b3b94f17b36b
-	github.com/buger/jsonparser v1.1.1
+	github.com/buger/jsonparser v1.1.2
 	github.com/jedib0t/go-pretty/v6 v6.7.8
 	github.com/knadh/koanf/parsers/yaml v1.1.0
 	github.com/knadh/koanf/providers/env/v2 v2.0.0
