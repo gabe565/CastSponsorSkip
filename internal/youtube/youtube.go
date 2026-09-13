@@ -42,6 +42,7 @@ func QueryVideoID(ctx context.Context, artist, title string) (string, error) {
 	slog.Debug("Searching for video ID", "query", query)
 	response, err := service.Search.List([]string{"id", "snippet"}).
 		Q(query).
+		Type("video").
 		Context(ctx).
 		Do()
 	if err != nil {
