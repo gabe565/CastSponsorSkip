@@ -61,77 +61,55 @@ changelog:
       regexp: '\(deps\):'
     - title: Others
       order: 998
-brews:
-  - homepage: https://github.com/gabe565/CastSponsorSkip
-    description: Skip YouTube ads and sponsorships on all local Google Cast devices
-    license: GPL-3.0
-    repository:
-      owner: gabe565
-      name: homebrew-tap
-    directory: Formula
-    install: |
-      bin.install "{{ .ProjectName }}"
-      man1.install "manpages/{{ .ProjectName }}.1.gz"
-      bash_completion.install "completions/{{ .ProjectName }}.bash" => "{{ .ProjectName }}"
-      zsh_completion.install "completions/{{ .ProjectName }}.zsh" => "_{{ .ProjectName }}"
-      fish_completion.install "completions/{{ .ProjectName }}.fish"
-    service: |
-      if OS.linux?
-        name "systemd/{{ .ProjectName }}.service"
-      else
-        run [opt_bin/"{{ .ProjectName }}"]
-        keep_alive true
-        error_log_path var/"log/{{ .ProjectName }}.log"
-      end
 dockers:
   - &dockers
     image_templates:
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-amd64
     use: buildx
     dockerfile: goreleaser.Dockerfile
     build_flag_templates:
       - "--platform=linux/amd64"
   - <<: *dockers
     image_templates:
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv6
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv6
     goarch: arm
     goarm: 6
     build_flag_templates:
       - "--platform=linux/arm/v6"
   - <<: *dockers
     image_templates:
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv7
     goarch: arm
     goarm: 7
     build_flag_templates:
       - "--platform=linux/arm/v7"
   - <<: *dockers
     image_templates:
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-arm64v8
     goarch: arm64
     build_flag_templates:
       - "--platform=linux/arm64/v8"
 docker_manifests:
   - &docker_manifests
-    name_template: ghcr.io/gabe565/{{ .ProjectName }}:latest
+    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:latest
     image_templates:
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-amd64
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv6
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-armv7
-      - ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}-arm64v8
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-amd64
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv6
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv7
+      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-arm64v8
   - <<: *docker_manifests
-    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Version }}
+    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}
   - <<: *docker_manifests
-    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}
+    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Major }}
   - <<: *docker_manifests
-    name_template: ghcr.io/gabe565/{{ .ProjectName }}:{{ .Major }}.{{ .Minor }}
+    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Major }}.{{ .Minor }}
 nfpms:
   - id: packages
-    vendor: Gabe Cook
-    homepage: https://github.com/gabe565/CastSponsorSkip
+    vendor: Andreas Andersson
+    homepage: https://github.com/ap-andersson/CastSponsorSkip
     description: Skip YouTube ads and sponsorships on all local Google Cast devices
     license: GPL-3.0
-    maintainer: Gabe Cook <gabe565@gmail.com>
+    maintainer: Andreas Andersson
     formats:
       - deb
       - rpm
@@ -160,40 +138,3 @@ nfpms:
         dst: /lib/systemd/system/{{ .ProjectName }}.service
         type: config
         packager: deb
-publishers:
-  - name: fury.io
-    ids:
-      - packages
-    dir: "{{ dir .ArtifactPath }}"
-    cmd: |
-      bash -c '
-      if [[ "{{ .ArtifactName }}" != *.deb || "{{ .Arm }}" != 7 ]]; then
-        curl -sf -Fpackage=@{{ .ArtifactName }} https://{{ .Env.FURY_TOKEN }}@push.fury.io/gabe565/
-      fi
-      '
-aurs:
-  - name: "{{ .ProjectName }}-bin"
-    homepage: https://github.com/gabe565/CastSponsorSkip
-    description: Skip YouTube ads and sponsorships on all local Google Cast devices
-    maintainers:
-      - Gabe Cook <gabe565@gmail.com>
-    license: GPL-3.0
-    private_key: '{{ .Env.AUR_SSH_KEY }}'
-    git_url: ssh://aur@aur.archlinux.org/{{ .ProjectName }}-bin.git
-    skip_upload: auto
-    package: |-
-      # bin
-      install -Dm755 "./{{ .ProjectName }}" "${pkgdir}/usr/bin/{{ .ProjectName }}"
-      # license
-      install -Dm644 "./LICENSE" "${pkgdir}/usr/share/licenses/{{ .ProjectName }}/LICENSE"
-      # man page
-      install -Dm644 "./manpages/{{ .ProjectName }}.1.gz" "${pkgdir}/usr/share/man/man1/{{ .ProjectName }}.1.gz"
-      # completion
-      install -Dm644 "./completions/{{ .ProjectName }}.bash" "${pkgdir}/usr/share/bash-completion/completions/{{ .ProjectName }}"
-      install -Dm644 "./completions/{{ .ProjectName }}.zsh" "${pkgdir}/usr/share/zsh/site-functions/_{{ .ProjectName }}"
-      install -Dm644 "./completions/{{ .ProjectName }}.fish" "${pkgdir}/usr/share/fish/vendor_completions.d/{{ .ProjectName }}.fish"
-      # systemd unit
-      install -Dm644 "./systemd/{{ .ProjectName }}.service" "${pkgdir}/usr/lib/systemd/system/{{ .ProjectName }}.service"
-    commit_author:
-      name: goreleaserbot
-      email: bot@goreleaser.com
