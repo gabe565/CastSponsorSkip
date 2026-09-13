@@ -1,6 +1,10 @@
 name: Build
 
-on: push
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +57,10 @@ jobs:
         uses: docker/setup-qemu-action@ce360397dd3f832beb865e1373c09c0e9f86d70a # v4.0.0
       - name: Set up Buildx
         uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+      # Pushing images requires write access to packages, which forked PRs
+      # don't get, so skip login/push for PRs from external forks.
       - name: Login to GitHub Container Registry
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ghcr.io
@@ -67,29 +74,36 @@ jobs:
         id: vars
         run: |
           args='release --clean'
-          if [[ "$GITHUB_REF" != refs/tags/* ]]; then
+          image_tag=''
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            # Tagged releases are published by GoReleaser itself
+            # (versioned tags + latest).
+            :
+          else
             args+=' --snapshot'
+            if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+              image_tag="$(git rev-parse --short HEAD)"
+            else
+              image_tag='edge'
+            fi
           fi
-          echo "args=$args" >> $GITHUB_OUTPUT
-      - name: Generate Token
-        id: app-token
-        if: startsWith(github.ref, 'refs/tags/')
-        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
-        with:
-          app-id: ${{ secrets.BOT_APP_ID }}
-          private-key: ${{ secrets.BOT_APP_PRIVATE_KEY }}
-          repositories: CastSponsorSkip,homebrew-tap
+          echo "args=$args" >> "$GITHUB_OUTPUT"
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: latest
           args: ${{ steps.vars.outputs.args }}
         env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          FURY_TOKEN: ${{ secrets.FURY_TOKEN }}
-          AUR_SSH_KEY: ${{ secrets.AUR_SSH_KEY }}
-      - name: Push beta image
-        if: github.ref_name == 'main'
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Snapshot builds (main pushes, PRs) aren't published by GoReleaser, so
+      # re-tag and push the per-arch images it built locally under one tag.
+      - name: Push snapshot image
+        if: >-
+          steps.vars.outputs.image_tag != '' &&
+          (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          IMAGE_TAG: ${{ steps.vars.outputs.image_tag }}
         run: |
           export REPO="$(tr '[[:upper:]]' '[[:lower:]]' <<< "ghcr.io/$GITHUB_REPOSITORY")"
           IMAGES=()
@@ -103,12 +117,12 @@ jobs:
                 select(.Repository == strenv(REPO)) |
                 [
                   .Repository + ":" + .Tag,
-                  .Repository + ":beta-" + (.Tag | sub(".*-", ""))
+                  .Repository + ":" + strenv(IMAGE_TAG) + "-" + (.Tag | sub(".*-", ""))
                 ]
               ')
 
-          docker manifest create "$REPO:beta" "${IMAGES[@]}"
-          docker manifest push "$REPO:beta"
+          docker manifest create "$REPO:$IMAGE_TAG" "${IMAGES[@]}"
+          docker manifest push "$REPO:$IMAGE_TAG"
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: dist

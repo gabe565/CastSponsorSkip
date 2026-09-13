@@ -3,7 +3,8 @@ WORKDIR /app
 
 RUN apk add --no-cache tzdata
 
-COPY castsponsorskip .
+ARG TARGETPLATFORM
+COPY $TARGETPLATFORM/castsponsorskip .
 
 ARG USERNAME=castsponsorskip
 ARG UID=1000
