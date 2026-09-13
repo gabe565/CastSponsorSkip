@@ -4,7 +4,6 @@
 
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/ap-andersson/CastSponsorSkip)](https://github.com/ap-andersson/CastSponsorSkip/releases)
 [![Build](https://github.com/ap-andersson/CastSponsorSkip/actions/workflows/build.yml/badge.svg)](https://github.com/ap-andersson/CastSponsorSkip/actions/workflows/build.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ap-andersson/CastSponsorSkip)](https://goreportcard.com/report/github.com/ap-andersson/CastSponsorSkip)
 
 > [!NOTE]
 > This is a personal fork of [gabe565/CastSponsorSkip](https://github.com/gabe565/CastSponsorSkip), maintained for my own use. See the original repo for the upstream project.
