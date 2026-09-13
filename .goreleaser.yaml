@@ -61,45 +61,17 @@ changelog:
       regexp: '\(deps\):'
     - title: Others
       order: 998
-dockers:
-  - &dockers
-    image_templates:
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-amd64
-    use: buildx
+dockers_v2:
+  - images:
+      - ghcr.io/ap-andersson/{{ .ProjectName }}
     dockerfile: goreleaser.Dockerfile
-    build_flag_templates:
-      - "--platform=linux/amd64"
-  - <<: *dockers
-    image_templates:
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv6
-    goarch: arm
-    goarm: 6
-    build_flag_templates:
-      - "--platform=linux/arm/v6"
-  - <<: *dockers
-    image_templates:
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv7
-    goarch: arm
-    goarm: 7
-    build_flag_templates:
-      - "--platform=linux/arm/v7"
-  - <<: *dockers
-    image_templates:
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-arm64v8
-    goarch: arm64
-    build_flag_templates:
-      - "--platform=linux/arm64/v8"
-docker_manifests:
-  - &docker_manifests
-    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:latest
-    image_templates:
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-amd64
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv6
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-armv7
-      - ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}-arm64v8
-  - <<: *docker_manifests
-    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Version }}
-  - <<: *docker_manifests
-    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Major }}
-  - <<: *docker_manifests
-    name_template: ghcr.io/ap-andersson/{{ .ProjectName }}:{{ .Major }}.{{ .Minor }}
+    platforms:
+      - linux/amd64
+      - linux/arm/v6
+      - linux/arm/v7
+      - linux/arm64
+    tags:
+      - "{{ .Version }}"
+      - "{{ if not .IsSnapshot }}latest{{ end }}"
+      - "{{ if not .IsSnapshot }}{{ .Major }}{{ end }}"
+      - "{{ if not .IsSnapshot }}{{ .Major }}.{{ .Minor }}{{ end }}"
