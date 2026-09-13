@@ -49,7 +49,10 @@ func TestQueryVideoId(t *testing.T) {
 		},
 		{
 			"collab channel credit in artist",
-			args{artist: "Corridor Crew and Wētā Workshop", title: "VFX Artists React to Bad & Great CGi 242 Ft. Richard Taylor"},
+			args{
+				artist: "Corridor Crew and Wētā Workshop",
+				title:  "VFX Artists React to Bad & Great CGi 242 Ft. Richard Taylor",
+			},
 			true,
 			"Corridor Crew", "VFX Artists React to Bad & Great CGi 242 Ft. Richard Taylor",
 			"iyWyliFoCuk",
