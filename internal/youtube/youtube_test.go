@@ -20,28 +20,44 @@ func TestQueryVideoId(t *testing.T) {
 		title  string
 	}
 	tests := []struct {
-		name      string
-		args      args
-		found     bool
-		want      string
-		wantQuery string
-		wantErr   require.ErrorAssertionFunc
+		name          string
+		args          args
+		found         bool
+		resultChannel string
+		resultTitle   string
+		want          string
+		wantQuery     string
+		wantErr       require.ErrorAssertionFunc
 	}{
 		{
 			"simple",
 			args{artist: "Rick Astley", title: "Rick Astley - Never Gonna Give You Up (Official Music Video)"},
 			true,
+			"", "",
 			"dQw4w9WgXcQ",
-			`"Rick Astley"+intitle:"Rick Astley - Never Gonna Give You Up (Official Music Video)"`,
+			`Rick Astley Rick Astley - Never Gonna Give You Up (Official Music Video)`,
 			require.NoError,
 		},
 		{
 			"not found",
 			args{artist: "gabe565", title: "Nonexistent video"},
 			false,
+			"", "",
 			"",
-			`"gabe565"+intitle:"Nonexistent video"`,
+			`gabe565 Nonexistent video`,
 			require.Error,
+		},
+		{
+			"collab channel credit in artist",
+			args{
+				artist: "Corridor Crew and Wētā Workshop",
+				title:  "VFX Artists React to Bad & Great CGi 242 Ft. Richard Taylor",
+			},
+			true,
+			"Corridor Crew", "VFX Artists React to Bad & Great CGi 242 Ft. Richard Taylor",
+			"iyWyliFoCuk",
+			`Corridor Crew and Wētā Workshop VFX Artists React to Bad & Great CGi 242 Ft. Richard Taylor`,
+			require.NoError,
 		},
 	}
 	for _, tt := range tests {
@@ -51,11 +67,19 @@ func TestQueryVideoId(t *testing.T) {
 
 				response := &youtube.SearchListResponse{}
 				if tt.found {
+					channelTitle := tt.resultChannel
+					if channelTitle == "" {
+						channelTitle = tt.args.artist
+					}
+					videoTitle := tt.resultTitle
+					if videoTitle == "" {
+						videoTitle = tt.args.title
+					}
 					response.Items = []*youtube.SearchResult{{
 						Id: &youtube.ResourceId{VideoId: tt.want},
 						Snippet: &youtube.SearchResultSnippet{
-							ChannelTitle: tt.args.artist,
-							Title:        tt.args.title,
+							ChannelTitle: channelTitle,
+							Title:        videoTitle,
 						},
 					}}
 				}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"html"
 	"log/slog"
 	"strings"
 
@@ -38,10 +39,12 @@ func QueryVideoID(ctx context.Context, artist, title string) (string, error) {
 		return "", util.HaltRetries(ErrNotConnected)
 	}
 
-	query := fmt.Sprintf(`%q+intitle:%q`, artist, title)
+	query := fmt.Sprintf(`%s %s`, artist, title)
 	slog.Debug("Searching for video ID", "query", query)
 	response, err := service.Search.List([]string{"id", "snippet"}).
 		Q(query).
+		Type("video").
+		MaxResults(50).
 		Context(ctx).
 		Do()
 	if err != nil {
@@ -56,7 +59,19 @@ func QueryVideoID(ctx context.Context, artist, title string) (string, error) {
 		if item == nil || item.Snippet == nil {
 			continue
 		}
-		if !strings.Contains(strings.ToLower(item.Snippet.ChannelTitle), strings.ToLower(artist)) {
+		channelTitle := strings.ToLower(item.Snippet.ChannelTitle)
+		artistLower := strings.ToLower(artist)
+		videoTitle := strings.ToLower(html.UnescapeString(item.Snippet.Title))
+		titleLower := strings.ToLower(title)
+		matchesChannel := strings.Contains(channelTitle, artistLower) || strings.Contains(artistLower, channelTitle)
+		matchesTitle := strings.Contains(videoTitle, titleLower) || strings.Contains(titleLower, videoTitle)
+		slog.Debug("Candidate result",
+			"channel_title", item.Snippet.ChannelTitle,
+			"video_title", item.Snippet.Title,
+			"matches_channel", matchesChannel,
+			"matches_title", matchesTitle,
+		)
+		if !matchesChannel || !matchesTitle {
 			continue
 		}
 		if item.Id == nil || item.Id.VideoId == "" {

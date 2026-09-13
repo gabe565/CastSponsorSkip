@@ -29,8 +29,7 @@ func Retry(ctx context.Context, attempts uint, sleep time.Duration, fn func(try 
 			return nil
 		}
 
-		var haltRetriesErr HaltRetriesError
-		if errors.As(err, &haltRetriesErr) {
+		if haltRetriesErr, ok := errors.AsType[HaltRetriesError](err); ok {
 			return haltRetriesErr.Err
 		}
 
