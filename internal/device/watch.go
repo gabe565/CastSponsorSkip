@@ -374,11 +374,18 @@ func (d *Device) queryVideoID() {
 }
 
 func (d *Device) muteAd(castVol *cast.Volume) {
-	var shouldUnmute bool
 	if d.config.MuteAds && !castVol.Muted {
 		d.logger.Info("Detected ad. Muting and attempting to skip...")
 		if err := d.app.SetMuted(true); err == nil {
-			shouldUnmute = true
+			// Unmute in a defer so the device is not left muted if Skipad
+			// panics (e.g. the receiver closing the session mid-ad). Once
+			// muted, a later tick sees the device as already muted and would
+			// never unmute it.
+			defer func() {
+				if err := d.app.SetMuted(false); err != nil {
+					d.logger.Warn("Failed to unmute ad.", "error", err.Error())
+				}
+			}()
 		} else {
 			d.logger.Warn("Failed to mute ad.", "error", err.Error())
 		}
@@ -390,12 +397,6 @@ func (d *Device) muteAd(castVol *cast.Volume) {
 		d.logger.Info("Skipped ad.")
 	} else if !errors.Is(err, application.ErrNoMediaSkipad) {
 		d.logger.Warn("Failed to skip ad.", "error", err.Error())
-	}
-
-	if shouldUnmute {
-		if err := d.app.SetMuted(false); err != nil {
-			d.logger.Warn("Failed to unmute ad.", "error", err.Error())
-		}
 	}
 }
 
